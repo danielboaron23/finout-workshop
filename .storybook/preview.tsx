@@ -7,6 +7,8 @@ const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
 const geist = Geist({ variable: '--font-geist', subsets: ['latin'] })
 
 const preview: Preview = {
+  // Full design-system docs on every component
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div className={`${inter.variable} ${geist.variable} contents`}>
@@ -15,6 +17,12 @@ const preview: Preview = {
     ),
   ],
   parameters: {
+    // Atomic Design order: Foundations → Atoms → Molecules → Organisms → Screens
+    options: {
+      storySort: {
+        order: ['Design System', 'Foundations', ['Colors', 'Typography', 'Spacing', 'Shadows & Radius', 'Icons'], 'Atoms', 'Molecules', 'Organisms', 'Screens'],
+      },
+    },
     controls: {
       matchers: {
        color: /(background|color)$/i,

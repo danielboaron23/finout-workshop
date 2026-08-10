@@ -4,7 +4,7 @@ import { TimeIntervalDrawer } from "./TimeIntervalDrawer";
 import { FormFooter } from "./FormFooter";
 
 const meta = {
-  title: "Anomaly Form/Misc",
+  title: "Molecules/Form Misc",
   parameters: { layout: "padded" },
 } satisfies Meta;
 

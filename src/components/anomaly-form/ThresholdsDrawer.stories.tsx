@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ThresholdsDrawer } from "./ThresholdsDrawer";
 
 const meta = {
-  title: "Anomaly Form/Thresholds",
+  title: "Organisms/Thresholds Drawer",
   parameters: { layout: "fullscreen" },
 } satisfies Meta;
 

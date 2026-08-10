@@ -5,8 +5,16 @@ import { TopSpendCard } from "./TopSpendCard";
 import { RecentActivityCard } from "./RecentActivityCard";
 
 const meta = {
-  title: "Home/Tables",
-  parameters: { layout: "fullscreen" },
+  title: "Organisms/Home Tables",
+  parameters: {
+    layout: "fullscreen",
+    docs: {
+      description: {
+        component:
+          "Table and list widgets of the Home dashboard — Figma \"Home page\" → `.local_homepage_content`. These use the home-local table primitives (header 44px #eaecf0 / cells 54px / rounded-12 shell), deliberately distinct from the list-screen table in `src/components/table`. CostCenters' \"Total Cost\" header is sortable — clicking it cycles the sort and flips the arrow — and its per-row \"Explore\" action buttons navigate to /megabill via the Next router. Recommendations, TopSpend and RecentActivity are narrower widgets sized to their Figma card widths (858 / 443 / 443).",
+      },
+    },
+  },
 } satisfies Meta;
 
 export default meta;
