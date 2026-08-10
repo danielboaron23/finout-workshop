@@ -21,7 +21,7 @@ const NAV: Entry[] = [
   { type: "item", label: "Finops for AI", icon: "finops-ai" },
   { type: "item", label: "Billy", icon: "billy" },
   { type: "section", label: "Inform" },
-  { type: "item", label: "MegaBill", icon: "megabill" },
+  { type: "item", label: "MegaBill", icon: "megabill", href: "/megabill" },
   { type: "item", label: "Virtual tags", icon: "virtual-tags", href: "/virtual-tags" },
   { type: "item", label: "Dashboards", icon: "dashboards" },
   { type: "item", label: "Financial Plans", icon: "financial-plans" },

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 export type KpiTrend = "down" | "up";
@@ -10,6 +11,8 @@ export type KpiCardProps = {
   delta?: { trend: KpiTrend; value: string };
   previous?: string;
   cta: string;
+  /** When set, the CTA navigates (e.g. Investigate in MegaBill -> /megabill) */
+  ctaHref?: string;
   className?: string;
 };
 
@@ -140,7 +143,7 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
   );
 }
 
-export function KpiCard({ title, caption, icon, value, delta, previous, cta, className = "" }: KpiCardProps) {
+export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, className = "" }: KpiCardProps) {
   return (
     <div
       className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
@@ -182,11 +185,22 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cla
           )}
         </div>
       </div>
-      <button className="bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer">
-        <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
-          {cta}
-        </span>
-      </button>
+      {(() => {
+        const ctaClass =
+          "bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer";
+        const label = (
+          <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
+            {cta}
+          </span>
+        );
+        return ctaHref ? (
+          <Link href={ctaHref} className={ctaClass}>
+            {label}
+          </Link>
+        ) : (
+          <button className={ctaClass}>{label}</button>
+        );
+      })()}
     </div>
   );
 }
@@ -200,6 +214,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     delta: { trend: "down", value: "7%" },
     previous: "$16,687 in previous month",
     cta: "Investigate in MegaBill",
+    ctaHref: "/megabill",
   },
   {
     title: "Avg. daily spend",
@@ -209,6 +224,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     delta: { trend: "down", value: "7%" },
     previous: "$556 in previous month",
     cta: "Investigate in MegaBill",
+    ctaHref: "/megabill",
   },
   {
     title: "Projected monthly spend",
@@ -218,6 +234,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     delta: { trend: "up", value: "3%" },
     previous: "$345,695 in previous month",
     cta: "Investigate in MegaBill",
+    ctaHref: "/megabill",
   },
   {
     title: "Monthly potential savings",
@@ -240,6 +257,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     icon: <KpiTileAnomaly />,
     value: "7",
     cta: "Go to Anomalies",
+    ctaHref: "/anomalies",
   },
 ];
 
