@@ -73,13 +73,13 @@ export function ProjectionCard({
 }: ProjectionCardProps) {
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex grow shrink-0 basis-auto flex-col min-h-[232px] items-start p-[16px] rounded-[8px] ${className}`}
+      className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex w-full flex-col min-h-[232px] items-start p-[16px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-1 flex-col items-start justify-between min-h-px w-full">
         <div className="flex gap-[12px] items-center">
           {logo}
-          <div className="flex flex-col gap-[2px] items-start">
-            <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px] whitespace-nowrap">
+          <div className="flex flex-col gap-[2px] items-start min-w-0">
+            <p className="font-sans font-medium text-[#101828] text-[15px] leading-[22px] @[300px]:text-[17px] @[300px]:leading-[24px] @[310px]:text-[18px] @[310px]:leading-[26px] @[340px]:text-[20px] @[340px]:leading-[28px]">
               {title}
             </p>
             <p className="font-sans font-normal leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
@@ -108,7 +108,7 @@ export const DEFAULT_PROJECTION_CARDS: ProjectionCardProps[] = [
 
 export function ProjectionCardsRow({ cards = DEFAULT_PROJECTION_CARDS }: { cards?: ProjectionCardProps[] }) {
   return (
-    <div className="flex flex-wrap gap-[32px] items-stretch w-full">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[32px] items-stretch w-full">
       {cards.map((card) => (
         <ProjectionCard key={card.cta} {...card} />
       ))}

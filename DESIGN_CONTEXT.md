@@ -25,6 +25,7 @@ Exported Figma SVGs only (never hand-drawn): `public/icons/{sidebar,topnav,ui}`,
 - Table cell text 21.57px/33.898 is the design's real rendered size (kept 1:1).
 
 ## Layout contract (applies to EVERY screen)
+- **Card rows: equal-width cards, container-query titles** (Daniel's rule): rows are `grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))]` so every card is the same size and the row fills the screen at any width. Each card is `@container` and its title steps with card width — `15px/22` base, `@[300px]:17px/24`, `@[310px]:18px/26`, `@[340px]:20px/28` (Figma's 20px needs a ≥340px card) — so text always fits inside the card, never overflows and never gets truncated.
 - Root: `flex h-screen overflow-hidden`; Sidebar `shrink-0`; content column `flex-1 min-w-0 overflow-y-auto`.
 - Pixel-perfect at 1920×1080 (Figma frame size); fluid below — tables wrap in `overflow-x-auto`, filters row wraps or scrolls, nothing overflows the viewport horizontally.
 - Verify loop: `node scripts/shot.mjs <url> <out.png> <w> <h>` at 1920×1080 + 1440×900 + 1280×800, compare vs Figma `get_screenshot`.

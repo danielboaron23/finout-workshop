@@ -143,13 +143,15 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
 export function KpiCard({ title, caption, icon, value, delta, previous, cta, className = "" }: KpiCardProps) {
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
+      className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-col gap-[12px] items-start w-full">
         <div className="flex gap-[12px] items-center w-full">
           {icon}
-          <div className="flex flex-col gap-[2px] items-start">
-            <div className="font-sans font-medium leading-[28px] text-[#101828] text-[20px] whitespace-nowrap">
+          <div className="flex flex-col gap-[2px] items-start min-w-0">
+            {/* Title steps down with the card so it always fits on one line
+                (Figma's 20px needs a ≥340px card; equal-width cards at 1920 are 311px) */}
+            <div className="font-sans font-medium text-[#101828] text-[15px] leading-[22px] @[300px]:text-[17px] @[300px]:leading-[24px] @[310px]:text-[18px] @[310px]:leading-[26px] @[340px]:text-[20px] @[340px]:leading-[28px]">
               {title}
             </div>
             <div className="flex gap-[2px] items-center font-sans leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
@@ -243,11 +245,11 @@ const DEFAULT_CARDS: KpiCardProps[] = [
 
 export function KpiCardsRow({ cards = DEFAULT_CARDS, className = "" }: { cards?: KpiCardProps[]; className?: string }) {
   return (
-    // Figma's own model: cards never shrink below their content (titles stay
-    // one line, like the design); whole cards wrap to the next row when tight
-    <div className={`flex flex-wrap gap-[24px] items-stretch w-full ${className}`}>
+    // Equal-width cards that fill the full row (like Figma); the card's
+    // container query scales its title so text always fits inside
+    <div className={`grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[24px] items-stretch w-full ${className}`}>
       {cards.map((card) => (
-        <KpiCard key={card.title} {...card} className="grow shrink-0 basis-auto" />
+        <KpiCard key={card.title} {...card} className="w-full" />
       ))}
     </div>
   );
