@@ -1,8 +1,15 @@
+"use client";
+
 /*
  * MegaBill top nav — Figma node 1:13878 ("Top nav", 1463x68).
  * LEFT: Views select-style button + Save/Clear link buttons (30% opacity).
  * RIGHT: Share link, home icon button, avatar S + chevron.
+ *
+ * Save/Clear stay at 30% opacity until the view state is dirty, then become
+ * fully opaque and clickable. The Views button lists saved views.
  */
+
+import { Dropdown, DropdownItem } from "@/components/ui/Dropdown";
 
 const I = "/icons/megabill";
 
@@ -53,10 +60,26 @@ function HouseIcon16() {
 export function MegaBillTopBar({
   viewsLabel = "Views",
   userInitial = "S",
+  dirty = false,
+  onSave,
+  onClear,
+  viewNames = ["Default view"],
+  onSelectView,
 }: {
   viewsLabel?: string;
   userInitial?: string;
+  /** True once the view state differs from the default — enables Save/Clear. */
+  dirty?: boolean;
+  onSave?: () => void;
+  onClear?: () => void;
+  /** Views listed in the Views dropdown ("Default view" + saved views). */
+  viewNames?: readonly string[];
+  onSelectView?: (name: string) => void;
 }) {
+  const linkButtonClass = (enabled: boolean) =>
+    `flex gap-[8px] items-center justify-center min-h-[24px]${
+      enabled ? "" : " opacity-30"
+    } px-[8px] py-[4px] rounded-[4px] shrink-0 cursor-pointer`;
   return (
     <div className="bg-[#fefefe] border-b border-solid border-[#f2f4f7] flex items-center px-[24px] py-[16px] w-full h-[68px]">
       <div className="bg-white flex flex-1 items-center justify-between min-w-0">
@@ -64,20 +87,49 @@ export function MegaBillTopBar({
         <div className="flex gap-[24px] items-center shrink-0">
           <div className="bg-white flex gap-[8px] items-center shrink-0">
             <div className="flex gap-[16px] items-center shrink-0">
-              <button className="bg-[#fefefe] border border-solid border-[#d0d5dd] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] shrink-0 cursor-pointer">
-                <ViewsIcon16 />
-                <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] text-center whitespace-nowrap">
-                  {viewsLabel}
-                </span>
-                <ChevronDown16 />
-              </button>
+              <Dropdown
+                trigger={() => (
+                  <button className="bg-[#fefefe] border border-solid border-[#d0d5dd] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] shrink-0 cursor-pointer">
+                    <ViewsIcon16 />
+                    <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] text-center whitespace-nowrap">
+                      {viewsLabel}
+                    </span>
+                    <ChevronDown16 />
+                  </button>
+                )}
+              >
+                {(close) => (
+                  <div className="flex flex-col min-w-[180px]">
+                    {viewNames.map((name) => (
+                      <DropdownItem
+                        key={name}
+                        selected={name === viewsLabel}
+                        onClick={() => {
+                          onSelectView?.(name);
+                          close();
+                        }}
+                      >
+                        {name}
+                      </DropdownItem>
+                    ))}
+                  </div>
+                )}
+              </Dropdown>
               <div className="flex gap-[16px] items-center shrink-0">
-                <button className="flex gap-[8px] items-center justify-center min-h-[24px] opacity-30 px-[8px] py-[4px] rounded-[4px] shrink-0 cursor-pointer">
+                <button
+                  onClick={dirty && onSave ? onSave : undefined}
+                  aria-disabled={!dirty}
+                  className={linkButtonClass(dirty)}
+                >
                   <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
                     Save
                   </span>
                 </button>
-                <button className="flex gap-[8px] items-center justify-center min-h-[24px] opacity-30 px-[8px] py-[4px] rounded-[4px] shrink-0 cursor-pointer">
+                <button
+                  onClick={dirty && onClear ? onClear : undefined}
+                  aria-disabled={!dirty}
+                  className={linkButtonClass(dirty)}
+                >
                   <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
                     Clear
                   </span>

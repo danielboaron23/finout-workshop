@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { showToast } from "@/components/ui/Toast";
 
 export type KpiTrend = "down" | "up";
 
@@ -13,6 +16,8 @@ export type KpiCardProps = {
   cta: string;
   /** When set, the CTA navigates (e.g. Investigate in MegaBill -> /megabill) */
   ctaHref?: string;
+  /** CTA click handler when there is no ctaHref (e.g. Go to CostGuard toast) */
+  onCtaClick?: () => void;
   className?: string;
 };
 
@@ -143,7 +148,7 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
   );
 }
 
-export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, className = "" }: KpiCardProps) {
+export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, onCtaClick, className = "" }: KpiCardProps) {
   return (
     <div
       className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
@@ -198,7 +203,9 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cta
             {label}
           </Link>
         ) : (
-          <button className={ctaClass}>{label}</button>
+          <button onClick={onCtaClick} className={ctaClass}>
+            {label}
+          </button>
         );
       })()}
     </div>
@@ -250,6 +257,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     icon: <KpiTileWavyCheck />,
     value: "$26,802",
     cta: "Go to CostGuard",
+    onCtaClick: () => showToast("CostGuard is next in the workshop 😉"),
   },
   {
     title: "Anomalies",

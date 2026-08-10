@@ -1,4 +1,7 @@
-import { HomeCell, HomeCellText, HomeHeaderCell, HomeTableShell, WidgetCard, WidgetTitle } from "./CostCentersCard";
+"use client";
+
+import { useState } from "react";
+import { HomeCell, HomeCellText, HomeHeaderCell, HomeTableShell, WidgetCard, WidgetTitle, parseMoney, type SortDir } from "./CostCentersCard";
 
 /*
  * "Top monthly spend by service" widget — middle card of the home page's
@@ -25,7 +28,15 @@ const DEFAULT_ROWS: TopSpendRow[] = [
   { name: "Others", totalCost: "$2,445" },
 ];
 
-export function TopSpendCard({ title = "Top monthly spend by service", rows = DEFAULT_ROWS }: TopSpendCardProps) {
+export function TopSpendCard({ title = "Top monthly spend by service", rows: rowsProp = DEFAULT_ROWS }: TopSpendCardProps) {
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const rows = sortDir
+    ? [...rowsProp].sort((a, b) =>
+        sortDir === "asc"
+          ? parseMoney(a.totalCost) - parseMoney(b.totalCost)
+          : parseMoney(b.totalCost) - parseMoney(a.totalCost),
+      )
+    : rowsProp;
   return (
     <WidgetCard className="h-full">
       <div className="flex flex-col gap-[16px] items-start w-full">
@@ -40,7 +51,12 @@ export function TopSpendCard({ title = "Top monthly spend by service", rows = DE
             ))}
           </div>
           <div className="flex flex-1 flex-col items-start min-w-0">
-            <HomeHeaderCell label="Total Cost" sortable />
+            <HomeHeaderCell
+              label="Total Cost"
+              sortable
+              sortDir={sortDir}
+              onSort={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}
+            />
             {rows.map((row) => (
               <HomeCell key={row.name}>
                 <HomeCellText>{row.totalCost}</HomeCellText>

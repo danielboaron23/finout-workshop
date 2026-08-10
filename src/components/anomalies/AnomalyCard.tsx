@@ -1,4 +1,7 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { showToast } from "@/components/ui/Toast";
 
 /*
  * Usage anomaly feed card — Figma ".local_usage_anomaly_feed" (1:14693).
@@ -9,9 +12,20 @@ import type { ReactNode } from "react";
 
 const I = "/icons/anomalies";
 
-function GhostAction({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+function GhostAction({
+  icon,
+  children,
+  onClick,
+}: {
+  icon: ReactNode;
+  children: ReactNode;
+  onClick?: () => void;
+}) {
   return (
-    <button className="bg-surface-primary flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer">
+    <button
+      onClick={onClick}
+      className="bg-surface-primary flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer"
+    >
       {icon}
       <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] text-center whitespace-nowrap">
         {children}
@@ -55,6 +69,18 @@ export type AnomalyCardProps = {
   intervalA?: string;
   intervalB?: string;
   scopeTag?: string;
+  /** True only on the seeded Figma card — user-created alerts omit it. */
+  builtIn?: boolean;
+  /** Comment texts appended via "Add comment" (stored on the card object). */
+  comments?: string[];
+};
+
+/** Behavior callbacks — all optional so stories/screens can render the card statically. */
+export type AnomalyCardActions = {
+  onInvestigate?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onComment?: (text: string) => void;
 };
 
 export function AnomalyCard({
@@ -69,7 +95,23 @@ export function AnomalyCard({
   intervalA = "1 day",
   intervalB = "6 days",
   scopeTag = "CostCenter: Anthropic",
-}: AnomalyCardProps) {
+  comments = [],
+  onInvestigate,
+  onEdit,
+  onDelete,
+  onComment,
+}: AnomalyCardProps & AnomalyCardActions) {
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [draft, setDraft] = useState("");
+
+  const submitComment = () => {
+    const text = draft.trim();
+    if (!text) return;
+    onComment?.(text);
+    setDraft("");
+    setCommentOpen(false);
+  };
+
   return (
     <div className="bg-white border border-solid border-[#d0d5dd] flex flex-col gap-[8px] items-start p-[24px] rounded-[8px] w-full">
       {/* header */}
@@ -155,7 +197,10 @@ export function AnomalyCard({
       {/* footer actions */}
       <div className="flex items-center justify-between w-full gap-[16px] flex-wrap">
         <div className="flex gap-[16px] items-center flex-wrap">
-          <button className="bg-surface-primary border border-solid border-[#1570ef] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer">
+          <button
+            onClick={onInvestigate}
+            className="bg-surface-primary border border-solid border-[#1570ef] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer"
+          >
             <span className="overflow-clip relative shrink-0 size-[16px]">
               <span className="-translate-x-1/2 absolute h-[17.5px] left-1/2 top-0 w-[12px]">
                 <img alt="" className="absolute block inset-0 max-w-none size-full" src={`${I}/investigate.svg`} />
@@ -166,6 +211,7 @@ export function AnomalyCard({
             </span>
           </button>
           <GhostAction
+            onClick={onEdit}
             icon={
               <span className="overflow-clip relative shrink-0 size-[16px]">
                 <span className="absolute inset-[5.21%]">
@@ -177,6 +223,7 @@ export function AnomalyCard({
             Edit anomaly
           </GhostAction>
           <GhostAction
+            onClick={onDelete}
             icon={
               <span className="overflow-clip relative shrink-0 size-[16px]">
                 <span className="absolute inset-[5.21%_9.38%]">
@@ -188,6 +235,7 @@ export function AnomalyCard({
             Delete
           </GhostAction>
           <GhostAction
+            onClick={() => setCommentOpen((v) => !v)}
             icon={
               <span className="overflow-clip relative shrink-0 size-[16px]">
                 <span className="absolute inset-[9.38%_9.38%_9.37%_9.38%]">
@@ -199,7 +247,10 @@ export function AnomalyCard({
             Add comment
           </GhostAction>
         </div>
-        <button className="bg-surface-primary border border-solid border-[#d0d5dd] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer">
+        <button
+          onClick={() => showToast("Jira issue FIN-1234 created")}
+          className="bg-surface-primary border border-solid border-[#d0d5dd] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] cursor-pointer"
+        >
           <span className="overflow-clip relative rounded-[3px] shrink-0 size-[16px]">
             <span className="absolute inset-[16.67%]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -215,6 +266,36 @@ export function AnomalyCard({
           </span>
         </button>
       </div>
+      {/* comment input (toggled by "Add comment") */}
+      {commentOpen && (
+        <form
+          className="flex items-start w-full"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitComment();
+          }}
+        >
+          <input
+            type="text"
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Add a comment"
+            aria-label="Add a comment"
+            className="bg-white border border-solid border-[#eaecf0] min-h-[36px] w-[320px] px-[12px] py-[7.5px] rounded-[8px] shadow-xs font-geist font-normal leading-[20px] text-[14px] text-[#191919] placeholder:text-[#475467] outline-none"
+          />
+        </form>
+      )}
+      {/* comment lines */}
+      {comments.length > 0 && (
+        <div className="flex flex-col gap-[4px] items-start w-full">
+          {comments.map((text, i) => (
+            <p key={i} className="font-sans font-normal leading-[15.2px] text-[#5c5c5c] text-[12px] w-full">
+              You · just now · {text}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

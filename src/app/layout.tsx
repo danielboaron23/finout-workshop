@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/Toast";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,7 +21,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${geist.variable} h-full antialiased`}>
-      <body className="app-zoom flex flex-col">{children}</body>
+      <body className="app-zoom flex flex-col">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

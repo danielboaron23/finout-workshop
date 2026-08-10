@@ -5,9 +5,14 @@
 export function SearchInput({
   placeholder = "Search",
   width = 350,
+  value,
+  onChange,
 }: {
   placeholder?: string;
   width?: number;
+  /** optional controlled value (pair with onChange) */
+  value?: string;
+  onChange?: (value: string) => void;
 }) {
   return (
     <div
@@ -24,6 +29,8 @@ export function SearchInput({
       <input
         type="text"
         placeholder={placeholder}
+        value={value}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
         className="flex-1 min-w-px font-geist font-normal leading-[20px] text-[14px] text-text-primary placeholder:text-[#475467] outline-none bg-transparent"
       />
     </div>

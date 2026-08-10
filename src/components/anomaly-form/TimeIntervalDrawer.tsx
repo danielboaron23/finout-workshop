@@ -149,9 +149,36 @@ function Pill({ children }: { children: React.ReactNode }) {
 
 const COMPARISON_CHIPS = [2, 3, 4, 5, 6];
 
-export function TimeIntervalDrawer({ className = "" }: { className?: string }) {
-  const [unit, setUnit] = useState<"Days" | "Weeks">("Days");
-  const [comparison, setComparison] = useState(6);
+export type TimeIntervalValue = { intervalA: string; intervalB: string };
+
+export function TimeIntervalDrawer({
+  className = "",
+  initialUnit = "Days",
+  initialComparison = 6,
+  onChange,
+}: {
+  className?: string;
+  initialUnit?: "Days" | "Weeks";
+  initialComparison?: number;
+  /** Fires with the card-ready values (e.g. { intervalA: "1 day", intervalB: "6 days" }). */
+  onChange?: (value: TimeIntervalValue) => void;
+}) {
+  const [unit, setUnit] = useState<"Days" | "Weeks">(initialUnit);
+  const [comparison, setComparison] = useState(initialComparison);
+
+  const emit = (u: "Days" | "Weeks", c: number) =>
+    onChange?.({
+      intervalA: `1 ${u === "Days" ? "day" : "week"}`,
+      intervalB: `${c} ${u === "Days" ? "days" : "weeks"}`,
+    });
+  const pickUnit = (u: "Days" | "Weeks") => {
+    setUnit(u);
+    emit(u, comparison);
+  };
+  const pickComparison = (c: number) => {
+    setComparison(c);
+    emit(unit, c);
+  };
 
   const unitSingular = unit === "Days" ? "day" : "week";
   const unitPlural = unit === "Days" ? "days" : "weeks";
@@ -179,8 +206,8 @@ export function TimeIntervalDrawer({ className = "" }: { className?: string }) {
                 </p>
                 <SelectButton label="1" medium />
                 <SegmentGroup>
-                  <Segment label="Days" active={unit === "Days"} onClick={() => setUnit("Days")} />
-                  <Segment label="Weeks" active={unit === "Weeks"} onClick={() => setUnit("Weeks")} />
+                  <Segment label="Days" active={unit === "Days"} onClick={() => pickUnit("Days")} />
+                  <Segment label="Weeks" active={unit === "Weeks"} onClick={() => pickUnit("Weeks")} />
                 </SegmentGroup>
               </div>
             </div>
@@ -202,7 +229,7 @@ export function TimeIntervalDrawer({ className = "" }: { className?: string }) {
                       key={n}
                       label={String(n)}
                       active={comparison === n}
-                      onClick={() => setComparison(n)}
+                      onClick={() => pickComparison(n)}
                     />
                   ))}
                 </SegmentGroup>

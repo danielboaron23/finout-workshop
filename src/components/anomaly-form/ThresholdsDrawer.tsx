@@ -91,16 +91,19 @@ function SmallInput({
   defaultValue,
   unit,
   size = "md",
+  onChange,
 }: {
   defaultValue: string;
   unit: string;
   size?: "md" | "sm";
+  onChange?: (v: string) => void;
 }) {
   return (
     <div className="flex gap-[4px] items-center shrink-0">
       <input
         type="text"
         defaultValue={defaultValue}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
         className={`bg-white border border-[#eaecf0] border-solid rounded-[8px] w-[91px] font-sans font-normal text-[14px] leading-[20px] text-[#191919] outline-none ${
           size === "md" ? "min-h-[36px] px-[12px]" : "min-h-[32px] px-[8px]"
         }`}
@@ -118,11 +121,13 @@ function ThresholdControls({
   percentValue,
   amountValue,
   amountUnit,
+  onPercentChange,
 }: {
   size?: "md" | "sm";
   percentValue: string;
   amountValue: string;
   amountUnit: string;
+  onPercentChange?: (v: string) => void;
 }) {
   return (
     <div className="flex gap-[8px] items-center shrink-0">
@@ -130,7 +135,7 @@ function ThresholdControls({
       <p className="font-sans font-normal leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
         by more than
       </p>
-      <SmallInput defaultValue={percentValue} unit="%" size={size} />
+      <SmallInput defaultValue={percentValue} unit="%" size={size} onChange={onPercentChange} />
       <p className="font-sans font-normal leading-[22px] text-[14px] text-[#101828] whitespace-nowrap">AND</p>
       <SmallInput defaultValue={amountValue} unit={amountUnit} size={size} />
     </div>
@@ -330,7 +335,15 @@ function ThresholdTable() {
 }
 
 /* ------------------------------ ThresholdsDrawer --------------------------- */
-export function ThresholdsDrawer() {
+export function ThresholdsDrawer({
+  defaultPercent = "20",
+  onPercentChange,
+}: {
+  /** Initial value of the settings-row "%" input. */
+  defaultPercent?: string;
+  /** Fires as the settings-row "%" input changes (carried into the saved card's deltaPct). */
+  onPercentChange?: (v: string) => void;
+} = {}) {
   return (
     <Drawer title="Alert Thresholds and Endpoints">
       <div className="flex flex-col gap-[16px] items-start w-full">
@@ -338,7 +351,12 @@ export function ThresholdsDrawer() {
         <div className="flex flex-col gap-[16px] items-start pt-[12px] w-full">
           <SectionHeading title="Thresholds" caption="Set the conditions that trigger an alert." />
           <div className="flex flex-col gap-[16px] items-start">
-            <ThresholdControls percentValue="20" amountValue="100,000" amountUnit="Tokens" />
+            <ThresholdControls
+              percentValue={defaultPercent}
+              amountValue="100,000"
+              amountUnit="Tokens"
+              onPercentChange={onPercentChange}
+            />
             <InfoBanner />
             <div className="flex gap-[8px] items-center">
               <Switch ariaLabel="Set anomaly threshold for every value in the group" />

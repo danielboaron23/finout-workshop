@@ -1,3 +1,5 @@
+"use client";
+
 /*
  * MegaBill — icons row + pivot table under the chart.
  * Figma: "MegaBill - New Components" → 1:14334 "Frame 1000004924" (icons row)
@@ -9,14 +11,35 @@
  * column bottom border #d0d5dd, header column dividers #d0d5dd 2x14px.
  * The delta cell is local (NOT home's DeltaCellContent): value #067647 Regular,
  * pill has a #abefc6 border on #ecfdf3 and no mix-blend.
+ *
+ * Interactivity (all optional props, driven by MegaBillPageClient): header
+ * funnels open value-checkbox filters, header dots open sort menus, and the
+ * icons row exports the current rows as CSV / copies them as JSON.
  */
+
+import { Dropdown, DropdownItem } from "@/components/ui/Dropdown";
+import { showToast } from "@/components/ui/Toast";
+import { copyText, downloadCsvFile } from "./megabill-actions";
+import { columnValue, rowsToCsv, type MegaBillColumnKey, type MegaBillSort } from "./megabill-data";
+import { CheckRow } from "./MegaBillMenus";
 
 /* ---------- icons row (1:14334) ---------- */
 
-function IconButton({ icon, inset, label }: { icon: string; inset: string; label: string }) {
+function IconButton({
+  icon,
+  inset,
+  label,
+  onClick,
+}: {
+  icon: string;
+  inset: string;
+  label: string;
+  onClick?: () => void;
+}) {
   return (
     <button
       aria-label={label}
+      onClick={onClick}
       className="bg-[#fefefe] flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] cursor-pointer"
     >
       <div className="flex-1 h-full min-w-px overflow-clip relative">
@@ -29,18 +52,70 @@ function IconButton({ icon, inset, label }: { icon: string; inset: string; label
 }
 
 /** Right-aligned grid / download / dots icon-buttons row between chart and table */
-export function MegaBillActionsRow() {
+export function MegaBillActionsRow({
+  onDownloadCsv,
+  onCopyData,
+}: {
+  onDownloadCsv?: () => void;
+  onCopyData?: () => void;
+} = {}) {
+  const download =
+    onDownloadCsv ?? (() => downloadCsvFile(rowsToCsv(DEFAULT_MEGABILL_ROWS, DEFAULT_DATE_HEADERS)));
+  const copy =
+    onCopyData ??
+    (() => {
+      copyText(JSON.stringify(DEFAULT_MEGABILL_ROWS, null, 2)).then(
+        () => showToast("Data copied to clipboard"),
+        () => showToast("Copy failed"),
+      );
+    });
   return (
     <div className="flex flex-col items-start px-[24px] py-[18px] w-full">
       <div className="flex h-[36px] items-start justify-center w-full">
         <div className="flex flex-1 gap-[12px] items-center justify-end min-w-px">
-          <IconButton icon="/icons/megabill/grid.svg" inset="inset-[9.38%]" label="Layout" />
-          <IconButton icon="/icons/megabill/download.svg" inset="inset-[9.38%]" label="Download" />
           <IconButton
-            icon="/icons/megabill/dots-vertical.svg"
-            inset="inset-[13.54%_42.71%]"
-            label="More options"
+            icon="/icons/megabill/grid.svg"
+            inset="inset-[9.38%]"
+            label="Layout"
+            onClick={() => showToast("Layout options coming soon")}
           />
+          <IconButton
+            icon="/icons/megabill/download.svg"
+            inset="inset-[9.38%]"
+            label="Download"
+            onClick={download}
+          />
+          <Dropdown
+            align="right"
+            trigger={() => (
+              <IconButton
+                icon="/icons/megabill/dots-vertical.svg"
+                inset="inset-[13.54%_42.71%]"
+                label="More options"
+              />
+            )}
+          >
+            {(close) => (
+              <div className="flex flex-col min-w-[160px]">
+                <DropdownItem
+                  onClick={() => {
+                    download();
+                    close();
+                  }}
+                >
+                  Export CSV
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    copy();
+                    close();
+                  }}
+                >
+                  Copy data
+                </DropdownItem>
+              </div>
+            )}
+          </Dropdown>
         </div>
       </div>
     </div>
@@ -82,8 +157,26 @@ function DotsIcon() {
   );
 }
 
-/** 44px header cell: label + funnel + dots, bg #fafafa; divider = 2x14 #d0d5dd column separator */
-function MegaBillHeaderCell({ label, divider = true }: { label: string; divider?: boolean }) {
+/** 44px header cell: label + funnel + dots, bg #fafafa; divider = 2x14 #d0d5dd column separator.
+ * When filter/sort handlers are provided, the funnel opens a value-checkbox
+ * menu (real row filter) and the dots open a sort menu. */
+function MegaBillHeaderCell({
+  label,
+  divider = true,
+  filterValues,
+  unchecked = [],
+  onToggleValue,
+  sortDir = null,
+  onSort,
+}: {
+  label: string;
+  divider?: boolean;
+  filterValues?: string[];
+  unchecked?: string[];
+  onToggleValue?: (value: string) => void;
+  sortDir?: "asc" | "desc" | null;
+  onSort?: (dir: "asc" | "desc" | null) => void;
+}) {
   return (
     <div className="bg-[#fafafa] border-b border-solid border-[#e9eaeb] flex h-[44px] items-center justify-between p-[12px] relative shrink-0 w-full">
       <div className="flex flex-1 gap-[4px] items-center min-w-px">
@@ -92,8 +185,72 @@ function MegaBillHeaderCell({ label, divider = true }: { label: string; divider?
         </p>
       </div>
       <div className="flex gap-[6px] items-center shrink-0">
-        <FunnelIcon />
-        <DotsIcon />
+        {onToggleValue && filterValues ? (
+          <Dropdown
+            align="right"
+            trigger={() => (
+              <span className="flex" style={{ cursor: "pointer" }} aria-label={`Filter ${label}`}>
+                <FunnelIcon />
+              </span>
+            )}
+          >
+            <div className="flex flex-col gap-[2px] min-w-[170px]">
+              {filterValues.map((v) => (
+                <CheckRow
+                  key={v}
+                  label={v}
+                  checked={!unchecked.includes(v)}
+                  onToggle={() => onToggleValue(v)}
+                />
+              ))}
+            </div>
+          </Dropdown>
+        ) : (
+          <FunnelIcon />
+        )}
+        {onSort ? (
+          <Dropdown
+            align="right"
+            trigger={() => (
+              <span className="flex" style={{ cursor: "pointer" }} aria-label={`Sort ${label}`}>
+                <DotsIcon />
+              </span>
+            )}
+          >
+            {(close) => (
+              <div className="flex flex-col min-w-[170px]">
+                <DropdownItem
+                  selected={sortDir === "asc"}
+                  onClick={() => {
+                    onSort("asc");
+                    close();
+                  }}
+                >
+                  Sort ascending
+                </DropdownItem>
+                <DropdownItem
+                  selected={sortDir === "desc"}
+                  onClick={() => {
+                    onSort("desc");
+                    close();
+                  }}
+                >
+                  Sort descending
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    onSort(null);
+                    close();
+                  }}
+                >
+                  Reset
+                </DropdownItem>
+              </div>
+            )}
+          </Dropdown>
+        ) : (
+          <DotsIcon />
+        )}
       </div>
       {divider && (
         <div className="-translate-y-1/2 absolute bg-[#d0d5dd] h-[14px] right-0 top-[calc(50%+0.5px)] w-[2px]" />
@@ -164,7 +321,7 @@ export type MegaBillRow = {
 
 const DELTA: MegaBillDelta = { value: "-$302,936", pct: "20%" };
 
-const DEFAULT_ROWS: MegaBillRow[] = [
+export const DEFAULT_MEGABILL_ROWS: MegaBillRow[] = [
   { name: "AWS", date1: "$1,234", date2: "$1,234", totalCost: "$1,234", previous: DELTA, pctOfTotal: "56%" },
   { name: "Kubernetes", date1: "$1,234", date2: "$1,234", totalCost: "$1,234", previous: DELTA, pctOfTotal: "31%" },
   { name: "Datadog", date1: "$1,234", date2: "$1,234", totalCost: "$1,234", previous: DELTA, pctOfTotal: "8%" },
@@ -173,9 +330,18 @@ const DEFAULT_ROWS: MegaBillRow[] = [
   { name: "Untagged", date1: "$1,234", date2: "$1,234", totalCost: "$1,234", previous: DELTA, pctOfTotal: "0.267%" },
 ];
 
+export const DEFAULT_DATE_HEADERS: [string, string] = ["Jul 11, 2026", "Jul 12, 2026"];
+
 export type MegaBillTableProps = {
   rows?: MegaBillRow[];
   dateHeaders?: [string, string];
+  /** Pre-column-filter rows (funnel menus list their values). Default: rows. */
+  baseRows?: MegaBillRow[];
+  /** Per-column UNCHECKED funnel values. */
+  columnFilters?: Partial<Record<MegaBillColumnKey, string[]>>;
+  onToggleColumnValue?: (col: MegaBillColumnKey, value: string) => void;
+  sort?: MegaBillSort;
+  onSortChange?: (col: MegaBillColumnKey, dir: "asc" | "desc" | null) => void;
 };
 
 /** Column wrapper — bottom border #d0d5dd closes the column strip */
@@ -207,9 +373,24 @@ function Column({
  * H-scrolls below 1200px per the layout contract.
  */
 export function MegaBillTable({
-  rows = DEFAULT_ROWS,
-  dateHeaders = ["Jul 11, 2026", "Jul 12, 2026"],
+  rows = DEFAULT_MEGABILL_ROWS,
+  dateHeaders = DEFAULT_DATE_HEADERS,
+  baseRows,
+  columnFilters,
+  onToggleColumnValue,
+  sort = null,
+  onSortChange,
 }: MegaBillTableProps) {
+  const funnelSource = baseRows ?? rows;
+  const headerProps = (col: MegaBillColumnKey) => ({
+    filterValues: onToggleColumnValue
+      ? Array.from(new Set(funnelSource.map((r) => columnValue(r, col))))
+      : undefined,
+    unchecked: columnFilters?.[col] ?? [],
+    onToggleValue: onToggleColumnValue ? (value: string) => onToggleColumnValue(col, value) : undefined,
+    sortDir: sort && sort.col === col ? sort.dir : null,
+    onSort: onSortChange ? (dir: "asc" | "desc" | null) => onSortChange(col, dir) : undefined,
+  });
   return (
     <div className="overflow-x-auto w-full">
       <div
@@ -218,7 +399,7 @@ export function MegaBillTable({
       >
         <div className="flex items-start w-full">
           <Column width={243}>
-            <MegaBillHeaderCell label="Name" />
+            <MegaBillHeaderCell label="Name" {...headerProps("name")} />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
                 <MegaBillCellText>{row.name}</MegaBillCellText>
@@ -226,7 +407,7 @@ export function MegaBillTable({
             ))}
           </Column>
           <Column width={166}>
-            <MegaBillHeaderCell label={dateHeaders[0]} />
+            <MegaBillHeaderCell label={dateHeaders[0]} {...headerProps("date1")} />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
                 <MegaBillCellText>{row.date1}</MegaBillCellText>
@@ -234,7 +415,7 @@ export function MegaBillTable({
             ))}
           </Column>
           <Column width={166}>
-            <MegaBillHeaderCell label={dateHeaders[1]} />
+            <MegaBillHeaderCell label={dateHeaders[1]} {...headerProps("date2")} />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
                 <MegaBillCellText>{row.date2}</MegaBillCellText>
@@ -242,7 +423,7 @@ export function MegaBillTable({
             ))}
           </Column>
           <Column width={221}>
-            <MegaBillHeaderCell label="Total cost" />
+            <MegaBillHeaderCell label="Total cost" {...headerProps("totalCost")} />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
                 <MegaBillCellText>{row.totalCost}</MegaBillCellText>
@@ -250,7 +431,7 @@ export function MegaBillTable({
             ))}
           </Column>
           <Column flex>
-            <MegaBillHeaderCell label="Previous perios total cost" />
+            <MegaBillHeaderCell label="Previous perios total cost" {...headerProps("previous")} />
             {rows.map((row) => (
               <MegaBillCell key={row.name} gap={8}>
                 <MegaBillDeltaCell delta={row.previous} />
@@ -258,7 +439,11 @@ export function MegaBillTable({
             ))}
           </Column>
           <Column flex>
-            <MegaBillHeaderCell label="Percentage of total cost" divider={false} />
+            <MegaBillHeaderCell
+              label="Percentage of total cost"
+              divider={false}
+              {...headerProps("pctOfTotal")}
+            />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
                 <p className="font-sans font-normal leading-[20px] text-[#101828] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">

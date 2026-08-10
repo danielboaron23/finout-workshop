@@ -1,4 +1,8 @@
+"use client";
+
+import Link from "next/link";
 import type { ReactNode } from "react";
+import { showToast } from "@/components/ui/Toast";
 
 /*
  * Home dashboard product shortcut cards ("Frame 1000005014").
@@ -101,14 +105,34 @@ export function ProductIconLink() {
 }
 
 /** Figma widget CTA button (white, #d0d5dd border, Inter Semi Bold #344054) */
-export function WidgetButton({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function WidgetButton({
+  children,
+  className = "",
+  onClick,
+  href,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+  /** When set, renders a Link with the exact same button chrome */
+  href?: string;
+}) {
+  const buttonClass = `bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer ${className}`;
+  const label = (
+    <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
+      {children}
+    </span>
+  );
+  if (href) {
+    return (
+      <Link href={href} className={buttonClass}>
+        {label}
+      </Link>
+    );
+  }
   return (
-    <button
-      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer ${className}`}
-    >
-      <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
-        {children}
-      </span>
+    <button onClick={onClick} className={buttonClass}>
+      {label}
     </button>
   );
 }
@@ -119,10 +143,14 @@ export type ProductCardProps = {
   count: string;
   description: string;
   cta: string;
+  /** When set, the CTA navigates (e.g. Go to Virtual Tags -> /virtual-tags) */
+  ctaHref?: string;
+  /** CTA click handler when there is no ctaHref (e.g. toasts) */
+  onCtaClick?: () => void;
   className?: string;
 };
 
-export function ProductCard({ icon, title, count, description, cta, className = "" }: ProductCardProps) {
+export function ProductCard({ icon, title, count, description, cta, ctaHref, onCtaClick, className = "" }: ProductCardProps) {
   return (
     <div
       className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-1 flex-col gap-[32px] items-start justify-center min-w-[280px] px-[16px] py-[24px] rounded-[8px] ${className}`}
@@ -143,7 +171,9 @@ export function ProductCard({ icon, title, count, description, cta, className = 
           <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">{description}</p>
         </div>
       </div>
-      <WidgetButton>{cta}</WidgetButton>
+      <WidgetButton href={ctaHref} onClick={onCtaClick}>
+        {cta}
+      </WidgetButton>
     </div>
   );
 }
@@ -155,6 +185,7 @@ export const DEFAULT_PRODUCT_CARDS: ProductCardProps[] = [
     count: "0 Plans",
     description: "Plan annual cloud budgets and control costs with Finout",
     cta: "Go to Financial Plans",
+    onCtaClick: () => showToast("Opening Financial Plans…"),
   },
   {
     icon: <ProductIconTag />,
@@ -162,6 +193,7 @@ export const DEFAULT_PRODUCT_CARDS: ProductCardProps[] = [
     count: "50 Tags",
     description: "Unify cloud cost management with Finout’s dynamic Virtual Tags",
     cta: "Go to Virtual Tags",
+    ctaHref: "/virtual-tags",
   },
   {
     icon: <ProductIconSquaresFour />,
@@ -169,6 +201,7 @@ export const DEFAULT_PRODUCT_CARDS: ProductCardProps[] = [
     count: "30 Dashboards",
     description: "Customize cloud cost dashboards to visualize, analyze, and optimize spend.",
     cta: "Go to Dashboards",
+    onCtaClick: () => showToast("Opening Dashboards…"),
   },
   {
     icon: <ProductIconLink />,
@@ -176,6 +209,7 @@ export const DEFAULT_PRODUCT_CARDS: ProductCardProps[] = [
     count: "8 Cost Centers",
     description: "Integrate cloud providers and services",
     cta: "Add Cost Centers",
+    onCtaClick: () => showToast("Opening cost center setup…"),
   },
 ];
 

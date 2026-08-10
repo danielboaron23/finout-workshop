@@ -1,4 +1,8 @@
-import { HomeCell, HomeCellText, HomeHeaderCell, HomeTableShell, TableActionButton, WidgetCard, WidgetTitle } from "./CostCentersCard";
+"use client";
+
+import { useState } from "react";
+import { showToast } from "@/components/ui/Toast";
+import { HomeCell, HomeCellText, HomeHeaderCell, HomeTableShell, TableActionButton, WidgetCard, WidgetTitle, parseMoney, type SortDir } from "./CostCentersCard";
 
 /*
  * "Recent daily optimization recommendations" widget — left card of the home
@@ -52,8 +56,16 @@ function Column({
 
 export function RecommendationsCard({
   title = "Recent daily optimization recommendations",
-  rows = DEFAULT_ROWS,
+  rows: rowsProp = DEFAULT_ROWS,
 }: RecommendationsCardProps) {
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  const rows = sortDir
+    ? [...rowsProp].sort((a, b) =>
+        sortDir === "asc"
+          ? parseMoney(a.scannedCost) - parseMoney(b.scannedCost)
+          : parseMoney(b.scannedCost) - parseMoney(a.scannedCost),
+      )
+    : rowsProp;
   return (
     <WidgetCard className="h-full">
       <div className="flex flex-col gap-[16px] items-start w-full">
@@ -76,7 +88,12 @@ export function RecommendationsCard({
             ))}
           </Column>
           <Column grow={COL.scannedCost}>
-            <HomeHeaderCell label="Scanned Cost" sortable />
+            <HomeHeaderCell
+              label="Scanned Cost"
+              sortable
+              sortDir={sortDir}
+              onSort={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}
+            />
             {rows.map((row) => (
               <HomeCell key={row.scanName}>
                 <HomeCellText>{row.scannedCost}</HomeCellText>
@@ -103,7 +120,11 @@ export function RecommendationsCard({
             <HomeHeaderCell label="Actions" />
             {rows.map((row) => (
               <HomeCell key={row.scanName} className="px-[12px]!">
-                {row.action !== undefined && <TableActionButton>{row.action}</TableActionButton>}
+                {row.action !== undefined && (
+                  <TableActionButton onClick={() => showToast("Opening scan in CostGuard…")}>
+                    {row.action}
+                  </TableActionButton>
+                )}
               </HomeCell>
             ))}
           </Column>

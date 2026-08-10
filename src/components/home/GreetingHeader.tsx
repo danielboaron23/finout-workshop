@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { setDemo, useDemoStore } from "@/lib/demo-store";
 
 export type Persona = "FinOps" | "Engineer" | "Finance" | "Executive";
 
@@ -94,17 +97,28 @@ const PERSONAS: { label: Persona; icon: ReactNode }[] = [
 ];
 
 /* Exported persona icons are fixed-color SVGs (FinOps blue, others gray),
- * so switching `active` restyles the pill but not the icon colors. */
-export function PersonaSwitcher({ active = "FinOps" }: { active?: Persona }) {
+ * so switching `active` restyles the pill but not the icon colors.
+ * Uncontrolled (no `active` prop) it reads/writes the "home-persona" demo
+ * store key, so the choice persists and the dashboard filters live. */
+export function PersonaSwitcher({
+  active,
+  onSelect,
+}: {
+  active?: Persona;
+  onSelect?: (persona: Persona) => void;
+}) {
+  const stored = useDemoStore<Persona>("home-persona", "FinOps");
+  const current = active ?? stored;
   return (
     <div className="flex h-[32px] isolate items-start overflow-clip relative rounded-[4px]">
       {PERSONAS.map(({ label, icon }, i) => {
-        const isActive = label === active;
+        const isActive = label === current;
         const isFirst = i === 0;
         const isLast = i === PERSONAS.length - 1;
         return (
           <button
             key={label}
+            onClick={() => (onSelect ? onSelect(label) : setDemo("home-persona", label))}
             className={`flex gap-[8px] h-full items-center justify-center px-[16px] py-[7px] shrink-0 cursor-pointer ${
               isActive
                 ? "bg-[#eff8ff] border border-solid border-[#1570ef]"
@@ -132,12 +146,15 @@ export function PersonaSwitcher({ active = "FinOps" }: { active?: Persona }) {
 export function GreetingHeader({
   greeting = "Good afternoon",
   name = "Sharon",
-  activePersona = "FinOps",
+  activePersona,
+  onPersonaChange,
   className = "",
 }: {
   greeting?: string;
   name?: string;
+  /** Controlled active persona; omit to drive it from the demo store */
   activePersona?: Persona;
+  onPersonaChange?: (persona: Persona) => void;
   className?: string;
 }) {
   return (
@@ -150,7 +167,7 @@ export function GreetingHeader({
           <img alt="" className="absolute block inset-0 max-w-none size-full" src="/icons/home/greeting-sun.svg" />
         </div>
       </div>
-      <PersonaSwitcher active={activePersona} />
+      <PersonaSwitcher active={activePersona} onSelect={onPersonaChange} />
     </div>
   );
 }

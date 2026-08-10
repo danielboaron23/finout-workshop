@@ -1,4 +1,7 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 /*
  * Home dashboard widget primitives + "Monthly cost by cost centers" table.
@@ -68,15 +71,37 @@ export function HomeTableShell({
   );
 }
 
-export function HomeHeaderCell({ label, sortable = false }: { label: string; sortable?: boolean }) {
+export type SortDir = "asc" | "desc" | null;
+
+/** "$184,058" / "-$165,062" / "+$4,805" → number, for table sorting */
+export function parseMoney(value: string): number {
+  return Number(value.replace(/[^0-9.-]/g, "")) || 0;
+}
+
+export function HomeHeaderCell({
+  label,
+  sortable = false,
+  sortDir = null,
+  onSort,
+}: {
+  label: string;
+  sortable?: boolean;
+  /** Current sort direction — "asc" flips the arrow via a rotate class */
+  sortDir?: SortDir;
+  /** When set, clicking the header cell toggles sorting */
+  onSort?: () => void;
+}) {
   return (
-    <div className="bg-[#eaecf0] border-b border-solid border-[#f9f9f9] flex gap-[12px] h-[44px] items-center p-[12px] shrink-0 w-full">
+    <div
+      onClick={onSort}
+      className={`bg-[#eaecf0] border-b border-solid border-[#f9f9f9] flex gap-[12px] h-[44px] items-center p-[12px] shrink-0 w-full${onSort ? " cursor-pointer select-none" : ""}`}
+    >
       <div className="flex flex-1 gap-[4px] items-center min-w-px">
         <p className="font-sans font-normal leading-[20px] text-[#101828] text-[12px] overflow-hidden text-ellipsis whitespace-nowrap">
           {label}
         </p>
         {sortable && (
-          <div className="relative shrink-0 size-[16px]">
+          <div className={`relative shrink-0 size-[16px]${sortDir === "asc" ? " rotate-180" : ""}`}>
             <img alt="" className="absolute block inset-0 max-w-none size-full" src="/icons/home/sort-arrow-down.svg" />
           </div>
         )}
@@ -139,9 +164,18 @@ export function DeltaCellContent({ value, pct, trend }: { value: string; pct: st
 }
 
 /** Tertiary action button used inside home table cells (Inter Semi Bold, #d0d5dd border) */
-export function TableActionButton({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function TableActionButton({
+  children,
+  className = "",
+  onClick,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
     <button
+      onClick={onClick}
       className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center min-w-0 overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
     >
       <p className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -202,8 +236,19 @@ export function CostCentersCard({
   rows = DEFAULT_ROWS,
   totalRow = DEFAULT_TOTAL,
 }: CostCentersCardProps) {
-  const all = [...rows, totalRow];
+  const router = useRouter();
+  const [sortDir, setSortDir] = useState<SortDir>(null);
+  // Sort data rows only — the Total row always stays pinned at the bottom
+  const sorted = sortDir
+    ? [...rows].sort((a, b) =>
+        sortDir === "asc"
+          ? parseMoney(a.totalCost) - parseMoney(b.totalCost)
+          : parseMoney(b.totalCost) - parseMoney(a.totalCost),
+      )
+    : rows;
+  const all = [...sorted, totalRow];
   const isTotal = (i: number) => i === all.length - 1;
+  const toggleSort = () => setSortDir((d) => (d === "desc" ? "asc" : "desc"));
   return (
     <WidgetCard>
       <div className="flex flex-col gap-[16px] items-start rounded-[8px] w-full">
@@ -224,7 +269,7 @@ export function CostCentersCard({
             ))}
           </div>
           <div className="flex flex-1 flex-col items-start min-w-0">
-            <HomeHeaderCell label="Total Cost" sortable />
+            <HomeHeaderCell label="Total Cost" sortable sortDir={sortDir} onSort={toggleSort} />
             {all.map((row, i) => (
               <HomeCell key={row.name} totalRow={isTotal(i)}>
                 <HomeCellText>{row.totalCost}</HomeCellText>
@@ -252,7 +297,9 @@ export function CostCentersCard({
             {all.map((row, i) => (
               <HomeCell key={row.name} totalRow={isTotal(i)}>
                 {row.action !== undefined && (
-                  <TableActionButton className="flex-1">{row.action}</TableActionButton>
+                  <TableActionButton className="flex-1" onClick={() => router.push("/megabill")}>
+                    {row.action}
+                  </TableActionButton>
                 )}
               </HomeCell>
             ))}

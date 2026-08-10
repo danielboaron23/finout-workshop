@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { Dropdown, DropdownItem } from "@/components/ui/Dropdown";
+import { showToast } from "@/components/ui/Toast";
+import { copyText, downloadCsvFile } from "./megabill-actions";
 
 /*
  * MegaBill — big-card upper "Content" section (Figma 1:13920, 1439x477).
@@ -15,9 +18,15 @@ import { useState } from "react";
  * rounded top cap — so the color beneath peeks out at the shoulders exactly
  * like the Figma rects. Segment heights come from the Figma bar SVGs
  * ($200k = 57px on the y grid).
+ *
+ * The section is fully controllable (data/series/axes/visibility/group-by via
+ * props, driven by MegaBillPageClient) and falls back to internal state +
+ * the default dataset when uncontrolled (stories).
  */
 
 /* ---------------------------------------------------------------- series */
+
+export type MegaBillSeries = { label: string; color: string };
 
 /** Legend + stacking order (index 0 = bottom of the stack). Exact Figma dot fills. */
 export const CHART_SERIES = [
@@ -37,7 +46,7 @@ export const CHART_SERIES = [
 export const TOTAL_LEGEND = { label: "Total", color: "#CCCCCC" } as const;
 
 export type MegaBillBarDatum = {
-  /** Dollar value per CHART_SERIES entry (AWS → Custom Cost); 0 renders nothing. */
+  /** Value per series entry (default: AWS → Custom Cost); 0 renders nothing. */
   values: number[];
 };
 
@@ -49,6 +58,7 @@ const BASELINE_BOTTOM = 9; // 0-line offset from the plot bottom (row center)
 const PLOT_LEFT = 48; // y label (40px) + 8px gap
 const BAR_GAP = 20;
 const PX_PER_DOLLAR = 57 / 200_000; // 57px between gridlines = $200k
+const LINE_PLOT_H = 4 * 57; // baseline → top gridline (line-chart plot height)
 
 const Y_LABELS = ["$800k", "$600k", "$400k", "$200k", "0"] as const;
 const X_LABELS = [
@@ -75,6 +85,14 @@ const TALL = [298_200, 121_300, 133_900, 79_150, 37_450, 21_450, 0, 8_350, 32_65
 export const DEFAULT_CHART_DATA: MegaBillBarDatum[] = Array.from({ length: 28 }, (_, i) => ({
   values: i === 6 ? SHORT : i === 15 ? TALL : NORMAL,
 }));
+
+const DEFAULT_METRICS = [
+  { label: "Total Cost", value: "$10,444,851" },
+  { label: "Share of Total Cost", value: "100%" },
+  { label: "Average Daily Cost", value: "$348,162" },
+];
+
+const DEFAULT_GROUP_OPTIONS = ["Global Cost Center", "Service", "Team"];
 
 /* ------------------------------------------------------------ kpi strip */
 
@@ -120,7 +138,7 @@ function MetricItem({
 
 /* Gray filter tag (#ebebeb, h-28, radius 3) with removable x — matches the
  * anomaly-form tag but with this section's 14px label + local assets. */
-function FilterTag({ label }: { label: string }) {
+function FilterTag({ label, onRemove }: { label: string; onRemove?: () => void }) {
   return (
     <span className="bg-[#ebebeb] flex gap-[5px] h-[28px] items-center justify-center px-[6px] rounded-[3px] shrink-0">
       <span className="font-sans font-medium leading-[20px] text-[14px] text-[#101828] whitespace-nowrap">
@@ -129,6 +147,14 @@ function FilterTag({ label }: { label: string }) {
       <span
         role="button"
         aria-label={`Remove ${label}`}
+        onClick={
+          onRemove
+            ? (e) => {
+                e.stopPropagation();
+                onRemove();
+              }
+            : undefined
+        }
         className="cursor-pointer h-[12px] inline-block relative shrink-0 w-[12.387px]"
       >
         <img alt="" className="absolute block inset-0 max-w-none size-full" src="/icons/megabill/x-frame.svg" />
@@ -160,25 +186,56 @@ function Caret16() {
   );
 }
 
-/* "Group By [Global Cost Center x]" grouped select — Figma 1:13946. */
-function GroupBySelect({ tag }: { tag: string }) {
+/* "Group By [Global Cost Center x]" grouped select — Figma 1:13946.
+ * The x removes the tag (→ Total-only chart); the dropdown re-picks a group. */
+function GroupBySelect({
+  tag,
+  options,
+  onChange,
+}: {
+  tag: string | null;
+  options: readonly string[];
+  onChange: (group: string | null) => void;
+}) {
   return (
-    <div className="bg-white border border-[#d0d5dd] border-solid flex items-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] shrink-0">
-      <button
-        type="button"
-        className="cursor-pointer flex gap-[8px] items-center pl-[8px] pr-[4px] py-[2px] rounded-[2px]"
-      >
-        <span className="flex gap-[8px] items-center">
-          <span className="flex gap-[4px] items-center py-px">
-            <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] whitespace-nowrap">
-              Group By
+    <Dropdown
+      align="right"
+      trigger={() => (
+        <div className="bg-white border border-[#d0d5dd] border-solid flex items-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] shrink-0">
+          <button
+            type="button"
+            className="cursor-pointer flex gap-[8px] items-center pl-[8px] pr-[4px] py-[2px] rounded-[2px]"
+          >
+            <span className="flex gap-[8px] items-center">
+              <span className="flex gap-[4px] items-center py-px">
+                <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] whitespace-nowrap">
+                  Group By
+                </span>
+              </span>
+              {tag !== null && <FilterTag label={tag} onRemove={() => onChange(null)} />}
             </span>
-          </span>
-          <FilterTag label={tag} />
-        </span>
-        <Caret16 />
-      </button>
-    </div>
+            <Caret16 />
+          </button>
+        </div>
+      )}
+    >
+      {(close) => (
+        <div className="flex flex-col min-w-[180px]">
+          {options.map((o) => (
+            <DropdownItem
+              key={o}
+              selected={o === tag}
+              onClick={() => {
+                onChange(o);
+                close();
+              }}
+            >
+              {o}
+            </DropdownItem>
+          ))}
+        </div>
+      )}
+    </Dropdown>
   );
 }
 
@@ -188,16 +245,19 @@ function IconButton({
   src,
   label,
   bordered = false,
+  onClick,
 }: {
   inset: string;
   src: string;
   label: string;
   bordered?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label={label}
+      onClick={onClick}
       className={`bg-[#fefefe] cursor-pointer flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] ${
         bordered ? "border border-[#d0d5dd] border-solid" : ""
       }`}
@@ -211,19 +271,64 @@ function IconButton({
   );
 }
 
-/* Comment icon button with the blue "0" counter badge — Figma 1:13957. */
-function CommentButton({ count }: { count: number }) {
+/* Comment icon button with the blue counter badge — Figma 1:13957.
+ * Opens an inline comment popover; submitting bumps the badge count. */
+function CommentButton() {
+  const [comments, setComments] = useState<string[]>([]);
+  const [draft, setDraft] = useState("");
+  const submit = (close: () => void) => {
+    const text = draft.trim();
+    if (!text) return;
+    setComments((prev) => [...prev, text]);
+    setDraft("");
+    close();
+  };
   return (
     <div className="relative shrink-0">
-      <IconButton
-        inset="inset-[9.38%_9.38%_9.37%_9.38%]"
-        src="/icons/megabill/comment.svg"
-        label="Comments"
-        bordered
-      />
-      <div className="absolute bg-[#1570ef] flex flex-col h-[20px] items-center justify-center left-[26px] min-h-[16px] min-w-[20px] p-[2px] rounded-[40px] top-[-6px]">
+      <Dropdown
+        align="right"
+        trigger={() => (
+          <IconButton
+            inset="inset-[9.38%_9.38%_9.37%_9.38%]"
+            src="/icons/megabill/comment.svg"
+            label="Comments"
+            bordered
+          />
+        )}
+      >
+        {(close) => (
+          <div className="flex flex-col gap-[8px] w-[240px]">
+            {comments.map((c, i) => (
+              <p key={i} className="font-sans font-normal leading-[20px] text-[14px] text-[#475467]">
+                {c}
+              </p>
+            ))}
+            <input
+              autoFocus
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") submit(close);
+              }}
+              placeholder="Add a comment"
+              className="border border-solid border-[#d0d5dd] rounded-[8px] px-[12px] py-[8px] font-sans font-normal leading-[20px] text-[14px] text-[#101828] placeholder:text-[#475467] outline-none w-full"
+            />
+            <button
+              type="button"
+              onClick={() => submit(close)}
+              className="self-end font-sans font-medium leading-[20px] text-[14px] text-[#175cd3] cursor-pointer"
+            >
+              Comment
+            </button>
+          </div>
+        )}
+      </Dropdown>
+      <div
+        className="absolute bg-[#1570ef] flex flex-col h-[20px] items-center justify-center left-[26px] min-h-[16px] min-w-[20px] p-[2px] rounded-[40px] top-[-6px]"
+        style={{ pointerEvents: "none" }}
+      >
         <p className="font-sans font-bold leading-[18px] text-[10px] text-center text-white whitespace-nowrap">
-          {count}
+          {comments.length}
         </p>
       </div>
     </div>
@@ -270,16 +375,28 @@ function ChartTypeToggle({
 
 /* ---------------------------------------------------------------- chart */
 
-/** One stacked daily bar: layered bottom-aligned divs, 6px rounded top caps. */
-function Bar({ values }: { values: number[] }) {
-  const px = values.map((v) => v * PX_PER_DOLLAR);
+/** One stacked daily bar: layered bottom-aligned divs, 6px rounded top caps.
+ * Hidden (legend-toggled) series contribute 0 so the stack re-computes its
+ * cumulative layer heights from the remaining visible series. */
+function Bar({
+  values,
+  series,
+  hidden,
+  pxPerUnit,
+}: {
+  values: number[];
+  series: readonly MegaBillSeries[];
+  hidden: ReadonlySet<string>;
+  pxPerUnit: number;
+}) {
+  const px = values.map((v, i) => (series[i] && hidden.has(series[i].label) ? 0 : v * pxPerUnit));
   const total = px.reduce((sum, h) => sum + h, 0);
   /* Paint top-of-stack series first; each layer runs baseline → top of its
    * segment so later (lower) layers cover it, exactly like the Figma rects. */
   const layers: { color: string; height: number }[] = [];
   let cumulative = total;
   for (let i = px.length - 1; i >= 0; i -= 1) {
-    if (px[i] > 0) layers.push({ color: CHART_SERIES[i].color, height: cumulative });
+    if (px[i] > 0) layers.push({ color: series[i].color, height: cumulative });
     cumulative -= px[i];
   }
   return (
@@ -295,7 +412,38 @@ function Bar({ values }: { values: number[] }) {
   );
 }
 
-function StackedBarChart({ data }: { data: MegaBillBarDatum[] }) {
+function StackedBarChart({
+  data,
+  series,
+  hidden,
+  pxPerUnit,
+  yLabels,
+  xLabels,
+  rotateXLabels,
+  chartType,
+}: {
+  data: MegaBillBarDatum[];
+  series: readonly MegaBillSeries[];
+  hidden: ReadonlySet<string>;
+  pxPerUnit: number;
+  yLabels: readonly string[];
+  xLabels: readonly string[];
+  rotateXLabels: boolean;
+  chartType: "line" | "bar";
+}) {
+  /* Line mode: totals of the visible series per bar, same plot + gridlines. */
+  const totals = data.map((d) =>
+    d.values.reduce((sum, v, i) => sum + (series[i] && hidden.has(series[i].label) ? 0 : v), 0),
+  );
+  const points = (
+    totals.length === 1
+      ? [0, 1000].map((x) => `${x},${LINE_PLOT_H - Math.min(totals[0] * pxPerUnit, LINE_PLOT_H)}`)
+      : totals.map((t, i) => {
+          const x = ((i + 0.5) / totals.length) * 1000;
+          const y = LINE_PLOT_H - Math.min(t * pxPerUnit, LINE_PLOT_H);
+          return `${x},${y}`;
+        })
+  ).join(" ");
   return (
     <div className="flex flex-col items-start w-full">
       <div className="relative w-full">
@@ -304,8 +452,8 @@ function StackedBarChart({ data }: { data: MegaBillBarDatum[] }) {
           className="flex flex-col items-start justify-between w-full"
           style={{ height: PLOT_H }}
         >
-          {Y_LABELS.map((label) => (
-            <div key={label} className="flex gap-[8px] items-center w-full" style={{ height: ROW_H }}>
+          {yLabels.map((label, i) => (
+            <div key={i} className="flex gap-[8px] items-center w-full" style={{ height: ROW_H }}>
               <p className="font-inter font-normal leading-[18px] shrink-0 text-[#535862] text-[12px] text-right w-[40px]">
                 {label}
               </p>
@@ -318,18 +466,39 @@ function StackedBarChart({ data }: { data: MegaBillBarDatum[] }) {
           className="absolute flex items-end right-0"
           style={{ bottom: BASELINE_BOTTOM, left: PLOT_LEFT, gap: BAR_GAP }}
         >
-          {data.map((datum, i) => (
-            <Bar key={i} values={datum.values} />
-          ))}
+          {chartType === "bar" ? (
+            data.map((datum, i) => (
+              <Bar key={i} values={datum.values} series={series} hidden={hidden} pxPerUnit={pxPerUnit} />
+            ))
+          ) : (
+            <svg
+              className="flex-1 min-w-px"
+              style={{ height: LINE_PLOT_H }}
+              viewBox={`0 0 1000 ${LINE_PLOT_H}`}
+              preserveAspectRatio="none"
+              aria-label="Total line chart"
+            >
+              <polyline
+                points={points}
+                fill="none"
+                stroke="#1570ef"
+                strokeWidth={2}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          )}
         </div>
       </div>
-      {/* X axis labels (every 3rd day) */}
+      {/* X axis labels (every 3rd day; series names in the Service pivot) */}
       <div className="w-full" style={{ paddingLeft: PLOT_LEFT }}>
         <div className="flex items-center justify-between px-[24px] w-full">
-          {X_LABELS.map((label) => (
+          {xLabels.map((label, i) => (
             <p
-              key={label}
+              key={`${label}-${i}`}
               className="font-inter font-normal leading-[18px] shrink-0 text-[#535862] text-[12px] text-center whitespace-nowrap"
+              style={rotateXLabels ? { transform: "rotate(-20deg)" } : undefined}
             >
               {label}
             </p>
@@ -351,7 +520,16 @@ function LegendDot({ color }: { color: string }) {
   );
 }
 
-function Legend() {
+function Legend({
+  series,
+  hidden,
+  onToggle,
+}: {
+  series: readonly MegaBillSeries[];
+  hidden: ReadonlySet<string>;
+  onToggle: (label: string) => void;
+}) {
+  const items = series.filter((s) => s.label !== TOTAL_LEGEND.label);
   return (
     <div className="flex flex-wrap gap-[12px] items-start">
       <div className="flex gap-[8px] items-center shrink-0">
@@ -360,11 +538,18 @@ function Legend() {
           {TOTAL_LEGEND.label}
         </p>
       </div>
-      {CHART_SERIES.map((series) => (
-        <div key={series.label} className="flex gap-[8px] items-center shrink-0">
-          <LegendDot color={series.color} />
+      {items.map((s) => (
+        <div
+          key={s.label}
+          role="button"
+          aria-pressed={!hidden.has(s.label)}
+          onClick={() => onToggle(s.label)}
+          className="flex gap-[8px] items-center shrink-0"
+          style={{ cursor: "pointer", opacity: hidden.has(s.label) ? 0.4 : 1 }}
+        >
+          <LegendDot color={s.color} />
           <p className="font-inter font-normal leading-[20px] text-[#535862] text-[14px] whitespace-nowrap">
-            {series.label}
+            {s.label}
           </p>
         </div>
       ))}
@@ -374,46 +559,173 @@ function Legend() {
 
 /* -------------------------------------------------------------- section */
 
+export type MegaBillChartSectionProps = {
+  data?: MegaBillBarDatum[];
+  className?: string;
+  /** Displayed series (legend + stack order). Default: the 10 cost series. */
+  series?: readonly MegaBillSeries[];
+  xLabels?: readonly string[];
+  yLabels?: readonly string[];
+  /** Pixels per data unit (57px per y-axis step). Default: $200k steps. */
+  pxPerUnit?: number;
+  /** Rotate x labels (Service pivot). */
+  rotateXLabels?: boolean;
+  /** KPI strip items. Default: the cost KPIs. */
+  metrics?: readonly { label: string; value: string }[];
+  /** Controlled legend-hidden series; falls back to internal state. */
+  hiddenSeries?: readonly string[];
+  onToggleSeries?: (label: string) => void;
+  /** Unselect all / Select all (true = hide all displayed series). */
+  onToggleAll?: (hideAll: boolean) => void;
+  chartType?: "line" | "bar";
+  onChartTypeChange?: (type: "line" | "bar") => void;
+  /** Group By tag; null = tag removed. Falls back to internal state. */
+  groupTag?: string | null;
+  groupOptions?: readonly string[];
+  onGroupChange?: (group: string | null) => void;
+  /** Download / Export CSV action; falls back to serializing the chart data. */
+  onDownloadCsv?: () => void;
+  /** Copy data action; falls back to copying the chart data JSON. */
+  onCopyData?: () => void;
+};
+
 export function MegaBillChartSection({
   data = DEFAULT_CHART_DATA,
   className = "",
-}: {
-  data?: MegaBillBarDatum[];
-  className?: string;
-}) {
-  const [chartType, setChartType] = useState<"line" | "bar">("bar");
+  series = CHART_SERIES,
+  xLabels = X_LABELS,
+  yLabels = Y_LABELS,
+  pxPerUnit = PX_PER_DOLLAR,
+  rotateXLabels = false,
+  metrics = DEFAULT_METRICS,
+  hiddenSeries,
+  onToggleSeries,
+  onToggleAll,
+  chartType,
+  onChartTypeChange,
+  groupTag,
+  groupOptions = DEFAULT_GROUP_OPTIONS,
+  onGroupChange,
+  onDownloadCsv,
+  onCopyData,
+}: MegaBillChartSectionProps) {
+  const [internalHidden, setInternalHidden] = useState<string[]>([]);
+  const [internalType, setInternalType] = useState<"line" | "bar">("bar");
+  const [internalGroup, setInternalGroup] = useState<string | null>("Global Cost Center");
+
+  const hidden = new Set(hiddenSeries ?? internalHidden);
+  const toggleSeries =
+    onToggleSeries ??
+    ((label: string) =>
+      setInternalHidden((prev) =>
+        prev.includes(label) ? prev.filter((x) => x !== label) : [...prev, label],
+      ));
+  const type = chartType ?? internalType;
+  const setType = onChartTypeChange ?? setInternalType;
+  const group = groupTag === undefined ? internalGroup : groupTag;
+  const changeGroup = onGroupChange ?? setInternalGroup;
+
+  const allHidden = series.length > 0 && series.every((s) => hidden.has(s.label));
+  const toggleAll =
+    onToggleAll ??
+    ((hideAll: boolean) => setInternalHidden(hideAll ? series.map((s) => s.label) : []));
+
+  const download =
+    onDownloadCsv ??
+    (() => {
+      const lines = [
+        ["Bar", ...series.map((s) => s.label)].join(","),
+        ...data.map((d, i) => [String(i + 1), ...d.values.map((v) => String(v))].join(",")),
+      ];
+      downloadCsvFile(lines.join("\n"));
+    });
+  const copy =
+    onCopyData ??
+    (() => {
+      copyText(JSON.stringify(data, null, 2)).then(
+        () => showToast("Data copied to clipboard"),
+        () => showToast("Copy failed"),
+      );
+    });
+
   return (
     <section className={`flex flex-col gap-[40px] items-start p-[24px] w-full ${className}`}>
       {/* KPI strip + controls row */}
       <div className="flex items-start justify-between w-full">
         <div className="flex gap-[20px] items-center shrink-0">
-          <MetricItem label="Total Cost" value="$10,444,851" />
-          <MetricItem label="Share of Total Cost" value="100%" />
-          <MetricItem label="Average Daily Cost" value="$348,162" divider={false} />
+          {metrics.map((m, i) => (
+            <MetricItem key={m.label} label={m.label} value={m.value} divider={i < metrics.length - 1} />
+          ))}
         </div>
         <div className="flex gap-[12px] items-center shrink-0">
-          <GroupBySelect tag="Global Cost Center" />
-          <CommentButton count={0} />
-          <ChartTypeToggle value={chartType} onChange={setChartType} />
-          <IconButton inset="inset-[9.38%]" src="/icons/megabill/grid.svg" label="Dashboard view" />
-          <IconButton inset="inset-[9.38%]" src="/icons/megabill/download.svg" label="Download" />
-          <IconButton inset="inset-[13.54%_42.71%]" src="/icons/megabill/dots.svg" label="More options" />
+          <GroupBySelect tag={group} options={groupOptions} onChange={changeGroup} />
+          <CommentButton />
+          <ChartTypeToggle value={type} onChange={setType} />
+          <IconButton
+            inset="inset-[9.38%]"
+            src="/icons/megabill/grid.svg"
+            label="Dashboard view"
+            onClick={() => showToast("Layout options coming soon")}
+          />
+          <IconButton
+            inset="inset-[9.38%]"
+            src="/icons/megabill/download.svg"
+            label="Download"
+            onClick={download}
+          />
+          <Dropdown
+            align="right"
+            trigger={() => (
+              <IconButton inset="inset-[13.54%_42.71%]" src="/icons/megabill/dots.svg" label="More options" />
+            )}
+          >
+            {(close) => (
+              <div className="flex flex-col min-w-[160px]">
+                <DropdownItem
+                  onClick={() => {
+                    download();
+                    close();
+                  }}
+                >
+                  Export CSV
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => {
+                    copy();
+                    close();
+                  }}
+                >
+                  Copy data
+                </DropdownItem>
+              </div>
+            )}
+          </Dropdown>
         </div>
       </div>
 
       {/* Chart + legend */}
       <div className="flex flex-col gap-[20px] items-start w-full">
-        <StackedBarChart data={data} />
+        <StackedBarChart
+          data={data}
+          series={series}
+          hidden={hidden}
+          pxPerUnit={pxPerUnit}
+          yLabels={yLabels}
+          xLabels={xLabels}
+          rotateXLabels={rotateXLabels}
+          chartType={type}
+        />
         <div className="flex flex-col gap-[10px] items-start w-full">
-          <Legend />
+          <Legend series={series} hidden={hidden} onToggle={toggleSeries} />
           <div className="flex items-center justify-between w-full">
             <div className="h-[20px] w-[151px]" />
             <button
               type="button"
+              onClick={() => toggleAll(!allHidden)}
               className="cursor-pointer flex gap-[8px] items-center justify-center min-h-[24px] px-[8px] py-[4px] rounded-[4px]"
             >
               <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
-                Unselect all
+                {allHidden ? "Select all" : "Unselect all"}
               </span>
             </button>
           </div>

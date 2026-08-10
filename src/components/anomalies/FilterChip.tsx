@@ -58,12 +58,25 @@ export function CalendarIcon18() {
   );
 }
 
-export function FilterChip({ children, icon }: { children: ReactNode; icon?: ReactNode }) {
+export function FilterChip({
+  children,
+  icon,
+  active = false,
+}: {
+  children: ReactNode;
+  icon?: ReactNode;
+  /** Selected filter — reuses the switcher's active blue text (#1570ef). */
+  active?: boolean;
+}) {
   return (
     <button className="bg-white border border-solid border-[#cfcece] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] flex items-start px-[8px] py-[3px] rounded-[8px] shrink-0 cursor-pointer">
       <span className="flex gap-[8px] items-center justify-center px-[8px] py-[4px] rounded-[2px]">
         {icon}
-        <span className="font-sans font-medium leading-[22px] text-[#0d0d0d] text-[14px] text-center whitespace-nowrap">
+        <span
+          className={`font-sans font-medium leading-[22px] text-[14px] text-center whitespace-nowrap ${
+            active ? "text-[#1570ef]" : "text-[#0d0d0d]"
+          }`}
+        >
           {children}
         </span>
         <CaretDown16 />
@@ -80,7 +93,13 @@ export function FilterSeparator() {
   );
 }
 
-export function SearchAnomalies() {
+export function SearchAnomalies({
+  value,
+  onChange,
+}: {
+  value?: string;
+  onChange?: (v: string) => void;
+} = {}) {
   return (
     <div className="bg-white border border-solid border-[#cfcece] flex gap-[8px] h-[36px] items-center overflow-clip p-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] shrink-0 w-[225px]">
       <span className="relative shrink-0 size-[20px]">
@@ -99,6 +118,8 @@ export function SearchAnomalies() {
       <input
         type="text"
         placeholder="Search Anomalies"
+        value={value}
+        onChange={onChange ? (e) => onChange(e.target.value) : undefined}
         className="flex-1 min-w-0 font-sans font-normal leading-[22px] text-[14px] text-[#101828] placeholder:text-[#5c5c5c] outline-none bg-transparent"
       />
     </div>

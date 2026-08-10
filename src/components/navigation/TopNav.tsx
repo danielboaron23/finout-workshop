@@ -1,7 +1,13 @@
+"use client";
+
 /*
  * Top nav — Figma node 0:75861. 68px tall, white surface, bottom border.
- * Right cluster: Share Link, home icon, avatar + user name.
+ * Right cluster: Share Link (copies URL), home icon (→ /), avatar + user name.
  */
+
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { showToast } from "@/components/ui/Toast";
 
 const I = "/icons/topnav";
 
@@ -32,8 +38,6 @@ function VerticalSeparator() {
   return <div className="h-[20px] w-px bg-border-lighter shrink-0" />;
 }
 
-import type { ReactNode } from "react";
-
 export function TopNav({
   userName = "User name here",
   userInitial = "S",
@@ -47,6 +51,14 @@ export function TopNav({
   /** Optional left-side content (e.g. the "Back to Anomalies" link) */
   left?: ReactNode;
 }) {
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast("Link copied");
+    } catch {
+      showToast("Couldn't copy link");
+    }
+  };
   return (
     <div className="bg-surface-primary border-b border-solid border-border-light flex items-center px-[24px] py-[16px] w-full h-[68px]">
       <div className="flex flex-1 items-center justify-between min-w-0 gap-[16px]">
@@ -54,7 +66,7 @@ export function TopNav({
         <div className="flex gap-[12px] items-center justify-end self-stretch">
           {!compact && (
             <>
-              <button className="flex gap-[8px] items-center justify-end overflow-clip cursor-pointer">
+              <button onClick={shareLink} className="flex gap-[8px] items-center justify-end overflow-clip cursor-pointer">
                 <LinkIcon />
                 <p className="font-sans font-medium leading-[22px] text-[14px] text-[#1570ef] whitespace-nowrap">
                   Share Link
@@ -63,11 +75,11 @@ export function TopNav({
               <VerticalSeparator />
             </>
           )}
-          <div className="overflow-clip relative shrink-0 size-[24px] cursor-pointer">
+          <Link href="/" aria-label="Home" className="overflow-clip relative shrink-0 size-[24px] cursor-pointer">
             <div className="absolute inset-[5.21%_9.38%_9.38%_9.38%]">
               <img alt="" className="absolute block inset-0 max-w-none size-full" src={`${I}/house.svg`} />
             </div>
-          </div>
+          </Link>
           {!compact && <VerticalSeparator />}
           <div className={`flex gap-[4px] items-center cursor-pointer ${compact ? "" : "w-[161px]"}`}>
             <div className="relative shrink-0 size-[24px]">

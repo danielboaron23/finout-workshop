@@ -8,9 +8,12 @@ export type TabItem = { label: string; count?: number };
 export function Tabs({
   items,
   activeIndex = 0,
+  onTabChange,
 }: {
   items: TabItem[];
   activeIndex?: number;
+  /** optional — makes the tabs clickable (controlled via activeIndex) */
+  onTabChange?: (index: number) => void;
 }) {
   return (
     <div className="bg-surface-primary border-b border-solid border-border-lighter flex items-center pl-[24px] w-full overflow-x-auto">
@@ -20,6 +23,7 @@ export function Tabs({
           return (
             <button
               key={tab.label}
+              onClick={onTabChange ? () => onTabChange(i) : undefined}
               className={`flex gap-[8px] h-full items-center justify-center min-h-[32px] min-w-[32px] px-[12px] py-[4px] cursor-pointer ${
                 active ? "bg-white border-b-2 border-solid border-[#1570ef]" : ""
               }`}

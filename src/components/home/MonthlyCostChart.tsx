@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { WidgetSubtitle } from "./CostCentersCard";
 
 /*
@@ -56,6 +59,12 @@ const CLUSTER_LEFTS = [3.78, 15.06, 25.95, 37.28, 48.37, 59.13, 70.21, 81.1, 92.
 const CLUSTER_W = 5.125; // 80/1561
 const OVERLAP = 2; // consecutive segments overlap by 2px in Figma
 
+/** "$" = absolute px heights (Figma), "%" = each bar normalized to a 100% stack */
+type ChartMode = "$" | "%";
+const PCT_Y_LABELS = ["100%", "75%", "50%", "25%", "0%"];
+const PLOT_TOP = GRID_TOPS[0];
+const FULL_STACK_H = GRID_TOPS[GRID_TOPS.length - 1] - GRID_TOPS[0]; // top→bottom gridline
+
 function clusterLeft(i: number, count: number): number {
   if (count === CLUSTER_LEFTS.length) return CLUSTER_LEFTS[i];
   return ((i + 0.5) / count) * 100 - CLUSTER_W / 2;
@@ -93,10 +102,50 @@ export function CurrencyCircleDollarIcon() {
   );
 }
 
-function BarCluster({ datum, left }: { datum: MonthlyCostDatum; left: number }) {
-  const total = stackHeight(datum.heights);
+function BarCluster({
+  datum,
+  left,
+  hidden,
+  mode,
+}: {
+  datum: MonthlyCostDatum;
+  left: number;
+  /** legend-toggled-off series labels */
+  hidden: ReadonlySet<string>;
+  mode: ChartMode;
+}) {
+  // Re-stack from visible series only: hidden segments drop out entirely and
+  // the remaining ones restack (px heights + 2px overlaps between neighbors).
+  const segments = datum.heights
+    .map((h, i) => ({
+      h,
+      label: CHART_SERIES[i]?.label ?? String(i),
+      color: CHART_SERIES[i]?.color ?? "#98a2b3",
+    }))
+    .filter((seg) => !hidden.has(seg.label));
+  if (segments.length === 0) return null;
+
+  if (mode === "%") {
+    // % view: visible segments normalized to a full-height 100% stack
+    const sum = segments.reduce((acc, seg) => acc + seg.h, 0);
+    return (
+      <div
+        className="absolute flex flex-col"
+        style={{ left: `${left}%`, width: `${CLUSTER_W}%`, top: PLOT_TOP, height: FULL_STACK_H }}
+      >
+        {segments.map((seg) => (
+          <div
+            key={seg.label}
+            className="w-full"
+            style={{ height: (seg.h / sum) * FULL_STACK_H, backgroundColor: seg.color }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  const total = stackHeight(segments.map((seg) => seg.h));
   const up = datum.direction === "up";
-  const segments = datum.heights.map((h, i) => ({ h, color: CHART_SERIES[i]?.color ?? "#98a2b3" }));
   const ordered = up ? [...segments].reverse() : segments;
   return (
     <div
@@ -110,7 +159,7 @@ function BarCluster({ datum, left }: { datum: MonthlyCostDatum; left: number }) 
     >
       {ordered.map((seg, i) => (
         <div
-          key={i}
+          key={seg.label}
           className="w-full"
           style={{ height: seg.h, backgroundColor: seg.color, marginTop: i === 0 ? 0 : -OVERLAP }}
         />
@@ -126,6 +175,13 @@ export function MonthlyCostChart({
   data?: MonthlyCostDatum[];
   className?: string;
 }) {
+  const [hiddenSeries, setHiddenSeries] = useState<readonly string[]>([]);
+  const [mode, setMode] = useState<ChartMode>("$");
+  const hidden = new Set(hiddenSeries);
+  const toggleSeries = (label: string) =>
+    setHiddenSeries((prev) =>
+      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
+    );
   return (
     <div
       className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start p-[16px] rounded-[8px] w-full ${className}`}
@@ -136,7 +192,13 @@ export function MonthlyCostChart({
           <p className="flex-1 font-sans font-medium leading-[26px] min-w-px text-[#101828] text-[18px]">
             Monthly cost changes (year to date)
           </p>
-          <CurrencyCircleDollarIcon />
+          <button
+            aria-label={mode === "$" ? "Switch to percentage view" : "Switch to absolute view"}
+            className="cursor-pointer shrink-0"
+            onClick={() => setMode((m) => (m === "$" ? "%" : "$"))}
+          >
+            <CurrencyCircleDollarIcon />
+          </button>
         </div>
         <div className="mt-[4px]">
           <WidgetSubtitle timeFrame="Current year" interval="Monthly" />
@@ -145,7 +207,7 @@ export function MonthlyCostChart({
         {/* Plot area */}
         <div className="mt-[4px] relative w-full" style={{ height: PLOT_H }}>
           {/* Y-axis labels */}
-          {Y_LABELS.map((label, i) => (
+          {(mode === "$" ? Y_LABELS : PCT_Y_LABELS).map((label, i) => (
             <p
               key={i}
               className="absolute font-sans font-normal leading-[18px] left-0 text-[#494646] text-[10px] text-right w-[26px]"
@@ -160,7 +222,13 @@ export function MonthlyCostChart({
               <div key={i} className="absolute bg-[#eaecf0] h-px left-0 right-0" style={{ top }} />
             ))}
             {data.map((datum, i) => (
-              <BarCluster key={datum.month} datum={datum} left={clusterLeft(i, data.length)} />
+              <BarCluster
+                key={datum.month}
+                datum={datum}
+                left={clusterLeft(i, data.length)}
+                hidden={hidden}
+                mode={mode}
+              />
             ))}
           </div>
         </div>
@@ -189,14 +257,26 @@ export function MonthlyCostChart({
             {TOTAL_LEGEND.label}
           </p>
         </div>
-        {CHART_SERIES.map((series) => (
-          <div key={series.label} className="flex gap-[4px] items-center">
-            <div className="size-[12px]" style={{ backgroundColor: series.color }} />
-            <p className="font-sans font-medium leading-[20px] text-[#333333] text-[12px] whitespace-nowrap">
-              {series.label}
-            </p>
-          </div>
-        ))}
+        {CHART_SERIES.map((series) => {
+          const off = hidden.has(series.label);
+          return (
+            <div
+              key={series.label}
+              className="flex gap-[4px] items-center cursor-pointer select-none"
+              onClick={() => toggleSeries(series.label)}
+            >
+              <div
+                className={`size-[12px]${off ? " opacity-40" : ""}`}
+                style={{ backgroundColor: series.color }}
+              />
+              <p
+                className={`font-sans font-medium leading-[20px] text-[#333333] text-[12px] whitespace-nowrap${off ? " opacity-40" : ""}`}
+              >
+                {series.label}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

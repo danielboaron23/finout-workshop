@@ -18,17 +18,26 @@ export function TableShell({ children }: { children: ReactNode }) {
 export function HeaderCell({
   label,
   sortable = false,
+  sortAsc = false,
+  onClick,
   className = "",
   style,
 }: {
   label?: string;
   sortable?: boolean;
+  /** flips the sort arrow vertically (ascending) */
+  sortAsc?: boolean;
+  /** optional — e.g. toggle sort direction */
+  onClick?: () => void;
   className?: string;
   style?: React.CSSProperties;
 }) {
   return (
     <div
-      className={`bg-[#f2f4f7] border-b-[1.241px] border-solid border-[#f9f9f9] flex h-[54px] items-center justify-center p-[12px] w-full ${className}`}
+      onClick={onClick}
+      className={`bg-[#f2f4f7] border-b-[1.241px] border-solid border-[#f9f9f9] flex h-[54px] items-center justify-center p-[12px] w-full ${
+        onClick ? "cursor-pointer " : ""
+      }${className}`}
       style={style}
     >
       {label !== undefined && (
@@ -36,7 +45,7 @@ export function HeaderCell({
           <div className="flex gap-[8px] items-center">
             <p className="font-sans font-medium leading-[20px] text-[14px] text-text-primary whitespace-nowrap">{label}</p>
             {sortable && (
-              <span className="relative shrink-0 size-[16px]">
+              <span className={`relative shrink-0 size-[16px] ${sortAsc ? "rotate-180" : ""}`}>
                 <span className="absolute inset-[17.71%]">
                   <img alt="" className="absolute block inset-0 max-w-none size-full" src="/icons/ui/arrow-down.svg" />
                 </span>
