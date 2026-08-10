@@ -1,14 +1,15 @@
 import React from 'react'
 import type { Preview } from '@storybook/nextjs-vite'
-import { Inter } from 'next/font/google'
+import { Geist, Inter } from 'next/font/google'
 import '../src/app/globals.css'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
+const geist = Geist({ variable: '--font-geist', subsets: ['latin'] })
 
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <div className={`${inter.variable} contents`}>
+      <div className={`${inter.variable} ${geist.variable} contents`}>
         <Story />
       </div>
     ),

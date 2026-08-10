@@ -7,8 +7,9 @@
 @theme {
   /* ---- Fonts ---- */
   --font-sans: "Helvetica Neue", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  /* next/font overrides --font-inter on <html> with the loaded webfont */
+  /* next/font overrides --font-inter / --font-geist on <html> with the loaded webfont */
   --font-inter: "Inter", "Helvetica Neue", sans-serif;
+  --font-geist: "Geist", "Inter", "Helvetica Neue", sans-serif;
 
   /* ---- Neutrals (Colors/Neutral) ---- */
   --color-neutral-0: #ffffff;
