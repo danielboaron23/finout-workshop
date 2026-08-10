@@ -242,12 +242,12 @@ export function CostCentersCard({
               </HomeCell>
             ))}
           </div>
-          <div className="flex flex-1 flex-col items-start min-w-0">
+          <div className="flex flex-1 flex-col items-start min-w-fit">
             <HomeHeaderCell label="Actions" />
             {all.map((row, i) => (
               <HomeCell key={row.name} totalRow={isTotal(i)}>
                 {row.action !== undefined && (
-                  <TableActionButton className="flex-1 min-w-px">{row.action}</TableActionButton>
+                  <TableActionButton className="flex-1">{row.action}</TableActionButton>
                 )}
               </HomeCell>
             ))}

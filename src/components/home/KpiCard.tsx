@@ -243,7 +243,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
 
 export function KpiCardsRow({ cards = DEFAULT_CARDS, className = "" }: { cards?: KpiCardProps[]; className?: string }) {
   return (
-    <div className={`flex flex-wrap gap-[24px] items-stretch w-full ${className}`}>
+    <div className={`grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[24px] items-stretch w-full ${className}`}>
       {cards.map((card) => (
         <KpiCard key={card.title} {...card} className="flex-1 min-w-[280px]" />
       ))}

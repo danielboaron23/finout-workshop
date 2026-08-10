@@ -181,7 +181,7 @@ export const DEFAULT_PRODUCT_CARDS: ProductCardProps[] = [
 
 export function ProductCardsRow({ cards = DEFAULT_PRODUCT_CARDS }: { cards?: ProductCardProps[] }) {
   return (
-    <div className="flex flex-wrap gap-[32px] items-start w-full">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[32px] items-stretch w-full">
       {cards.map((card) => (
         <ProductCard key={card.title} {...card} />
       ))}

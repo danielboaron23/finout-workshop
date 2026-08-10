@@ -108,7 +108,7 @@ export const DEFAULT_PROJECTION_CARDS: ProjectionCardProps[] = [
 
 export function ProjectionCardsRow({ cards = DEFAULT_PROJECTION_CARDS }: { cards?: ProjectionCardProps[] }) {
   return (
-    <div className="flex flex-wrap gap-[32px] items-center w-full">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[32px] items-stretch w-full">
       {cards.map((card) => (
         <ProjectionCard key={card.cta} {...card} />
       ))}

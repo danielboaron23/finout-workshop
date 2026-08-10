@@ -141,8 +141,8 @@ export function GreetingHeader({
   className?: string;
 }) {
   return (
-    <div className={`flex items-center justify-between w-full ${className}`}>
-      <div className="flex flex-1 gap-[16px] items-center min-w-0">
+    <div className={`flex flex-wrap gap-[16px] items-center justify-between w-full ${className}`}>
+      <div className="flex gap-[16px] items-center min-w-0">
         <h1 className="font-sans font-bold leading-[32px] text-[#101828] text-[24px] whitespace-nowrap">
           {greeting}, {name}
         </h1>

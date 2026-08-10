@@ -159,8 +159,6 @@ export function MonthlyCostChart({
             {GRID_TOPS.map((top, i) => (
               <div key={i} className="absolute bg-[#eaecf0] h-px left-0 right-0" style={{ top }} />
             ))}
-            {/* Darker $0 baseline segment (drawn this way in Figma) */}
-            <div className="absolute bg-[#ced6e9] h-px left-0 w-[37.22%]" style={{ top: ZERO_Y }} />
             {data.map((datum, i) => (
               <BarCluster key={datum.month} datum={datum} left={clusterLeft(i, data.length)} />
             ))}
