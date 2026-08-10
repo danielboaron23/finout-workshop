@@ -180,7 +180,7 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cla
           )}
         </div>
       </div>
-      <button className="bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer">
+      <button className="bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer">
         <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
           {cta}
         </span>

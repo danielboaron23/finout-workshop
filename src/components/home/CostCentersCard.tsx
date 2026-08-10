@@ -142,7 +142,7 @@ export function DeltaCellContent({ value, pct, trend }: { value: string; pct: st
 export function TableActionButton({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <button
-      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
+      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
     >
       <p className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">{children}</p>
     </button>
