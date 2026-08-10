@@ -142,9 +142,11 @@ export function DeltaCellContent({ value, pct, trend }: { value: string; pct: st
 export function TableActionButton({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <button
-      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
+      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center min-w-0 overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
     >
-      <p className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">{children}</p>
+      <p className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap overflow-hidden text-ellipsis">
+        {children}
+      </p>
     </button>
   );
 }
@@ -209,10 +211,10 @@ export function CostCentersCard({
           <WidgetTitle>{title}</WidgetTitle>
           <WidgetSubtitle timeFrame={timeFrame} interval={interval} />
         </div>
-        {/* 5 equal columns like Figma; below 1320px the widest action button
-            ("Go to snowflake dashboard", ~205px + cell padding) would squeeze,
-            so the table scrolls horizontally instead */}
-        <HomeTableShell minWidth={1320}>
+        {/* 5 equal columns like Figma at every width; when a column gets too
+            narrow for the widest action label, the button ellipsizes inside
+            its box (Figma buttons are overflow-clip). Scroll only below 1000px */}
+        <HomeTableShell minWidth={1000}>
           <div className="flex flex-1 flex-col items-start min-w-0">
             <HomeHeaderCell label="Name" />
             {all.map((row, i) => (
