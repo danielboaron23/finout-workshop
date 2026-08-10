@@ -79,7 +79,7 @@ export function ProjectionCard({
         <div className="flex gap-[12px] items-center">
           {logo}
           <div className="flex flex-col gap-[2px] items-start min-w-0">
-            <p className="font-sans font-medium text-[#101828] text-[15px] leading-[22px] @[300px]:text-[17px] @[300px]:leading-[24px] @[310px]:text-[18px] @[310px]:leading-[26px] @[340px]:text-[20px] @[340px]:leading-[28px]">
+            <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px]">
               {title}
             </p>
             <p className="font-sans font-normal leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
