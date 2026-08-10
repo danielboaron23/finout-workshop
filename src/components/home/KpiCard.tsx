@@ -146,7 +146,7 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cla
       className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-col gap-[12px] items-start w-full">
-        <div className="flex gap-[12px] items-center">
+        <div className="flex gap-[12px] items-center w-full">
           {icon}
           <div className="flex flex-col gap-[2px] items-start">
             <div className="font-sans font-medium leading-[28px] text-[#101828] text-[20px] whitespace-nowrap">
@@ -157,8 +157,8 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cla
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-[8px] items-start">
-          <div className="flex gap-[8px] items-center">
+        <div className="flex flex-col gap-[8px] items-start w-full">
+          <div className="flex flex-wrap gap-[8px] items-center">
             <div className="font-sans font-bold leading-[32px] text-[#101828] text-[24px] whitespace-nowrap">
               {value}
             </div>
@@ -243,9 +243,11 @@ const DEFAULT_CARDS: KpiCardProps[] = [
 
 export function KpiCardsRow({ cards = DEFAULT_CARDS, className = "" }: { cards?: KpiCardProps[]; className?: string }) {
   return (
-    <div className={`grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[24px] items-stretch w-full ${className}`}>
+    // Figma's own model: cards never shrink below their content (titles stay
+    // one line, like the design); whole cards wrap to the next row when tight
+    <div className={`flex flex-wrap gap-[24px] items-stretch w-full ${className}`}>
       {cards.map((card) => (
-        <KpiCard key={card.title} {...card} className="flex-1 min-w-[280px]" />
+        <KpiCard key={card.title} {...card} className="grow shrink-0 basis-auto" />
       ))}
     </div>
   );

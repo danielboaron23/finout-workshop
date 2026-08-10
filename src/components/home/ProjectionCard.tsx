@@ -73,7 +73,7 @@ export function ProjectionCard({
 }: ProjectionCardProps) {
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-1 flex-col h-[232px] items-start min-w-[280px] p-[16px] rounded-[8px] ${className}`}
+      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex grow shrink-0 basis-auto flex-col min-h-[232px] items-start p-[16px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-1 flex-col items-start justify-between min-h-px w-full">
         <div className="flex gap-[12px] items-center">
@@ -108,7 +108,7 @@ export const DEFAULT_PROJECTION_CARDS: ProjectionCardProps[] = [
 
 export function ProjectionCardsRow({ cards = DEFAULT_PROJECTION_CARDS }: { cards?: ProjectionCardProps[] }) {
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[32px] items-stretch w-full">
+    <div className="flex flex-wrap gap-[32px] items-stretch w-full">
       {cards.map((card) => (
         <ProjectionCard key={card.cta} {...card} />
       ))}

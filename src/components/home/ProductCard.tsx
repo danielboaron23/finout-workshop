@@ -127,15 +127,15 @@ export function ProductCard({ icon, title, count, description, cta, className = 
     <div
       className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-1 flex-col gap-[32px] items-start justify-center min-w-[280px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
-      <div className="bg-white flex flex-col h-[114px] items-start w-full">
+      <div className="bg-white flex flex-col min-h-[114px] items-start w-full">
         <div className="flex flex-col gap-[12px] items-start w-full">
-          <div className="flex gap-[12px] items-center">
+          <div className="flex gap-[12px] items-center w-full">
             {icon}
-            <div className="flex flex-col gap-[2px] items-start">
-              <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px] whitespace-nowrap">
+            <div className="flex flex-col gap-[2px] items-start flex-1 min-w-0">
+              <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px]">
                 {title}
               </p>
-              <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px] whitespace-nowrap">
+              <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">
                 {count}
               </p>
             </div>
