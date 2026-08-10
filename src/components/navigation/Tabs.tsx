@@ -13,7 +13,7 @@ export function Tabs({
   activeIndex?: number;
 }) {
   return (
-    <div className="bg-surface-primary border-b border-solid border-border-lighter flex items-center pl-[24px] w-full">
+    <div className="bg-surface-primary border-b border-solid border-border-lighter flex items-center pl-[24px] w-full overflow-x-auto">
       <div className="flex h-[68px] items-center py-px">
         {items.map((tab, i) => {
           const active = i === activeIndex;

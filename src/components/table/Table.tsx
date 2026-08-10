@@ -9,8 +9,8 @@ import type { ReactNode } from "react";
 
 export function TableShell({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-surface-primary border border-solid border-border-light flex items-start overflow-clip rounded-[8px] shadow-[0px_2.483px_4.965px_-2.483px_rgba(16,24,40,0.06),0px_4.965px_9.93px_-2.483px_rgba(16,24,40,0.1)] w-full">
-      {children}
+    <div className="bg-surface-primary border border-solid border-border-light overflow-x-auto rounded-[8px] shadow-[0px_2.483px_4.965px_-2.483px_rgba(16,24,40,0.06),0px_4.965px_9.93px_-2.483px_rgba(16,24,40,0.1)] w-full">
+      <div className="flex items-start w-full min-w-fit">{children}</div>
     </div>
   );
 }

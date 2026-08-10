@@ -64,7 +64,7 @@ export function Sidebar({ activeItem = "Virtual tags" }: { activeItem?: string }
   return (
     <div className="bg-[#101828] flex items-start h-full w-[220px] shrink-0">
       <div className="flex flex-1 flex-col h-full items-start justify-between min-w-px">
-        <div className="flex flex-1 flex-col gap-[24px] items-start min-h-px overflow-clip pt-[32px] w-full">
+        <div className="flex flex-1 flex-col gap-[24px] items-start min-h-px overflow-y-auto overflow-x-clip pt-[32px] w-full">
           <div className="flex flex-col items-start pl-[24px] pr-[20px] w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/brand/finout-logo.svg" alt="Finout" className="h-[24px] w-[96.601px] block" />

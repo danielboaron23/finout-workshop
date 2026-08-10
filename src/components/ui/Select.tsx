@@ -7,12 +7,15 @@ import { ChevronDown16 } from "./Button";
 export function Select({
   label,
   width = 140,
+  onClick,
 }: {
   label: string;
   width?: number;
+  onClick?: () => void;
 }) {
   return (
     <button
+      onClick={onClick}
       className="bg-white border border-solid border-[#eaecf0] flex gap-[12px] items-center min-h-[40px] overflow-clip pl-[16px] pr-[8px] py-[10px] rounded-[8px] cursor-pointer"
       style={{ width }}
     >

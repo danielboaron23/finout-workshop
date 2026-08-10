@@ -4,10 +4,9 @@ import { PageTitleBar } from "@/components/navigation/PageTitleBar";
 import { Tabs } from "@/components/navigation/Tabs";
 import { Button, ChevronDown16 } from "@/components/ui/Button";
 import { SearchInput } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { FolderSelect } from "@/components/ui/FolderSelect";
 import { FolderBadge, ProductBadge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Avatar";
-import { FolderMenu } from "@/components/ui/FolderMenu";
 import { TableShell, HeaderCell, Cell, CellText, MenuCell, CheckboxCell } from "@/components/table/Table";
 
 /*
@@ -37,9 +36,9 @@ const FOLDERS = Array.from({ length: 8 }, () => "Folder name here");
 
 export function VirtualTagsScreen() {
   return (
-    <div className="bg-canvas flex h-[1080px] w-[1920px] items-start overflow-clip">
+    <div className="bg-canvas flex h-screen w-full items-start overflow-hidden">
       <Sidebar activeItem="Virtual tags" />
-      <div className="flex flex-col flex-1 h-full relative">
+      <div className="flex flex-col flex-1 h-full min-w-0 overflow-y-auto">
         <TopNav />
         <PageTitleBar title="Virtual Tags" linkLabel="Learn about Virtual Tags" />
         <Tabs
@@ -50,10 +49,10 @@ export function VirtualTagsScreen() {
           ]}
         />
         <div className="bg-surface-primary flex items-center justify-center p-[24px] w-full">
-          <div className="flex flex-1 items-center justify-between min-w-px">
+          <div className="flex flex-1 flex-wrap gap-[8px] items-center justify-between min-w-0">
             <div className="flex gap-[8px] items-center">
               <SearchInput placeholder="Search" />
-              <Select label="Folders" />
+              <FolderSelect folders={FOLDERS} />
             </div>
             <Button variant="primary">
               Create Virtual Tag
@@ -61,7 +60,7 @@ export function VirtualTagsScreen() {
             </Button>
           </div>
         </div>
-        <div className="flex flex-col items-center px-[24px] w-full">
+        <div className="flex flex-col items-center px-[24px] pb-[24px] w-full">
           <TableShell>
             {/* checkbox column */}
             <div className="flex flex-col items-start w-[48px] shrink-0">
@@ -132,10 +131,6 @@ export function VirtualTagsScreen() {
               ))}
             </div>
           </TableShell>
-        </div>
-        {/* Folder picker menu overlay — Figma position x=602 y=276 in the 1920 frame (sidebar included) */}
-        <div className="absolute" style={{ left: 602 - 220, top: 276 }}>
-          <FolderMenu folders={FOLDERS} />
         </div>
       </div>
     </div>

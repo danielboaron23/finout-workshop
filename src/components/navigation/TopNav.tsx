@@ -41,8 +41,8 @@ export function TopNav({
 }) {
   return (
     <div className="bg-surface-primary border-b border-solid border-border-light flex items-center px-[24px] py-[16px] w-full h-[68px]">
-      <div className="flex flex-1 items-center justify-between min-w-px">
-        <div className="flex gap-[24px] h-[36px] items-center w-[429px]" />
+      <div className="flex flex-1 items-center justify-between min-w-0 gap-[16px]">
+        <div className="flex flex-1 gap-[24px] h-[36px] items-center min-w-0" />
         <div className="flex gap-[12px] items-center justify-end self-stretch">
           <button className="flex gap-[8px] items-center justify-end overflow-clip cursor-pointer">
             <LinkIcon />
