@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { TopNav } from "@/components/navigation/TopNav";
 import { PageTitleBar } from "@/components/navigation/PageTitleBar";
-import { Button } from "@/components/ui/Button";
+import { AnomaliesResults } from "@/components/anomalies/AnomaliesResults";
 import {
   FilterChip,
   FilterSeparator,
@@ -9,7 +10,6 @@ import {
   DotsMenuButton,
   CalendarIcon18,
 } from "@/components/anomalies/FilterChip";
-import { AnomalyCard } from "@/components/anomalies/AnomalyCard";
 
 /*
  * Screen: Anomalies feed — Figma node 1:14654 (1920x959).
@@ -56,17 +56,17 @@ export function AnomaliesScreen() {
                 <SearchAnomalies />
               </div>
               <div className="flex gap-[12px] items-end">
-                <Button variant="primary" className="min-h-[36px]">
+                <Link
+                  href="/anomalies/create"
+                  className="bg-[#1570ef] flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-[#f3f5f8] whitespace-nowrap"
+                >
                   Create Anomaly Alert
-                </Button>
+                </Link>
                 <DotsMenuButton />
               </div>
             </div>
           </div>
-          <p className="font-sans font-medium leading-[28px] text-[#101828] text-[18px] mt-[24px]">1 result</p>
-          <div className="mt-[16px] pb-[32px] w-full">
-            <AnomalyCard />
-          </div>
+          <AnomaliesResults />
         </div>
       </div>
     </div>

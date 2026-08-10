@@ -32,20 +32,25 @@ function VerticalSeparator() {
   return <div className="h-[20px] w-px bg-border-lighter shrink-0" />;
 }
 
+import type { ReactNode } from "react";
+
 export function TopNav({
   userName = "User name here",
   userInitial = "S",
   compact = false,
+  left,
 }: {
   userName?: string;
   userInitial?: string;
   /** Figma variant with only home + avatar + chevron on the right */
   compact?: boolean;
+  /** Optional left-side content (e.g. the "Back to Anomalies" link) */
+  left?: ReactNode;
 }) {
   return (
     <div className="bg-surface-primary border-b border-solid border-border-light flex items-center px-[24px] py-[16px] w-full h-[68px]">
       <div className="flex flex-1 items-center justify-between min-w-0 gap-[16px]">
-        <div className="flex flex-1 gap-[24px] h-[36px] items-center min-w-0" />
+        <div className="flex flex-1 gap-[24px] h-[36px] items-center min-w-0">{left}</div>
         <div className="flex gap-[12px] items-center justify-end self-stretch">
           {!compact && (
             <>
