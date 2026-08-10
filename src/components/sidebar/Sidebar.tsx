@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SidebarIcon, type SidebarIconName } from "./sidebar-icons";
 
 /*
@@ -11,15 +12,17 @@ export type SidebarItem = {
   icon: SidebarIconName;
 };
 
-type Entry = { type: "item"; label: string; icon: SidebarIconName } | { type: "section"; label: string };
+type Entry =
+  | { type: "item"; label: string; icon: SidebarIconName; href?: string }
+  | { type: "section"; label: string };
 
 const NAV: Entry[] = [
-  { type: "item", label: "Overview", icon: "overview" },
+  { type: "item", label: "Overview", icon: "overview", href: "/" },
   { type: "item", label: "Finops for AI", icon: "finops-ai" },
   { type: "item", label: "Billy", icon: "billy" },
   { type: "section", label: "Inform" },
   { type: "item", label: "MegaBill", icon: "megabill" },
-  { type: "item", label: "Virtual tags", icon: "virtual-tags" },
+  { type: "item", label: "Virtual tags", icon: "virtual-tags", href: "/virtual-tags" },
   { type: "item", label: "Dashboards", icon: "dashboards" },
   { type: "item", label: "Financial Plans", icon: "financial-plans" },
   { type: "item", label: "Resources", icon: "resources" },
@@ -28,7 +31,7 @@ const NAV: Entry[] = [
   { type: "item", label: "CostGuard", icon: "costguard" },
   { type: "item", label: "My Commitments", icon: "my-commitments" },
   { type: "item", label: "Commitments Log", icon: "commitments-log" },
-  { type: "item", label: "Anomalies", icon: "anomalies" },
+  { type: "item", label: "Anomalies", icon: "anomalies", href: "/anomalies" },
   { type: "section", label: "Operate" },
   { type: "item", label: "Cost per entity", icon: "cost-per-entity" },
   { type: "item", label: "Reports", icon: "reports" },
@@ -40,23 +43,30 @@ function NavItem({
   icon,
   active = false,
   footer = false,
+  href,
 }: {
   label: string;
   icon: SidebarIconName;
   active?: boolean;
   footer?: boolean;
+  href?: string;
 }) {
   const bg = active ? "bg-[#475467]" : footer ? "bg-[#1a2435]" : "bg-[#101828]";
   const text = active ? "text-white" : "text-text-tertiary";
-  return (
-    <div className="flex items-start w-full">
-      <div className={`${bg} flex flex-1 items-center overflow-clip p-[8px] rounded-[6px] cursor-pointer`}>
-        <div className="flex flex-1 gap-[8px] items-center min-w-px">
-          <SidebarIcon name={icon} />
-          <p className={`font-inter font-medium leading-[20px] text-[14px] whitespace-nowrap ${text}`}>{label}</p>
-        </div>
+  const inner = (
+    <div className={`${bg} flex flex-1 items-center overflow-clip p-[8px] rounded-[6px] cursor-pointer`}>
+      <div className="flex flex-1 gap-[8px] items-center min-w-px">
+        <SidebarIcon name={icon} />
+        <p className={`font-inter font-medium leading-[20px] text-[14px] whitespace-nowrap ${text}`}>{label}</p>
       </div>
     </div>
+  );
+  return href ? (
+    <Link href={href} className="flex items-start w-full">
+      {inner}
+    </Link>
+  ) : (
+    <div className="flex items-start w-full">{inner}</div>
   );
 }
 
@@ -78,7 +88,13 @@ export function Sidebar({ activeItem = "Virtual tags" }: { activeItem?: string }
                   </p>
                 </div>
               ) : (
-                <NavItem key={entry.label} label={entry.label} icon={entry.icon} active={entry.label === activeItem} />
+                <NavItem
+                  key={entry.label}
+                  label={entry.label}
+                  icon={entry.icon}
+                  href={entry.href}
+                  active={entry.label === activeItem}
+                />
               ),
             )}
           </nav>
