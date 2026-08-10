@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Finout Design Tokens
+ * Extracted from Figma: lhnXVSWU3CbI8QP3BKE0bx (Representative Screens)
+ */
+@theme {
+  /* ---- Fonts ---- */
+  --font-sans: "Helvetica Neue", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* ---- Neutrals (Colors/Neutral) ---- */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f3f5f8;
+  --color-neutral-100: #eaecf0;
+  --color-neutral-200: #d0d5dd;
+  --color-neutral-300: #98a2b3;
+  --color-neutral-400: #57677f;
+  --color-neutral-500: #101828;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* ---- Gray (Untitled-style grays used in tables/labels) ---- */
+  --color-gray-200: #eaecf0;
+  --color-gray-300: #d0d5dd;
+  --color-gray-600: #475467;
+  --color-gray-700: #344054;
+
+  /* ---- Blue (brand / action) ---- */
+  --color-blue-25: #f5faff;
+  --color-blue-50: #eff8ff;
+  --color-blue-300: #2e90fa;
+  --color-blue-400: #1570ef;
+  --color-blue-600: #1570ef;
+
+  /* ---- Semantic: text ---- */
+  --color-text-primary: #101828;
+  --color-text-secondary: #475467;
+  --color-text-tertiary: #7b889e;
+  --color-text-inverse: #f3f5f8;
+  --color-text-link: #175cd3;
+
+  /* ---- Semantic: icon ---- */
+  --color-icon-primary: #7b889e;
+  --color-icon-secondary: #475467;
+  --color-icon-dark: #101828;
+  --color-icon-link: #175cd3;
+  --color-icon-inverse: #ffffff;
+  --color-icon-disabled: #939393;
+  --color-icon-brand: #429674;
+
+  /* ---- Semantic: surface ---- */
+  --color-surface-primary: #fefefe;
+  --color-surface-secondary: #f3f5f8;
+  --color-canvas: #f2f4f7;
+
+  /* ---- Semantic: border ---- */
+  --color-border-lighter: #f2f4f7;
+  --color-border-light: #dee1e8;
+  --color-border-muted: #d0d5dd;
+  --color-border-default: #98a2b3;
+  --color-border-primary: #1570ef;
+
+  /* ---- Success (badges / status) ---- */
+  --color-success-50: #ecfdf3;
+  --color-success-200: #abefc6;
+  --color-success-500: #17b26a;
+  --color-success-700: #067647;
+
+  /* ---- Data-Viz ---- */
+  --color-dataviz-blue-25: #f5faff;
+  --color-dataviz-blue-100: #84caff;
+  --color-dataviz-blue-600: #194185;
+  --color-dataviz-purple-400: #53389e;
+  --color-dataviz-violet-25: #ede9fc;
+  --color-dataviz-violet-50: #cabdf7;
+  --color-dataviz-violet-75: #8465eb;
+  --color-dataviz-violet-100: #724fe9;
+
+  /* ---- Radius ---- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 2px 4px -2px rgba(0, 0, 0, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-medium:
+    0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06);
+  --shadow-lg:
+    0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 5px 15px -3px rgba(0, 0, 0, 0.05);
+  --shadow-xl:
+    0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* ---- Type scale (Body = Helvetica Neue) ---- */
+  --text-2xs: 10px;
+  --text-2xs--line-height: 18px;
+  --text-xs: 12px;
+  --text-xs--line-height: 20px;
+  --text-sm: 14px;
+  --text-sm--line-height: 22px;
+  --text-base: 16px;
+  --text-base--line-height: 24px;
+  --text-xl: 20px;
+  --text-xl--line-height: 24px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
