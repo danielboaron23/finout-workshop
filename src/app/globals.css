@@ -115,3 +115,21 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+
+/*
+ * Proportional scaling (Daniel's rule, applies to EVERY screen):
+ * the app is designed at the Figma frame width (1920). At any viewport the
+ * whole UI zooms uniformly so it always looks exactly like the Figma —
+ * larger on big screens, smaller on laptops — with a floor at 1280/1920.
+ * Below the floor the layout falls back to the fluid grid behaviors.
+ */
+:root {
+  --app-zoom: clamp(0.6667, calc(100vw / 1920px), 10);
+}
+
+.app-zoom {
+  zoom: var(--app-zoom);
+  /* viewport units are not divided by zoom, so compensate to fill the screen */
+  height: calc(100dvh / var(--app-zoom));
+  overflow: hidden;
+}

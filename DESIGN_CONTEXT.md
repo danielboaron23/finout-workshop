@@ -25,6 +25,7 @@ Exported Figma SVGs only (never hand-drawn): `public/icons/{sidebar,topnav,ui}`,
 - Table cell text 21.57px/33.898 is the design's real rendered size (kept 1:1).
 
 ## Layout contract (applies to EVERY screen)
+- **Proportional scaling (Daniel's global rule)**: the app is designed at the Figma frame width (1920) and the whole UI zooms uniformly to the viewport via `.app-zoom` on `<body>` (`--app-zoom: clamp(0.6667, 100vw/1920px, 10)` in globals.css). On ANY screen — small laptop or large monitor — every screen looks exactly like the Figma at the same proportions; typography is always its Figma size (titles 20px logical everywhere). Floor 1280/1920; below it the fluid grid behaviors take over. New screens: root `h-full flex-1` (NOT `h-screen` — viewport units are not divided by zoom).
 - **Card rows: equal-width cards, container-query titles** (Daniel's rule): rows are `grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))]` so every card is the same size and the row fills the screen at any width. Each card is `@container` and its title steps with card width — `15px/22` base, `@[300px]:17px/24`, `@[310px]:18px/26`, `@[340px]:20px/28` (Figma's 20px needs a ≥340px card) — so text always fits inside the card, never overflows and never gets truncated.
 - Root: `flex h-screen overflow-hidden`; Sidebar `shrink-0`; content column `flex-1 min-w-0 overflow-y-auto`.
 - Pixel-perfect at 1920×1080 (Figma frame size); fluid below — tables wrap in `overflow-x-auto`, filters row wraps or scrolls, nothing overflows the viewport horizontally.
