@@ -132,7 +132,7 @@ export function ProductCard({ icon, title, count, description, cta, className = 
           <div className="flex gap-[12px] items-center w-full">
             {icon}
             <div className="flex flex-col gap-[2px] items-start flex-1 min-w-0">
-              <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px]">
+              <p className="font-sans font-medium leading-[26px] text-[#101828] text-[18px]">
                 {title}
               </p>
               <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">

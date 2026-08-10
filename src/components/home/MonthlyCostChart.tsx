@@ -133,7 +133,7 @@ export function MonthlyCostChart({
       <div className="w-full">
         {/* Title + top-right $ icon */}
         <div className="flex items-start justify-between w-full">
-          <p className="flex-1 font-sans font-medium leading-[28px] min-w-px text-[#101828] text-[20px]">
+          <p className="flex-1 font-sans font-medium leading-[26px] min-w-px text-[#101828] text-[18px]">
             Monthly cost changes (year to date)
           </p>
           <CurrencyCircleDollarIcon />

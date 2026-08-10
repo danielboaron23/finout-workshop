@@ -23,7 +23,7 @@ export function WidgetCard({ children, className = "" }: { children: ReactNode; 
 
 export function WidgetTitle({ children }: { children: ReactNode }) {
   return (
-    <p className="font-sans font-medium leading-[28px] text-[#101828] text-[20px] w-full">{children}</p>
+    <p className="font-sans font-medium leading-[26px] text-[#101828] text-[18px] w-full">{children}</p>
   );
 }
 

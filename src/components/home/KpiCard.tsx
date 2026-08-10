@@ -149,9 +149,9 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cla
         <div className="flex gap-[12px] items-center w-full">
           {icon}
           <div className="flex flex-col gap-[2px] items-start min-w-0">
-            {/* Canonical widget-title typography (Figma Medium/lg 20/28) — same as
-                every other title on the page; wraps inside the card when tight */}
-            <div className="font-sans font-medium leading-[28px] text-[#101828] text-[20px]">
+            {/* Canonical widget-title typography (18/26 — sized so the longest
+                title fits one line in an equal-width card); same on every title */}
+            <div className="font-sans font-medium leading-[26px] text-[#101828] text-[18px]">
               {title}
             </div>
             <div className="flex gap-[2px] items-center font-sans leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
