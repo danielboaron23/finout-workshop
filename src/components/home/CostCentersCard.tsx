@@ -209,7 +209,10 @@ export function CostCentersCard({
           <WidgetTitle>{title}</WidgetTitle>
           <WidgetSubtitle timeFrame={timeFrame} interval={interval} />
         </div>
-        <HomeTableShell minWidth={1100}>
+        {/* 5 equal columns like Figma; below 1320px the widest action button
+            ("Go to snowflake dashboard", ~205px + cell padding) would squeeze,
+            so the table scrolls horizontally instead */}
+        <HomeTableShell minWidth={1320}>
           <div className="flex flex-1 flex-col items-start min-w-0">
             <HomeHeaderCell label="Name" />
             {all.map((row, i) => (
@@ -242,7 +245,7 @@ export function CostCentersCard({
               </HomeCell>
             ))}
           </div>
-          <div className="flex flex-1 flex-col items-start min-w-fit">
+          <div className="flex flex-1 flex-col items-start min-w-0">
             <HomeHeaderCell label="Actions" />
             {all.map((row, i) => (
               <HomeCell key={row.name} totalRow={isTotal(i)}>
