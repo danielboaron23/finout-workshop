@@ -12,7 +12,7 @@ const page = await context.newPage();
 
 // Row names from the Name column (CellText paragraphs only, header excluded)
 const names = () =>
-  page.$$eval('div[class*="min-w-[160px]"] p[class*="33.898"]', (els) =>
+  page.$$eval('div[class*="min-w-[160px]"] p[class*="27.31"]', (els) =>
     els.map((e) => e.textContent.trim()),
   );
 
@@ -36,7 +36,7 @@ const modifiedDates = () =>
     const header = [...document.querySelectorAll("p")].find((p) => p.textContent.trim() === "Modified date");
     if (!header) return null;
     const col = header.closest('div[class*="flex-col"]');
-    return [...col.querySelectorAll('p[class*="33.898"]')].map((p) => p.textContent.trim());
+    return [...col.querySelectorAll('p[class*="27.31"]')].map((p) => p.textContent.trim());
   });
 
 const clickTab = async (label) => {
