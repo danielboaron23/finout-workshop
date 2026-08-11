@@ -114,8 +114,8 @@ try {
   const menuClosed = (await menu.count()) === 0;
   const triggerShowsFolder = (await page.getByRole("button", { name: firstFolderName }).count()) === 1;
   const rowsFiltered = await names();
-  // rows whose folder is NOT the selected folder must be gone (seeded rows use folder "Folder name")
-  const nonMatchingGone = !rowsFiltered.includes("ProfitPulse") && !rowsFiltered.includes("MarketMetrics");
+  // first folder is "Folder name" (matches seeded rows): its 4 rows stay, others (MarketMetrics) go
+  const nonMatchingGone = rowsFiltered.includes("ProfitPulse") && !rowsFiltered.includes("MarketMetrics") && rowsFiltered.length === 4;
   // clear: click trigger (now labelled with folder) + same folder again
   await page.getByRole("button", { name: firstFolderName }).first().click();
   await page.waitForTimeout(400);
