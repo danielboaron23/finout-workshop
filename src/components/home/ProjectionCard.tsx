@@ -73,24 +73,24 @@ export function ProjectionCard({
 }: ProjectionCardProps) {
   return (
     <div
-      className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex w-full flex-col min-h-[232px] items-start p-[16px] rounded-[8px] ${className}`}
+      className={`@container bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex w-full flex-col min-h-[232px] items-start p-[16px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-1 flex-col items-start justify-between min-h-px w-full">
         <div className="flex gap-[12px] items-center">
           {logo}
           <div className="flex flex-col gap-[2px] items-start min-w-0">
-            <p className="font-sans font-medium leading-[26px] text-[#101828] text-[18px]">
+            <p className="font-sans font-medium leading-[26px] text-text-primary text-[18px]">
               {title}
             </p>
-            <p className="font-sans font-normal leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
+            <p className="font-sans font-normal leading-[20px] text-text-secondary text-[12px] whitespace-nowrap">
               {caption}
             </p>
           </div>
         </div>
         <div className="flex flex-1 gap-[38px] items-center justify-center min-h-px w-full">
           <div className="flex flex-col gap-[8px] h-[78px] items-start whitespace-nowrap">
-            <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">{label}</p>
-            <p className="font-sans font-bold leading-[32px] text-[#101828] text-[24px]">{value}</p>
+            <p className="font-sans font-normal leading-[22px] text-text-secondary text-[14px]">{label}</p>
+            <p className="font-sans font-bold leading-[32px] text-text-primary text-[24px]">{value}</p>
           </div>
         </div>
         <WidgetButton>{cta}</WidgetButton>

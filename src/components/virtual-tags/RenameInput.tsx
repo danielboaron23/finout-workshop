@@ -33,7 +33,7 @@ export function RenameInput({
         }
       }}
       onBlur={() => (cancelled.current ? onCancel() : onCommit(value))}
-      className="w-full min-w-0 bg-white border border-solid border-[#1570ef] rounded-[4px] px-[8px] font-sans font-normal leading-[33.898px] text-[21.57px] text-text-primary outline-none"
+      className="w-full min-w-0 bg-white border border-solid border-border-primary rounded-[4px] px-[8px] font-sans font-normal leading-[33.898px] text-[21.57px] text-text-primary outline-none"
     />
   );
 }

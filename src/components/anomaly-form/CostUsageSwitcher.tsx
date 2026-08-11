@@ -25,11 +25,11 @@ export function CostUsageSwitcher({
         onClick={() => onChange("cost")}
         className={`${base} rounded-bl-[4px] rounded-tl-[4px] ${
           value === "cost"
-            ? "bg-[#eff8ff] border border-solid border-[#1570ef] z-[2]"
-            : "bg-white border-[#d0d5dd] border-b border-l border-solid border-t z-[1]"
+            ? "bg-blue-50 border border-solid border-border-primary z-[2]"
+            : "bg-white border-border-muted border-b border-l border-solid border-t z-[1]"
         }`}
       >
-        <span className={`${label} ${value === "cost" ? "text-[#1570ef]" : "text-[#101828]"}`}>
+        <span className={`${label} ${value === "cost" ? "text-blue-400" : "text-text-primary"}`}>
           Cost
         </span>
       </button>
@@ -39,11 +39,11 @@ export function CostUsageSwitcher({
         onClick={() => onChange("usage")}
         className={`${base} rounded-br-[4px] rounded-tr-[4px] ${
           value === "usage"
-            ? "bg-[#eff8ff] border border-solid border-[#1570ef] z-[2]"
-            : "bg-white border-[#d0d5dd] border-b border-r border-solid border-t z-[1]"
+            ? "bg-blue-50 border border-solid border-border-primary z-[2]"
+            : "bg-white border-border-muted border-b border-r border-solid border-t z-[1]"
         }`}
       >
-        <span className={`${label} ${value === "usage" ? "text-[#1570ef]" : "text-[#101828]"}`}>
+        <span className={`${label} ${value === "usage" ? "text-blue-400" : "text-text-primary"}`}>
           Usage
         </span>
       </button>

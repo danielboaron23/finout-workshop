@@ -24,7 +24,7 @@ export function PageTitleBar({
                 <img alt="" className="absolute block inset-0 max-w-none size-full" src="/icons/topnav/external-link.svg" />
               </div>
             </div>
-            <p className="font-sans font-medium leading-[22px] text-[14px] text-[#1570ef] whitespace-nowrap">{linkLabel}</p>
+            <p className="font-sans font-medium leading-[22px] text-[14px] text-blue-400 whitespace-nowrap">{linkLabel}</p>
           </button>
         </div>
       )}

@@ -121,8 +121,8 @@ export function PersonaSwitcher({
             onClick={() => (onSelect ? onSelect(label) : setDemo("home-persona", label))}
             className={`flex gap-[8px] h-full items-center justify-center px-[16px] py-[7px] shrink-0 cursor-pointer ${
               isActive
-                ? "bg-[#eff8ff] border border-solid border-[#1570ef]"
-                : "bg-white border-solid border-[#d0d5dd] border-b border-r border-t"
+                ? "bg-blue-50 border border-solid border-border-primary"
+                : "bg-white border-solid border-border-muted border-b border-r border-t"
             } ${isFirst ? "rounded-bl-[8px] rounded-tl-[8px]" : ""} ${
               isLast ? "rounded-br-[8px] rounded-tr-[8px]" : ""
             }`}
@@ -131,7 +131,7 @@ export function PersonaSwitcher({
             {icon}
             <span
               className={`font-sans font-medium leading-[24px] text-[16px] whitespace-nowrap ${
-                isActive ? "text-[#1570ef]" : "text-[#98a2b3]"
+                isActive ? "text-blue-400" : "text-neutral-300"
               }`}
             >
               {label}
@@ -160,7 +160,7 @@ export function GreetingHeader({
   return (
     <div className={`flex flex-wrap gap-[16px] items-center justify-between w-full ${className}`}>
       <div className="flex gap-[16px] items-center min-w-0">
-        <h1 className="font-sans font-bold leading-[32px] text-[#101828] text-[24px] whitespace-nowrap">
+        <h1 className="font-sans font-bold leading-[32px] text-text-primary text-[24px] whitespace-nowrap">
           {greeting}, {name}
         </h1>
         <div className="relative shrink-0 size-[32px]">

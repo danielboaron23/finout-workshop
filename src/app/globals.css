@@ -61,6 +61,28 @@
   --color-border-default: #98a2b3;
   --color-border-primary: #1570ef;
 
+  /* ---- Neutrals N-ramp (Figma "Neutrals/N*" — anomalies & megabill screens) ---- */
+  --color-n150: #ebebeb;
+  --color-n200: #cfcece;
+  --color-n500: #888787;
+  --color-n600: #707070;
+  --color-n700: #5c5c5c;
+  --color-n900: #0d0d0d;
+
+  /* ---- Geist input foreground (Figma "---general---/foreground") ---- */
+  --color-foreground: #191919;
+
+  /* ---- Status accents (Figma Green/Red/Pink ramps) ---- */
+  --color-green-300: #49a57f;
+  --color-green-400: #027a48;
+  --color-red-400: #d92d20;
+  --color-red-800: #ac1706;
+  --color-red-50: #fef3f2;
+  --color-pink-200: #f87979;
+  --color-pink-25: #fdf8f8;
+  --color-yellow-50: #fffae6;
+  --color-orange-800: #7a2e0e;
+
   /* ---- Success (badges / status) ---- */
   --color-success-50: #ecfdf3;
   --color-success-200: #abefc6;

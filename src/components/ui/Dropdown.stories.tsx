@@ -12,7 +12,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Generic dropdown/popover pair mapped to the Figma **Menu** chrome: white panel, `#eaecf0` border, 8px radius, md drop shadow, 12px padding. `Dropdown` renders any trigger as-is (the render-prop receives the open state), opens the panel 8px below aligned left or right, and closes on outside click. `DropdownItem` is the standard menu row — Helvetica Neue 14/20, `hover:bg-[#f3f5f8]`, and a selected state in `#eff8ff` / `#1570ef`. Composed by FolderSelect, table row menus, and the MegaBill toolbars.",
+          "Generic dropdown/popover pair mapped to the Figma **Menu** chrome: white panel, `#eaecf0` border, 8px radius, md drop shadow, 12px padding. `Dropdown` renders any trigger as-is (the render-prop receives the open state), opens the panel 8px below aligned left or right, and closes on outside click. `DropdownItem` is the standard menu row — Helvetica Neue 14/20, `hover:bg-neutral-50`, and a selected state in `#eff8ff` / `#1570ef`. Composed by FolderSelect, table row menus, and the MegaBill toolbars.",
       },
     },
   },

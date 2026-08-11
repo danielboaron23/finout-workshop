@@ -115,6 +115,29 @@ export const datavizColors: Token[] = [
 /* Radius                                                             */
 /* ================================================================== */
 
+
+export const nRamp: Token[] = [
+  { name: "--color-n150", value: "#ebebeb", usage: "Figma Neutrals/N150 — form tags, row dividers (anomalies/megabill)" },
+  { name: "--color-n200", value: "#cfcece", usage: "Figma Neutrals/N200 — filter chip borders" },
+  { name: "--color-n500", value: "#888787", usage: "Figma Neutrals/N500 — active tab underline (anomalies)" },
+  { name: "--color-n600", value: "#707070", usage: "Figma Neutrals/N600 — secondary text on anomaly screens" },
+  { name: "--color-n700", value: "#5c5c5c", usage: "Figma Neutrals/N700 — placeholders, result counters" },
+  { name: "--color-n900", value: "#0d0d0d", usage: "Figma Neutrals/N900 — chip labels, tab text" },
+];
+
+export const statusAccents: Token[] = [
+  { name: "--color-green-300", value: "#49a57f", usage: "Cost-down delta text (home tables)" },
+  { name: "--color-green-400", value: "#027a48", usage: "KPI trend-down percentage" },
+  { name: "--color-red-400", value: "#d92d20", usage: "KPI trend-up percentage, anomaly delta" },
+  { name: "--color-red-800", value: "#ac1706", usage: "Anomaly badge percentage text" },
+  { name: "--color-red-50", value: "#fef3f2", usage: "Anomaly delta badge background" },
+  { name: "--color-pink-200", value: "#f87979", usage: "Cost-up delta text (home tables)" },
+  { name: "--color-pink-25", value: "#fdf8f8", usage: "Cost-up delta badge background" },
+  { name: "--color-yellow-50", value: "#fffae6", usage: "Usage Anomaly badge background" },
+  { name: "--color-orange-800", value: "#7a2e0e", usage: "Usage Anomaly badge text" },
+  { name: "--color-foreground", value: "#191919", usage: "Geist input/value text (Figma ---general---/foreground)" },
+];
+
 export const radii: Token[] = [
   { name: "--radius-sm", value: "4px", usage: "Small controls — badges, checkboxes, tags" },
   { name: "--radius-md", value: "8px", usage: "Buttons, inputs, selects" },
@@ -212,4 +235,6 @@ export const colorGroups: { title: string; description: string; tokens: Token[] 
   { title: "Grays", description: "Untitled-UI-style grays used in tables and labels.", tokens: grays },
   { title: "Success", description: "Status greens for badges and positive indicators.", tokens: successColors },
   { title: "Data-Viz", description: "Chart-only palette — blues, purples and violets for series and fills.", tokens: datavizColors },
+  { title: "Neutrals N-ramp", description: "Figma's second neutral ramp (Neutrals/N*), used on the anomalies and MegaBill screens.", tokens: nRamp },
+  { title: "Status Accents", description: "Delta/badge accent colors from the Figma Green, Red, Pink, Yellow and Orange ramps.", tokens: statusAccents },
 ];

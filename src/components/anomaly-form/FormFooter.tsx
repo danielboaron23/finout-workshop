@@ -18,21 +18,21 @@ export function FormFooter({
 }) {
   return (
     <div
-      className={`bg-white border-t border-solid border-[#98a2b3] flex flex-col items-start justify-center pr-[32px] py-[24px] w-full ${className}`}
+      className={`bg-white border-t border-solid border-neutral-300 flex flex-col items-start justify-center pr-[32px] py-[24px] w-full ${className}`}
     >
       <div className="flex items-center justify-end w-full">
         <div className="flex gap-[8px] items-center">
           <button
             type="button"
             onClick={onCancel}
-            className="bg-surface-primary border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center min-h-[40px] px-[24px] py-[10px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-[#101828] text-center whitespace-nowrap"
+            className="bg-surface-primary border border-solid border-border-muted flex gap-[8px] items-center justify-center min-h-[40px] px-[24px] py-[10px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-text-primary text-center whitespace-nowrap"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={onSave}
-            className="bg-[#1570ef] flex gap-[8px] items-center justify-center min-h-[40px] px-[24px] py-[10px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-[#f3f5f8] text-center whitespace-nowrap"
+            className="bg-blue-400 flex gap-[8px] items-center justify-center min-h-[40px] px-[24px] py-[10px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-text-inverse text-center whitespace-nowrap"
           >
             Save
           </button>

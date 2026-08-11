@@ -38,11 +38,11 @@ function AnomalyTabs({ active, onChange }: { active: Tab; onChange: (tab: Tab) =
         active === tab ? "border-b-2 border-solid border-[#888787] " : ""
       }flex h-[36px] items-center justify-center overflow-clip pb-[11px] pt-px px-[4px] cursor-pointer`}
     >
-      <p className="font-sans font-medium leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">{label}</p>
+      <p className="font-sans font-medium leading-[22px] text-n900 text-[14px] whitespace-nowrap">{label}</p>
     </button>
   );
   return (
-    <div className="border-b border-solid border-[#ebebeb] flex flex-col items-start w-full">
+    <div className="border-b border-solid border-n150 flex flex-col items-start w-full">
       <div className="flex gap-[16px] items-start">
         {tabButton("feed", "Anomalies Feed")}
         {tabButton("manage", "Manage Anomalies")}
@@ -169,7 +169,7 @@ export function AnomaliesScreen() {
               <div className="flex gap-[12px] items-end">
                 <Link
                   href="/anomalies/create"
-                  className="bg-[#1570ef] flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-[#f3f5f8] whitespace-nowrap"
+                  className="bg-blue-400 flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] text-text-inverse whitespace-nowrap"
                 >
                   Create Anomaly Alert
                 </Link>

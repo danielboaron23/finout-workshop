@@ -25,13 +25,13 @@ export function Tabs({
               key={tab.label}
               onClick={onTabChange ? () => onTabChange(i) : undefined}
               className={`flex gap-[8px] h-full items-center justify-center min-h-[32px] min-w-[32px] px-[12px] py-[4px] cursor-pointer ${
-                active ? "bg-white border-b-2 border-solid border-[#1570ef]" : ""
+                active ? "bg-white border-b-2 border-solid border-border-primary" : ""
               }`}
             >
               <p className="font-sans font-normal leading-[20px] text-[14px] text-text-primary whitespace-nowrap">{tab.label}</p>
               {tab.count !== undefined && (
-                <span className="bg-[#d0d5dd] flex flex-col h-[16px] items-center justify-center min-w-[16px] px-[4px] rounded-[10px]">
-                  <span className="font-geist font-semibold leading-[16px] text-[12px] text-[#191919] text-center whitespace-nowrap">
+                <span className="bg-neutral-200 flex flex-col h-[16px] items-center justify-center min-w-[16px] px-[4px] rounded-[10px]">
+                  <span className="font-geist font-semibold leading-[16px] text-[12px] text-foreground text-center whitespace-nowrap">
                     {tab.count}
                   </span>
                 </span>

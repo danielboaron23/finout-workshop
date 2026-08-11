@@ -184,12 +184,12 @@ export function MonthlyCostChart({
     );
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start p-[16px] rounded-[8px] w-full ${className}`}
+      className={`bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start p-[16px] rounded-[8px] w-full ${className}`}
     >
       <div className="w-full">
         {/* Title + top-right $ icon */}
         <div className="flex items-start justify-between w-full">
-          <p className="flex-1 font-sans font-medium leading-[26px] min-w-px text-[#101828] text-[18px]">
+          <p className="flex-1 font-sans font-medium leading-[26px] min-w-px text-text-primary text-[18px]">
             Monthly cost changes (year to date)
           </p>
           <button
@@ -219,7 +219,7 @@ export function MonthlyCostChart({
           {/* Gridlines + bars */}
           <div className="absolute inset-y-0 left-[43px] right-[16px]">
             {GRID_TOPS.map((top, i) => (
-              <div key={i} className="absolute bg-[#eaecf0] h-px left-0 right-0" style={{ top }} />
+              <div key={i} className="absolute bg-neutral-100 h-px left-0 right-0" style={{ top }} />
             ))}
             {data.map((datum, i) => (
               <BarCluster
@@ -253,7 +253,7 @@ export function MonthlyCostChart({
       <div className="flex flex-wrap gap-[16px] items-center w-full">
         <div className="flex gap-[8px] items-center">
           <div className="rounded-[1px] size-[9px]" style={{ backgroundColor: TOTAL_LEGEND.color }} />
-          <p className="font-sans font-normal leading-[20px] text-[#98a2b3] text-[12px] whitespace-nowrap">
+          <p className="font-sans font-normal leading-[20px] text-neutral-300 text-[12px] whitespace-nowrap">
             {TOTAL_LEGEND.label}
           </p>
         </div>

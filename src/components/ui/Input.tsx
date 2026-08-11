@@ -16,7 +16,7 @@ export function SearchInput({
 }) {
   return (
     <div
-      className="bg-white border border-solid border-[#eaecf0] flex gap-[12px] items-center min-h-[40px] overflow-clip px-[16px] py-[9.5px] rounded-[8px]"
+      className="bg-white border border-solid border-neutral-100 flex gap-[12px] items-center min-h-[40px] overflow-clip px-[16px] py-[9.5px] rounded-[8px]"
       style={{ width, maxWidth: width, minWidth: 200 }}
     >
       <div className="flex flex-col items-center justify-center p-[2px] shrink-0 w-[20px]">
@@ -31,7 +31,7 @@ export function SearchInput({
         placeholder={placeholder}
         value={value}
         onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-        className="flex-1 min-w-px font-geist font-normal leading-[20px] text-[14px] text-text-primary placeholder:text-[#475467] outline-none bg-transparent"
+        className="flex-1 min-w-px font-geist font-normal leading-[20px] text-[14px] text-text-primary placeholder:text-text-secondary outline-none bg-transparent"
       />
     </div>
   );

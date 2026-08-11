@@ -45,7 +45,7 @@ export function Toaster() {
       {items.map((t) => (
         <div
           key={t.id}
-          className="bg-[#101828] flex gap-[16px] items-center px-[16px] py-[10px] rounded-[8px] shadow-[0px_4px_8px_-2px_rgba(16,24,40,0.1),0px_2px_4px_-2px_rgba(16,24,40,0.06)]"
+          className="bg-neutral-500 flex gap-[16px] items-center px-[16px] py-[10px] rounded-[8px] shadow-[0px_4px_8px_-2px_rgba(16,24,40,0.1),0px_2px_4px_-2px_rgba(16,24,40,0.06)]"
         >
           <span className="font-sans font-normal leading-[20px] text-[14px] text-white whitespace-nowrap">{t.message}</span>
           {t.undo && (

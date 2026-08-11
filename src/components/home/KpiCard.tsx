@@ -31,7 +31,7 @@ export function KpiTileDollar() {
 
 function Tile({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-[#eff8ff] flex flex-col items-center justify-center px-[7.952px] py-[8.835px] relative rounded-[8px] shrink-0 size-[50px]">
+    <div className="bg-blue-50 flex flex-col items-center justify-center px-[7.952px] py-[8.835px] relative rounded-[8px] shrink-0 size-[50px]">
       {children}
     </div>
   );
@@ -151,7 +151,7 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
 export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, onCtaClick, className = "" }: KpiCardProps) {
   return (
     <div
-      className={`@container bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
+      className={`@container bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-col gap-[12px] items-start w-full">
         <div className="flex gap-[12px] items-center w-full">
@@ -159,17 +159,17 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cta
           <div className="flex flex-col gap-[2px] items-start min-w-0">
             {/* Canonical widget-title typography (18/26 — sized so the longest
                 title fits one line in an equal-width card); same on every title */}
-            <div className="font-sans font-medium leading-[26px] text-[#101828] text-[18px]">
+            <div className="font-sans font-medium leading-[26px] text-text-primary text-[18px]">
               {title}
             </div>
-            <div className="flex gap-[2px] items-center font-sans leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
+            <div className="flex gap-[2px] items-center font-sans leading-[20px] text-text-secondary text-[12px] whitespace-nowrap">
               {caption}
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-[8px] items-start w-full">
           <div className="flex flex-wrap gap-[8px] items-center">
-            <div className="font-sans font-bold leading-[32px] text-[#101828] text-[24px] whitespace-nowrap">
+            <div className="font-sans font-bold leading-[32px] text-text-primary text-[24px] whitespace-nowrap">
               {value}
             </div>
             {delta && (
@@ -177,7 +177,7 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cta
                 <TrendIcon trend={delta.trend} />
                 <span
                   className={`font-sans font-bold leading-[28px] text-[20px] whitespace-nowrap ${
-                    delta.trend === "down" ? "text-[#027a48]" : "text-[#d92d20]"
+                    delta.trend === "down" ? "text-green-400" : "text-red-400"
                   }`}
                 >
                   {delta.value}
@@ -186,15 +186,15 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cta
             )}
           </div>
           {previous && (
-            <div className="font-sans leading-[22px] text-[#101828] text-[14px] whitespace-nowrap">{previous}</div>
+            <div className="font-sans leading-[22px] text-text-primary text-[14px] whitespace-nowrap">{previous}</div>
           )}
         </div>
       </div>
       {(() => {
         const ctaClass =
-          "bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer";
+          "bg-white border border-solid border-border-muted flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer";
         const label = (
-          <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
+          <span className="font-inter font-semibold leading-[20px] text-gray-700 text-[14px] whitespace-nowrap">
             {cta}
           </span>
         );
@@ -248,8 +248,8 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     caption: (
       <>
         <span>Time resolution: </span>
-        <span className="bg-[#f2f4f7] flex items-center px-[6px] rounded-[8px]">
-          <span className="font-medium text-[#101828]">Monthly</span>
+        <span className="bg-canvas flex items-center px-[6px] rounded-[8px]">
+          <span className="font-medium text-text-primary">Monthly</span>
         </span>
         <InfoIcon16 />
       </>

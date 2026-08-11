@@ -24,7 +24,7 @@ export function AlertNameDrawer({
           defaultValue={value}
           onChange={(e) => onChange?.(e.target.value)}
           aria-label="Alert Name"
-          className="bg-white border border-solid border-[#eaecf0] flex-1 min-h-[36px] min-w-px px-[12px] py-[7.5px] rounded-[8px] shadow-xs font-geist font-normal leading-[20px] text-[14px] text-[#191919] outline-none"
+          className="bg-white border border-solid border-neutral-100 flex-1 min-h-[36px] min-w-px px-[12px] py-[7.5px] rounded-[8px] shadow-xs font-geist font-normal leading-[20px] text-[14px] text-foreground outline-none"
         />
       </div>
     </Drawer>

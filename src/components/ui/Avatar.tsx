@@ -4,7 +4,7 @@
  */
 export function Avatar({ initials }: { initials?: string }) {
   return (
-    <span className="relative shrink-0 size-[40px] inline-flex items-center justify-center bg-[#f3f5f8] rounded-full">
+    <span className="relative shrink-0 size-[40px] inline-flex items-center justify-center bg-neutral-50 rounded-full">
       {initials ? (
         // 14/20 at the Virtual Tags table's 1.241x Figma instance scale
         <span className="font-sans font-medium leading-[24.83px] text-[17.37px] text-text-primary text-center">{initials}</span>

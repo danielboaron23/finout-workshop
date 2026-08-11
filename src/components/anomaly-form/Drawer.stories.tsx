@@ -23,7 +23,7 @@ const meta = {
   args: {
     title: "Alert name",
     children: (
-      <p className="font-sans font-normal leading-[20px] text-[14px] text-[#475467]">
+      <p className="font-sans font-normal leading-[20px] text-[14px] text-text-secondary">
         Drawer body content — form fields render here.
       </p>
     ),

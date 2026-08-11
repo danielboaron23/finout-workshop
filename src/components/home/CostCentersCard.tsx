@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 export function WidgetCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start px-[24px] py-[16px] rounded-[8px] w-full ${className}`}
+      className={`bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start px-[24px] py-[16px] rounded-[8px] w-full ${className}`}
     >
       {children}
     </div>
@@ -26,7 +26,7 @@ export function WidgetCard({ children, className = "" }: { children: ReactNode; 
 
 export function WidgetTitle({ children }: { children: ReactNode }) {
   return (
-    <p className="font-sans font-medium leading-[26px] text-[#101828] text-[18px] w-full">{children}</p>
+    <p className="font-sans font-medium leading-[26px] text-text-primary text-[18px] w-full">{children}</p>
   );
 }
 
@@ -35,7 +35,7 @@ export function WidgetSubtitle({ timeFrame, interval }: { timeFrame: string; int
   return (
     <div className="flex items-center py-[4px] w-full">
       <div className="flex gap-[6px] items-center">
-        <p className="font-sans font-normal leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
+        <p className="font-sans font-normal leading-[20px] text-text-secondary text-[12px] whitespace-nowrap">
           Time frame: {timeFrame}
         </p>
         <div className="h-[10px] relative shrink-0 w-0">
@@ -43,7 +43,7 @@ export function WidgetSubtitle({ timeFrame, interval }: { timeFrame: string; int
             <img alt="" className="block max-w-none size-full" src="/icons/home/subtitle-divider.svg" />
           </div>
         </div>
-        <p className="font-sans font-normal leading-[20px] text-[#475467] text-[12px] whitespace-nowrap">
+        <p className="font-sans font-normal leading-[20px] text-text-secondary text-[12px] whitespace-nowrap">
           Interval: {interval}
         </p>
       </div>
@@ -94,10 +94,10 @@ export function HomeHeaderCell({
   return (
     <div
       onClick={onSort}
-      className={`bg-[#eaecf0] border-b border-solid border-[#f9f9f9] flex gap-[12px] h-[44px] items-center p-[12px] shrink-0 w-full${onSort ? " cursor-pointer select-none" : ""}`}
+      className={`bg-neutral-100 border-b border-solid border-[#f9f9f9] flex gap-[12px] h-[44px] items-center p-[12px] shrink-0 w-full${onSort ? " cursor-pointer select-none" : ""}`}
     >
       <div className="flex flex-1 gap-[4px] items-center min-w-px">
-        <p className="font-sans font-normal leading-[20px] text-[#101828] text-[12px] overflow-hidden text-ellipsis whitespace-nowrap">
+        <p className="font-sans font-normal leading-[20px] text-text-primary text-[12px] overflow-hidden text-ellipsis whitespace-nowrap">
           {label}
         </p>
         {sortable && (
@@ -123,7 +123,7 @@ export function HomeCell({
   return (
     <div
       className={`${
-        totalRow ? "border-t border-solid border-[#98a2b3]" : "border-b border-solid border-[#ebebeb]"
+        totalRow ? "border-t border-solid border-neutral-300" : "border-b border-solid border-n150"
       } flex gap-[12px] h-[54px] items-center px-[24px] py-[16px] shrink-0 w-full ${className}`}
     >
       {children}
@@ -133,7 +133,7 @@ export function HomeCell({
 
 export function HomeCellText({ children }: { children: ReactNode }) {
   return (
-    <p className="font-sans font-normal leading-[22px] text-[#101828] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
+    <p className="font-sans font-normal leading-[22px] text-text-primary text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
       {children}
     </p>
   );
@@ -143,8 +143,8 @@ export type DeltaTrend = "up" | "down";
 
 /** Colored delta value + pill badge: up = red (#f87979 / #fdf8f8), down = green (#49a57f / #ecfdf3) */
 export function DeltaCellContent({ value, pct, trend }: { value: string; pct: string; trend: DeltaTrend }) {
-  const color = trend === "up" ? "text-[#f87979]" : "text-[#49a57f]";
-  const badgeBg = trend === "up" ? "bg-[#fdf8f8]" : "bg-[#ecfdf3]";
+  const color = trend === "up" ? "text-pink-200" : "text-green-300";
+  const badgeBg = trend === "up" ? "bg-pink-25" : "bg-success-50";
   const icon = trend === "up" ? "/icons/home/badge-arrow-up.svg" : "/icons/home/badge-arrow-down.svg";
   return (
     <>
@@ -176,9 +176,9 @@ export function TableActionButton({
   return (
     <button
       onClick={onClick}
-      className={`bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center min-w-0 overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
+      className={`bg-white border border-solid border-border-muted flex gap-[8px] items-center justify-center min-w-0 overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer ${className}`}
     >
-      <p className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap overflow-hidden text-ellipsis">
+      <p className="font-inter font-semibold leading-[20px] text-gray-700 text-[14px] whitespace-nowrap overflow-hidden text-ellipsis">
         {children}
       </p>
     </button>
@@ -224,7 +224,7 @@ const DEFAULT_TOTAL: CostCenterRow = {
 
 function PreviousCellContent({ delta }: { delta: CostCenterDelta | null }) {
   if (!delta) {
-    return <p className="font-inter font-normal leading-[20px] text-[#475467] text-[14px] whitespace-nowrap">-</p>;
+    return <p className="font-inter font-normal leading-[20px] text-text-secondary text-[14px] whitespace-nowrap">-</p>;
   }
   return <DeltaCellContent value={delta.value} pct={delta.pct} trend={delta.trend} />;
 }

@@ -68,7 +68,7 @@ export function TopNav({
             <>
               <button onClick={shareLink} className="flex gap-[8px] items-center justify-end overflow-clip cursor-pointer">
                 <LinkIcon />
-                <p className="font-sans font-medium leading-[22px] text-[14px] text-[#1570ef] whitespace-nowrap">
+                <p className="font-sans font-medium leading-[22px] text-[14px] text-blue-400 whitespace-nowrap">
                   Share Link
                 </p>
               </button>
@@ -90,7 +90,7 @@ export function TopNav({
             <div className="flex flex-1 items-center min-w-px">
               {!compact && (
                 <div className="flex flex-1 gap-[8px] h-full items-center min-w-px">
-                  <p className="font-geist font-medium leading-[20px] text-[14px] text-[#191919] overflow-hidden text-ellipsis whitespace-nowrap flex-1">
+                  <p className="font-geist font-medium leading-[20px] text-[14px] text-foreground overflow-hidden text-ellipsis whitespace-nowrap flex-1">
                     {userName}
                   </p>
                 </div>

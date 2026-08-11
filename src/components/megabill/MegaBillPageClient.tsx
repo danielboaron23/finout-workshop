@@ -132,7 +132,7 @@ export function MegaBillPageClient() {
           amortized={state.amortized}
           onAmortizedChange={(a) => patch({ amortized: a })}
         />
-        <div className="bg-white border border-solid border-[#eaecf0] flex flex-col rounded-[8px] w-full">
+        <div className="bg-white border border-solid border-neutral-100 flex flex-col rounded-[8px] w-full">
           <MegaBillChartSection
             data={chart.data}
             series={chart.series}
@@ -154,9 +154,9 @@ export function MegaBillPageClient() {
             onDownloadCsv={exportCsv}
             onCopyData={copyData}
           />
-          <div className="h-px w-full bg-[#eaecf0]" />
+          <div className="h-px w-full bg-neutral-100" />
           <MegaBillActionsRow onDownloadCsv={exportCsv} onCopyData={copyData} />
-          <div className="h-px w-full bg-[#eaecf0]" />
+          <div className="h-px w-full bg-neutral-100" />
           <MegaBillTable
             rows={visible}
             baseRows={seriesFiltered}

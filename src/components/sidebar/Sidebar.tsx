@@ -51,7 +51,7 @@ function NavItem({
   footer?: boolean;
   href?: string;
 }) {
-  const bg = active ? "bg-[#475467]" : footer ? "bg-[#1a2435]" : "bg-[#101828]";
+  const bg = active ? "bg-gray-600" : footer ? "bg-[#1a2435]" : "bg-neutral-500";
   const text = active ? "text-white" : "text-text-tertiary";
   const inner = (
     <div className={`${bg} flex flex-1 items-center overflow-clip p-[8px] rounded-[6px] cursor-pointer`}>
@@ -72,7 +72,7 @@ function NavItem({
 
 export function Sidebar({ activeItem = "Virtual tags" }: { activeItem?: string }) {
   return (
-    <div className="bg-[#101828] flex items-start h-full w-[220px] shrink-0">
+    <div className="bg-neutral-500 flex items-start h-full w-[220px] shrink-0">
       <div className="flex flex-1 flex-col h-full items-start justify-between min-w-px">
         <div className="flex flex-1 flex-col gap-[24px] items-start min-h-px overflow-y-auto overflow-x-clip pt-[32px] w-full">
           <div className="flex flex-col items-start pl-[24px] pr-[20px] w-full">

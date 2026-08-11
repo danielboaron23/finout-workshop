@@ -84,10 +84,10 @@ function SelectButton({ label, medium = false }: { label: string; medium?: boole
   return (
     <button
       type="button"
-      className="bg-white border border-solid border-[#cfcece] flex gap-[8px] h-[36px] items-center justify-center overflow-clip px-[16px] py-[10px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer"
+      className="bg-white border border-solid border-n200 flex gap-[8px] h-[36px] items-center justify-center overflow-clip px-[16px] py-[10px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] cursor-pointer"
     >
       <span
-        className={`font-sans ${medium ? "font-medium" : "font-normal"} leading-[22px] text-[14px] text-[#0d0d0d] whitespace-nowrap`}
+        className={`font-sans ${medium ? "font-medium" : "font-normal"} leading-[22px] text-[14px] text-n900 whitespace-nowrap`}
       >
         {label}
       </span>
@@ -115,12 +115,12 @@ function Segment({
       onClick={onClick}
       aria-pressed={active}
       className={`${
-        active ? "bg-[#eff8ff] border-[#cfcece]" : "bg-white border-[#d0d5dd]"
+        active ? "bg-blue-50 border-n200" : "bg-white border-border-muted"
       } border-r border-solid flex items-center justify-center px-[16px] py-[10px] cursor-pointer`}
     >
       <span
         className={`font-sans font-medium leading-[22px] text-[14px] whitespace-nowrap ${
-          active ? "text-[#1570ef]" : "text-[#0d0d0d]"
+          active ? "text-blue-400" : "text-n900"
         }`}
       >
         {label}
@@ -131,7 +131,7 @@ function Segment({
 
 function SegmentGroup({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border border-solid border-[#cfcece] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.05)] flex h-[36px] isolate items-center overflow-clip rounded-[8px] shrink-0">
+    <div className="border border-solid border-n200 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.05)] flex h-[36px] isolate items-center overflow-clip rounded-[8px] shrink-0">
       {children}
     </div>
   );
@@ -139,8 +139,8 @@ function SegmentGroup({ children }: { children: React.ReactNode }) {
 
 function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="bg-[#eff8ff] flex h-[26px] items-center mix-blend-multiply px-[8px] py-[2px] rounded-[16px] shrink-0">
-      <span className="font-sans font-medium leading-[22px] text-[14px] text-[#0d0d0d] text-center whitespace-nowrap">
+    <span className="bg-blue-50 flex h-[26px] items-center mix-blend-multiply px-[8px] py-[2px] rounded-[16px] shrink-0">
+      <span className="font-sans font-medium leading-[22px] text-[14px] text-n900 text-center whitespace-nowrap">
         {children}
       </span>
     </span>
@@ -195,13 +195,13 @@ export function TimeIntervalDrawer({
             {/* Row 1 — evaluation period */}
             <div className="flex gap-[16px] items-center">
               <div className="flex gap-[4px] items-center">
-                <p className="font-sans font-medium leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
+                <p className="font-sans font-medium leading-[22px] text-n900 text-[14px] whitespace-nowrap">
                   Define evaluation period
                 </p>
                 <InfoCircle20 />
               </div>
               <div className="flex gap-[8px] items-center">
-                <p className="font-sans font-normal leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
+                <p className="font-sans font-normal leading-[22px] text-n900 text-[14px] whitespace-nowrap">
                   Last
                 </p>
                 <SelectButton label="1" medium />
@@ -214,13 +214,13 @@ export function TimeIntervalDrawer({
             {/* Row 2 — comparison period */}
             <div className="flex gap-[16px] items-center">
               <div className="flex gap-[4px] items-center">
-                <p className="font-sans font-medium leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
+                <p className="font-sans font-medium leading-[22px] text-n900 text-[14px] whitespace-nowrap">
                   Comparison period
                 </p>
                 <InfoCircle20 />
               </div>
               <div className="flex gap-[8px] items-center">
-                <p className="font-sans font-normal leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
+                <p className="font-sans font-normal leading-[22px] text-n900 text-[14px] whitespace-nowrap">
                   Average of total cost over
                 </p>
                 <SegmentGroup>
@@ -234,7 +234,7 @@ export function TimeIntervalDrawer({
                   ))}
                 </SegmentGroup>
                 <SelectButton label="More" />
-                <p className="font-sans font-normal leading-[22px] text-[#0d0d0d] text-[14px] whitespace-nowrap">
+                <p className="font-sans font-normal leading-[22px] text-n900 text-[14px] whitespace-nowrap">
                   days
                 </p>
               </div>
@@ -246,17 +246,17 @@ export function TimeIntervalDrawer({
           <div className="flex items-center">
             <div className="flex gap-[4px] items-center">
               <PresentationChart20 />
-              <p className="font-sans font-normal leading-[22px] text-[#5c5c5c] text-[14px] whitespace-nowrap">
+              <p className="font-sans font-normal leading-[22px] text-n700 text-[14px] whitespace-nowrap">
                 Analyzing anomalies over the past
               </p>
               <Pill>1 {unitSingular}</Pill>
-              <p className="font-sans font-normal leading-[22px] text-[#5c5c5c] text-[14px] whitespace-nowrap">
+              <p className="font-sans font-normal leading-[22px] text-n700 text-[14px] whitespace-nowrap">
                 compared to the previous
               </p>
               <Pill>
                 {comparison} {unitPlural}
               </Pill>
-              <p className="font-sans font-normal leading-[22px] text-[#5c5c5c] text-[14px] whitespace-nowrap">
+              <p className="font-sans font-normal leading-[22px] text-n700 text-[14px] whitespace-nowrap">
                 average.
               </p>
             </div>

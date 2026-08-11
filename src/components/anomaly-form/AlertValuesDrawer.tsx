@@ -18,7 +18,7 @@ const GROUP_BY_OPTIONS = ["User Name", "Model", "Region"];
 export function FormSelect({
   label,
   leftIcon,
-  textClassName = "font-geist font-normal leading-[20px] text-[14px] text-[#475467]",
+  textClassName = "font-geist font-normal leading-[20px] text-[14px] text-text-secondary",
   chevronSrc = "/icons/ui/chevron-down-16.svg",
   decoratedChevron = false,
   className = "",
@@ -40,7 +40,7 @@ export function FormSelect({
   return (
     <button
       type="button"
-      className={`bg-white border border-solid border-[#eaecf0] flex gap-[8px] items-center min-h-[36px] rounded-[8px] shrink-0 cursor-pointer ${
+      className={`bg-white border border-solid border-neutral-100 flex gap-[8px] items-center min-h-[36px] rounded-[8px] shrink-0 cursor-pointer ${
         decoratedChevron ? "px-[12px] py-[7.5px]" : "pl-[12px] pr-[8px] py-[8px]"
       } ${className}`}
     >
@@ -79,8 +79,8 @@ function FilterIcon() {
 /* Gray filter tag (#ebebeb, h-28, radius 3) with removable x. */
 function FilterTag({ label, onRemove }: { label: string; onRemove?: () => void }) {
   return (
-    <span className="bg-[#ebebeb] flex gap-[5px] h-[28px] items-center justify-center px-[6px] rounded-[3px] shrink-0">
-      <span className="font-sans font-medium leading-[20px] text-[12px] text-[#101828] whitespace-nowrap">
+    <span className="bg-n150 flex gap-[5px] h-[28px] items-center justify-center px-[6px] rounded-[3px] shrink-0">
+      <span className="font-sans font-medium leading-[20px] text-[12px] text-text-primary whitespace-nowrap">
         {label}
       </span>
       <span
@@ -124,7 +124,7 @@ function GroupBySelect({
   return (
     <Dropdown
       trigger={() => (
-        <div className="bg-white border border-solid border-[#d0d5dd] flex items-center justify-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] w-[356px]">
+        <div className="bg-white border border-solid border-border-muted flex items-center justify-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] w-[356px]">
           <div className="flex flex-1 items-start min-w-0">
             <button
               type="button"
@@ -132,7 +132,7 @@ function GroupBySelect({
             >
               <span className="flex gap-[8px] items-center">
                 <span className="flex gap-[4px] items-center py-px">
-                  <span className="font-geist font-normal leading-[20px] text-[14px] text-[#475467] whitespace-nowrap">
+                  <span className="font-geist font-normal leading-[20px] text-[14px] text-text-secondary whitespace-nowrap">
                     Group By
                   </span>
                 </span>
@@ -199,7 +199,7 @@ export function AlertValuesDrawer({
               <FormSelect
                 label={selectedVendor}
                 className="w-[207px]"
-                textClassName="font-sans font-normal leading-[20px] text-[14px] text-[#101828]"
+                textClassName="font-sans font-normal leading-[20px] text-[14px] text-text-primary"
               />
             )}
           >
@@ -224,7 +224,7 @@ export function AlertValuesDrawer({
           <FormSelect label="Filters" leftIcon={<FilterIcon />} className="w-[207px]" />
           <GroupBySelect value={groupBy} onChange={setGroupBy} />
         </div>
-        <div className="bg-white border border-solid border-[#eaecf0] content-center flex flex-wrap gap-y-[8px] items-center px-[16px] py-[12px] rounded-[8px] w-full">
+        <div className="bg-white border border-solid border-neutral-100 content-center flex flex-wrap gap-y-[8px] items-center px-[16px] py-[12px] rounded-[8px] w-full">
           <div className="content-center flex flex-1 flex-wrap gap-[8px] items-center min-w-0">
             {tags.map((tag) => (
               <FilterTag
@@ -251,7 +251,7 @@ export function AlertValuesDrawer({
                   </span>
                 </span>
               </span>
-              <span className="font-sans font-medium leading-[22px] text-[14px] text-[#0d0d0d] whitespace-nowrap">
+              <span className="font-sans font-medium leading-[22px] text-[14px] text-n900 whitespace-nowrap">
                 Clear
               </span>
             </button>

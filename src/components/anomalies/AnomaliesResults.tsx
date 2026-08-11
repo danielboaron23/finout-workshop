@@ -65,7 +65,7 @@ export function AnomaliesResults({
 
   if (tab === "manage" && visible.length === 0) {
     return (
-      <p className="font-sans font-normal leading-[22px] text-[#5c5c5c] text-[14px] text-center w-full mt-[48px] pb-[32px]">
+      <p className="font-sans font-normal leading-[22px] text-n700 text-[14px] text-center w-full mt-[48px] pb-[32px]">
         No custom anomaly alerts yet. Create one to manage it here.
       </p>
     );
@@ -74,7 +74,7 @@ export function AnomaliesResults({
   const count = visible.length;
   return (
     <>
-      <p className="font-sans font-medium leading-[28px] text-[#101828] text-[18px] mt-[24px]">
+      <p className="font-sans font-medium leading-[28px] text-text-primary text-[18px] mt-[24px]">
         {count} {count === 1 ? "result" : "results"}
       </p>
       <div className="mt-[16px] pb-[32px] w-full flex flex-col gap-[16px]">

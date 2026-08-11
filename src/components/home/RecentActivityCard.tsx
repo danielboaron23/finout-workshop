@@ -45,10 +45,10 @@ function ActivityRow({ item }: { item: ActivityItem }) {
       </div>
       <div className="flex flex-col gap-[4px] items-start min-w-0">
         <div className="flex gap-[16px] items-baseline min-w-0">
-          <p className="font-sans font-medium leading-[24px] text-[#101828] text-[16px] whitespace-nowrap">{item.name}</p>
-          <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px] whitespace-nowrap">{item.time}</p>
+          <p className="font-sans font-medium leading-[24px] text-text-primary text-[16px] whitespace-nowrap">{item.name}</p>
+          <p className="font-sans font-normal leading-[22px] text-text-secondary text-[14px] whitespace-nowrap">{item.time}</p>
         </div>
-        <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
+        <p className="font-sans font-normal leading-[22px] text-text-secondary text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
           {item.action}
         </p>
       </div>
@@ -64,7 +64,7 @@ export function RecentActivityCard({ title = "Recent activity", items = DEFAULT_
         <div className="flex flex-col gap-[16px] items-start w-full">
           {items.map((item, i) => (
             <Fragment key={`${item.name}-${item.time}`}>
-              {i > 0 && <div className="bg-[#eaecf0] h-px shrink-0 w-full" />}
+              {i > 0 && <div className="bg-neutral-100 h-px shrink-0 w-full" />}
               <ActivityRow item={item} />
             </Fragment>
           ))}

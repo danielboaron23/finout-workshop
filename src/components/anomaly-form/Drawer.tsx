@@ -29,7 +29,7 @@ export function Drawer({
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
-            className="bg-surface-primary border border-solid border-[#d0d5dd] flex items-center justify-center min-h-[24px] min-w-[24px] p-[4px] rounded-[4px] shrink-0 cursor-pointer"
+            className="bg-surface-primary border border-solid border-border-muted flex items-center justify-center min-h-[24px] min-w-[24px] p-[4px] rounded-[4px] shrink-0 cursor-pointer"
           >
             <span className="overflow-clip relative shrink-0 size-[16px]">
               <span
@@ -42,7 +42,7 @@ export function Drawer({
           <div className="flex flex-1 flex-col gap-[4px] items-start min-w-0">
             <p className="font-sans font-medium leading-[24px] text-[16px] text-text-primary w-full">{title}</p>
             {description && (
-              <p className="font-sans font-normal leading-[20px] text-[14px] text-[#475467] w-full">{description}</p>
+              <p className="font-sans font-normal leading-[20px] text-[14px] text-text-secondary w-full">{description}</p>
             )}
           </div>
         </div>

@@ -81,7 +81,7 @@ export function MegaBillTopBar({
       enabled ? "" : " opacity-30"
     } px-[8px] py-[4px] rounded-[4px] shrink-0 cursor-pointer`;
   return (
-    <div className="bg-[#fefefe] border-b border-solid border-[#f2f4f7] flex items-center px-[24px] py-[16px] w-full h-[68px]">
+    <div className="bg-surface-primary border-b border-solid border-border-lighter flex items-center px-[24px] py-[16px] w-full h-[68px]">
       <div className="bg-white flex flex-1 items-center justify-between min-w-0">
         {/* Left */}
         <div className="flex gap-[24px] items-center shrink-0">
@@ -89,9 +89,9 @@ export function MegaBillTopBar({
             <div className="flex gap-[16px] items-center shrink-0">
               <Dropdown
                 trigger={() => (
-                  <button className="bg-[#fefefe] border border-solid border-[#d0d5dd] flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] shrink-0 cursor-pointer">
+                  <button className="bg-surface-primary border border-solid border-border-muted flex gap-[6px] items-center justify-center min-h-[32px] px-[12px] py-[6px] rounded-[8px] shrink-0 cursor-pointer">
                     <ViewsIcon16 />
-                    <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] text-center whitespace-nowrap">
+                    <span className="font-sans font-medium leading-[20px] text-text-primary text-[14px] text-center whitespace-nowrap">
                       {viewsLabel}
                     </span>
                     <ChevronDown16 />
@@ -121,7 +121,7 @@ export function MegaBillTopBar({
                   aria-disabled={!dirty}
                   className={linkButtonClass(dirty)}
                 >
-                  <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
+                  <span className="font-sans font-medium leading-[20px] text-text-link text-[14px] whitespace-nowrap">
                     Save
                   </span>
                 </button>
@@ -130,7 +130,7 @@ export function MegaBillTopBar({
                   aria-disabled={!dirty}
                   className={linkButtonClass(dirty)}
                 >
-                  <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
+                  <span className="font-sans font-medium leading-[20px] text-text-link text-[14px] whitespace-nowrap">
                     Clear
                   </span>
                 </button>
@@ -143,12 +143,12 @@ export function MegaBillTopBar({
           <div className="flex gap-[4px] items-center shrink-0">
             <button className="flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] shrink-0 cursor-pointer">
               <LinkIcon16 />
-              <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
+              <span className="font-sans font-medium leading-[20px] text-text-link text-[14px] whitespace-nowrap">
                 Share
               </span>
             </button>
             <div className="self-stretch shrink-0 w-px" />
-            <button className="bg-[#fefefe] flex items-center justify-center min-h-[32px] min-w-[32px] overflow-clip p-[8px] rounded-[8px] shrink-0 cursor-pointer">
+            <button className="bg-surface-primary flex items-center justify-center min-h-[32px] min-w-[32px] overflow-clip p-[8px] rounded-[8px] shrink-0 cursor-pointer">
               <HouseIcon16 />
             </button>
           </div>
@@ -160,7 +160,7 @@ export function MegaBillTopBar({
                 </p>
               </div>
             </div>
-            <button className="bg-[#fefefe] flex items-center justify-center min-h-[24px] min-w-[24px] overflow-clip p-[4px] rounded-[4px] shrink-0 cursor-pointer">
+            <button className="bg-surface-primary flex items-center justify-center min-h-[24px] min-w-[24px] overflow-clip p-[4px] rounded-[4px] shrink-0 cursor-pointer">
               <ChevronDown16 dark />
             </button>
           </div>

@@ -12,11 +12,11 @@ import type { ReactNode } from "react";
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "ghost" | "link";
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-[#1570ef] text-[#f3f5f8]",
-  secondary: "bg-surface-primary border border-solid border-[#1570ef] text-[#175cd3]",
-  tertiary: "bg-surface-primary border border-solid border-[#d0d5dd] text-[#101828]",
-  ghost: "bg-surface-primary text-[#101828]",
-  link: "bg-transparent text-[#175cd3]",
+  primary: "bg-blue-400 text-text-inverse",
+  secondary: "bg-surface-primary border border-solid border-border-primary text-text-link",
+  tertiary: "bg-surface-primary border border-solid border-border-muted text-text-primary",
+  ghost: "bg-surface-primary text-text-primary",
+  link: "bg-transparent text-text-link",
 };
 
 export function Button({

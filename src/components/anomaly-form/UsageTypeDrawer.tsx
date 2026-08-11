@@ -33,7 +33,7 @@ export function UsageTypeDrawer({
           <FormSelect
             label={selected}
             className="w-[320px]"
-            textClassName="font-geist font-normal leading-[20px] text-[14px] text-[#191919]"
+            textClassName="font-geist font-normal leading-[20px] text-[14px] text-foreground"
             chevronSrc="/icons/anomaly-form/chevron-down-16-dark.svg"
             decoratedChevron
           />

@@ -44,7 +44,7 @@ export function RowMenuCell({
   };
 
   return (
-    <div className="border-b-[1.241px] border-solid border-[#f2f4f7] flex h-[54px] items-center justify-center w-[48px]">
+    <div className="border-b-[1.241px] border-solid border-border-lighter flex h-[54px] items-center justify-center w-[48px]">
       <div ref={rootRef} className="relative">
         <button
           onClick={() => (open ? close() : setOpen(true))}
@@ -58,7 +58,7 @@ export function RowMenuCell({
         </button>
         {open && (
           <div
-            className={`absolute right-0 z-50 bg-white border border-solid border-[#eaecf0] rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
+            className={`absolute right-0 z-50 bg-white border border-solid border-neutral-100 rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
               openUp ? "bottom-[calc(100%+8px)]" : "top-[calc(100%+8px)]"
             }`}
           >

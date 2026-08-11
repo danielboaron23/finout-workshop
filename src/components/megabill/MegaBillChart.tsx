@@ -118,16 +118,16 @@ function MetricItem({
   return (
     <div
       className={`flex flex-col gap-[4px] items-start justify-center pr-[20px] shrink-0 w-[168px] ${
-        divider ? "border-r border-solid border-[#dee1e8]" : ""
+        divider ? "border-r border-solid border-border-light" : ""
       }`}
     >
       <div className="flex gap-[8px] items-center w-full">
-        <p className="font-sans font-medium leading-[20px] text-[#475467] text-[14px] whitespace-nowrap">
+        <p className="font-sans font-medium leading-[20px] text-text-secondary text-[14px] whitespace-nowrap">
           {label}
         </p>
         <InfoIcon16 />
       </div>
-      <p className="font-sans font-medium leading-[24px] text-[#101828] text-[16px] whitespace-nowrap">
+      <p className="font-sans font-medium leading-[24px] text-text-primary text-[16px] whitespace-nowrap">
         {value}
       </p>
     </div>
@@ -140,8 +140,8 @@ function MetricItem({
  * anomaly-form tag but with this section's 14px label + local assets. */
 function FilterTag({ label, onRemove }: { label: string; onRemove?: () => void }) {
   return (
-    <span className="bg-[#ebebeb] flex gap-[5px] h-[28px] items-center justify-center px-[6px] rounded-[3px] shrink-0">
-      <span className="font-sans font-medium leading-[20px] text-[14px] text-[#101828] whitespace-nowrap">
+    <span className="bg-n150 flex gap-[5px] h-[28px] items-center justify-center px-[6px] rounded-[3px] shrink-0">
+      <span className="font-sans font-medium leading-[20px] text-[14px] text-text-primary whitespace-nowrap">
         {label}
       </span>
       <span
@@ -201,14 +201,14 @@ function GroupBySelect({
     <Dropdown
       align="right"
       trigger={() => (
-        <div className="bg-white border border-[#d0d5dd] border-solid flex items-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] shrink-0">
+        <div className="bg-white border border-border-muted border-solid flex items-center pl-[4px] pr-[8px] py-[2px] rounded-[8px] shrink-0">
           <button
             type="button"
             className="cursor-pointer flex gap-[8px] items-center pl-[8px] pr-[4px] py-[2px] rounded-[2px]"
           >
             <span className="flex gap-[8px] items-center">
               <span className="flex gap-[4px] items-center py-px">
-                <span className="font-sans font-medium leading-[20px] text-[#101828] text-[14px] whitespace-nowrap">
+                <span className="font-sans font-medium leading-[20px] text-text-primary text-[14px] whitespace-nowrap">
                   Group By
                 </span>
               </span>
@@ -258,8 +258,8 @@ function IconButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`bg-[#fefefe] cursor-pointer flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] ${
-        bordered ? "border border-[#d0d5dd] border-solid" : ""
+      className={`bg-surface-primary cursor-pointer flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] ${
+        bordered ? "border border-border-muted border-solid" : ""
       }`}
     >
       <span className="flex-1 h-full min-w-px overflow-clip relative">
@@ -299,7 +299,7 @@ function CommentButton() {
         {(close) => (
           <div className="flex flex-col gap-[8px] w-[240px]">
             {comments.map((c, i) => (
-              <p key={i} className="font-sans font-normal leading-[20px] text-[14px] text-[#475467]">
+              <p key={i} className="font-sans font-normal leading-[20px] text-[14px] text-text-secondary">
                 {c}
               </p>
             ))}
@@ -311,12 +311,12 @@ function CommentButton() {
                 if (e.key === "Enter") submit(close);
               }}
               placeholder="Add a comment"
-              className="border border-solid border-[#d0d5dd] rounded-[8px] px-[12px] py-[8px] font-sans font-normal leading-[20px] text-[14px] text-[#101828] placeholder:text-[#475467] outline-none w-full"
+              className="border border-solid border-border-muted rounded-[8px] px-[12px] py-[8px] font-sans font-normal leading-[20px] text-[14px] text-text-primary placeholder:text-text-secondary outline-none w-full"
             />
             <button
               type="button"
               onClick={() => submit(close)}
-              className="self-end font-sans font-medium leading-[20px] text-[14px] text-[#175cd3] cursor-pointer"
+              className="self-end font-sans font-medium leading-[20px] text-[14px] text-text-link cursor-pointer"
             >
               Comment
             </button>
@@ -324,7 +324,7 @@ function CommentButton() {
         )}
       </Dropdown>
       <div
-        className="absolute bg-[#1570ef] flex flex-col h-[20px] items-center justify-center left-[26px] min-h-[16px] min-w-[20px] p-[2px] rounded-[40px] top-[-6px]"
+        className="absolute bg-blue-400 flex flex-col h-[20px] items-center justify-center left-[26px] min-h-[16px] min-w-[20px] p-[2px] rounded-[40px] top-[-6px]"
         style={{ pointerEvents: "none" }}
       >
         <p className="font-sans font-bold leading-[18px] text-[10px] text-center text-white whitespace-nowrap">
@@ -366,7 +366,7 @@ function ChartTypeToggle({
     );
   };
   return (
-    <div className="bg-[#f2f4f7] flex gap-[4px] items-center px-[8px] py-[4px] rounded-[24px] shrink-0">
+    <div className="bg-canvas flex gap-[4px] items-center px-[8px] py-[4px] rounded-[24px] shrink-0">
       {tab("line", "/icons/megabill/chart-line.svg", "inset-[9.38%]", "Line chart")}
       {tab("bar", "/icons/megabill/chart-column.svg", "inset-[9.38%]", "Bar chart")}
     </div>
@@ -724,7 +724,7 @@ export function MegaBillChartSection({
               onClick={() => toggleAll(!allHidden)}
               className="cursor-pointer flex gap-[8px] items-center justify-center min-h-[24px] px-[8px] py-[4px] rounded-[4px]"
             >
-              <span className="font-sans font-medium leading-[20px] text-[#175cd3] text-[14px] whitespace-nowrap">
+              <span className="font-sans font-medium leading-[20px] text-text-link text-[14px] whitespace-nowrap">
                 {allHidden ? "Select all" : "Unselect all"}
               </span>
             </button>

@@ -14,7 +14,7 @@ import { showToast } from "@/components/ui/Toast";
 
 function Tile({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-[#eff8ff] flex flex-col items-center justify-center px-[7.952px] py-[8.835px] relative rounded-[8px] shrink-0 size-[50px]">
+    <div className="bg-blue-50 flex flex-col items-center justify-center px-[7.952px] py-[8.835px] relative rounded-[8px] shrink-0 size-[50px]">
       {children}
     </div>
   );
@@ -117,9 +117,9 @@ export function WidgetButton({
   /** When set, renders a Link with the exact same button chrome */
   href?: string;
 }) {
-  const buttonClass = `bg-white border border-solid border-[#d0d5dd] flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer ${className}`;
+  const buttonClass = `bg-white border border-solid border-border-muted flex gap-[8px] items-center justify-center overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer ${className}`;
   const label = (
-    <span className="font-inter font-semibold leading-[20px] text-[#344054] text-[14px] whitespace-nowrap">
+    <span className="font-inter font-semibold leading-[20px] text-gray-700 text-[14px] whitespace-nowrap">
       {children}
     </span>
   );
@@ -153,22 +153,22 @@ export type ProductCardProps = {
 export function ProductCard({ icon, title, count, description, cta, ctaHref, onCtaClick, className = "" }: ProductCardProps) {
   return (
     <div
-      className={`bg-white border border-solid border-[#eaecf0] drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-1 flex-col gap-[32px] items-start justify-center min-w-[280px] px-[16px] py-[24px] rounded-[8px] ${className}`}
+      className={`bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-1 flex-col gap-[32px] items-start justify-center min-w-[280px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
       <div className="bg-white flex flex-col min-h-[114px] items-start w-full">
         <div className="flex flex-col gap-[12px] items-start w-full">
           <div className="flex gap-[12px] items-center w-full">
             {icon}
             <div className="flex flex-col gap-[2px] items-start flex-1 min-w-0">
-              <p className="font-sans font-medium leading-[26px] text-[#101828] text-[18px]">
+              <p className="font-sans font-medium leading-[26px] text-text-primary text-[18px]">
                 {title}
               </p>
-              <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">
+              <p className="font-sans font-normal leading-[22px] text-text-secondary text-[14px]">
                 {count}
               </p>
             </div>
           </div>
-          <p className="font-sans font-normal leading-[22px] text-[#475467] text-[14px]">{description}</p>
+          <p className="font-sans font-normal leading-[22px] text-text-secondary text-[14px]">{description}</p>
         </div>
       </div>
       <WidgetButton href={ctaHref} onClick={onCtaClick}>

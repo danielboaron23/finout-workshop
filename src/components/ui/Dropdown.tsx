@@ -36,7 +36,7 @@ export function Dropdown({
       <div onClick={() => setOpen((v) => !v)}>{trigger(open)}</div>
       {open && (
         <div
-          className={`absolute top-[calc(100%+8px)] z-50 bg-white border border-solid border-[#eaecf0] rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
+          className={`absolute top-[calc(100%+8px)] z-50 bg-white border border-solid border-neutral-100 rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
             align === "left" ? "left-0" : "right-0"
           } ${panelClassName}`}
         >
@@ -60,8 +60,8 @@ export function DropdownItem({
   return (
     <button
       onClick={onClick}
-      className={`flex gap-[8px] items-center w-full px-[8px] py-[6px] rounded-[6px] cursor-pointer text-left font-sans font-normal leading-[20px] text-[14px] text-text-primary hover:bg-[#f3f5f8] ${
-        selected ? "bg-[#eff8ff] text-[#1570ef]" : ""
+      className={`flex gap-[8px] items-center w-full px-[8px] py-[6px] rounded-[6px] cursor-pointer text-left font-sans font-normal leading-[20px] text-[14px] text-text-primary hover:bg-neutral-50 ${
+        selected ? "bg-blue-50 text-blue-400" : ""
       }`}
     >
       {children}

@@ -94,8 +94,8 @@ export const MonthlyPotentialSavings: Story = {
     caption: (
       <>
         <span>Time resolution: </span>
-        <span className="bg-[#f2f4f7] flex items-center px-[6px] rounded-[8px]">
-          <span className="font-medium text-[#101828]">Monthly</span>
+        <span className="bg-canvas flex items-center px-[6px] rounded-[8px]">
+          <span className="font-medium text-text-primary">Monthly</span>
         </span>
         <InfoIcon16 />
       </>

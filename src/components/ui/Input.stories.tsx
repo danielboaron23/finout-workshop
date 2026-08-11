@@ -52,7 +52,7 @@ function FilteringDemo() {
           </li>
         ))}
         {visible.length === 0 && (
-          <li className="font-sans font-normal leading-[20px] text-[14px] text-[#475467]">No results</li>
+          <li className="font-sans font-normal leading-[20px] text-[14px] text-text-secondary">No results</li>
         )}
       </ul>
     </div>

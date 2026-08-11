@@ -69,12 +69,12 @@ export function FilterChip({
   active?: boolean;
 }) {
   return (
-    <button className="bg-white border border-solid border-[#cfcece] drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] flex items-start px-[8px] py-[3px] rounded-[8px] shrink-0 cursor-pointer">
+    <button className="bg-white border border-solid border-n200 drop-shadow-[0px_1px_1px_rgba(0,0,0,0.05)] flex items-start px-[8px] py-[3px] rounded-[8px] shrink-0 cursor-pointer">
       <span className="flex gap-[8px] items-center justify-center px-[8px] py-[4px] rounded-[2px]">
         {icon}
         <span
           className={`font-sans font-medium leading-[22px] text-[14px] text-center whitespace-nowrap ${
-            active ? "text-[#1570ef]" : "text-[#0d0d0d]"
+            active ? "text-blue-400" : "text-n900"
           }`}
         >
           {children}
@@ -88,7 +88,7 @@ export function FilterChip({
 export function FilterSeparator() {
   return (
     <span className="flex items-center justify-center self-stretch shrink-0 w-px">
-      <span className="bg-[#eaecf0] h-full w-px" />
+      <span className="bg-neutral-100 h-full w-px" />
     </span>
   );
 }
@@ -101,7 +101,7 @@ export function SearchAnomalies({
   onChange?: (v: string) => void;
 } = {}) {
   return (
-    <div className="bg-white border border-solid border-[#cfcece] flex gap-[8px] h-[36px] items-center overflow-clip p-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] shrink-0 w-[225px]">
+    <div className="bg-white border border-solid border-n200 flex gap-[8px] h-[36px] items-center overflow-clip p-[8px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] shrink-0 w-[225px]">
       <span className="relative shrink-0 size-[20px]">
         <img alt="" className="absolute block inset-0 max-w-none size-full" src={`${I}/search-base.svg`} />
         <span className="absolute inset-[12.5%_21.88%_21.88%_12.5%]">
@@ -120,7 +120,7 @@ export function SearchAnomalies({
         placeholder="Search Anomalies"
         value={value}
         onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-        className="flex-1 min-w-0 font-sans font-normal leading-[22px] text-[14px] text-[#101828] placeholder:text-[#5c5c5c] outline-none bg-transparent"
+        className="flex-1 min-w-0 font-sans font-normal leading-[22px] text-[14px] text-text-primary placeholder:text-n700 outline-none bg-transparent"
       />
     </div>
   );

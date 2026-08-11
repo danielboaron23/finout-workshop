@@ -40,7 +40,7 @@ function IconButton({
     <button
       aria-label={label}
       onClick={onClick}
-      className="bg-[#fefefe] flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] cursor-pointer"
+      className="bg-surface-primary flex items-center justify-center min-h-[36px] min-w-[36px] p-[8px] rounded-[8px] shrink-0 size-[36px] cursor-pointer"
     >
       <div className="flex-1 h-full min-w-px overflow-clip relative">
         <div className={`absolute ${inset}`}>
@@ -180,7 +180,7 @@ function MegaBillHeaderCell({
   return (
     <div className="bg-[#fafafa] border-b border-solid border-[#e9eaeb] flex h-[44px] items-center justify-between p-[12px] relative shrink-0 w-full">
       <div className="flex flex-1 gap-[4px] items-center min-w-px">
-        <p className="font-sans font-medium leading-[20px] text-[#475467] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
+        <p className="font-sans font-medium leading-[20px] text-text-secondary text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
           {label}
         </p>
       </div>
@@ -253,7 +253,7 @@ function MegaBillHeaderCell({
         )}
       </div>
       {divider && (
-        <div className="-translate-y-1/2 absolute bg-[#d0d5dd] h-[14px] right-0 top-[calc(50%+0.5px)] w-[2px]" />
+        <div className="-translate-y-1/2 absolute bg-neutral-200 h-[14px] right-0 top-[calc(50%+0.5px)] w-[2px]" />
       )}
     </div>
   );
@@ -273,7 +273,7 @@ function MegaBillCell({ children, gap = 4 }: { children: React.ReactNode; gap?: 
 /** Name / date / total-cost cell text — Helvetica Neue Medium 14/20 #475467 */
 function MegaBillCellText({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-sans font-medium leading-[20px] text-[#475467] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
+    <p className="font-sans font-medium leading-[20px] text-text-secondary text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
       {children}
     </p>
   );
@@ -285,10 +285,10 @@ export type MegaBillDelta = { value: string; pct: string };
 function MegaBillDeltaCell({ delta }: { delta: MegaBillDelta }) {
   return (
     <>
-      <p className="font-sans font-normal leading-[20px] text-[#067647] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap shrink-0 text-center">
+      <p className="font-sans font-normal leading-[20px] text-success-700 text-[14px] overflow-hidden text-ellipsis whitespace-nowrap shrink-0 text-center">
         {delta.value}
       </p>
-      <div className="bg-[#ecfdf3] border border-solid border-[#abefc6] flex gap-[2px] items-center pl-[6px] pr-[8px] py-[2px] rounded-[9999px] shrink-0">
+      <div className="bg-success-50 border border-solid border-success-200 flex gap-[2px] items-center pl-[6px] pr-[8px] py-[2px] rounded-[9999px] shrink-0">
         <div className="overflow-clip relative shrink-0 size-[12px]">
           <div className="absolute inset-[20.83%]">
             <div className="absolute inset-[-10.71%]">
@@ -300,7 +300,7 @@ function MegaBillDeltaCell({ delta }: { delta: MegaBillDelta }) {
             </div>
           </div>
         </div>
-        <p className="font-inter font-medium leading-[18px] text-[#067647] text-[12px] text-center whitespace-nowrap">
+        <p className="font-inter font-medium leading-[18px] text-success-700 text-[12px] text-center whitespace-nowrap">
           {delta.pct}
         </p>
       </div>
@@ -356,7 +356,7 @@ function Column({
 }) {
   return (
     <div
-      className={`border-b border-solid border-[#d0d5dd] flex flex-col items-start ${
+      className={`border-b border-solid border-border-muted flex flex-col items-start ${
         flex ? "flex-1 min-w-0" : "shrink-0"
       }`}
       style={width ? { width } : undefined}
@@ -446,7 +446,7 @@ export function MegaBillTable({
             />
             {rows.map((row) => (
               <MegaBillCell key={row.name}>
-                <p className="font-sans font-normal leading-[20px] text-[#101828] text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
+                <p className="font-sans font-normal leading-[20px] text-text-primary text-[14px] overflow-hidden text-ellipsis whitespace-nowrap">
                   {row.pctOfTotal}
                 </p>
               </MegaBillCell>

@@ -35,7 +35,7 @@ export function HeaderCell({
   return (
     <div
       onClick={onClick}
-      className={`bg-[#f2f4f7] border-b-[1.241px] border-solid border-[#f9f9f9] flex h-[54px] items-center justify-center p-[12px] w-full ${
+      className={`bg-canvas border-b-[1.241px] border-solid border-[#f9f9f9] flex h-[54px] items-center justify-center p-[12px] w-full ${
         onClick ? "cursor-pointer " : ""
       }${className}`}
       style={style}
@@ -52,7 +52,7 @@ export function HeaderCell({
               </span>
             )}
           </div>
-          <div className="h-[24px] w-px bg-[#d0d5dd] shrink-0" />
+          <div className="h-[24px] w-px bg-neutral-200 shrink-0" />
         </div>
       )}
     </div>
@@ -70,7 +70,7 @@ export function Cell({
 }) {
   return (
     <div
-      className={`border-b-[1.241px] border-solid border-[#f2f4f7] flex h-[54px] items-center px-[16px] w-full ${className}`}
+      className={`border-b-[1.241px] border-solid border-border-lighter flex h-[54px] items-center px-[16px] w-full ${className}`}
       style={style}
     >
       {children}
@@ -89,7 +89,7 @@ export function CellText({ children }: { children: ReactNode }) {
 
 export function MenuCell() {
   return (
-    <div className="border-b-[1.241px] border-solid border-[#f2f4f7] flex h-[54px] items-center justify-center w-[48px]">
+    <div className="border-b-[1.241px] border-solid border-border-lighter flex h-[54px] items-center justify-center w-[48px]">
       <button className="bg-surface-primary flex items-center justify-center min-h-[24px] min-w-[24px] overflow-clip p-[4px] rounded-[4px] cursor-pointer">
         <span className="overflow-clip relative shrink-0 size-[16px]">
           <span className="absolute inset-[13.54%_42.71%]">
@@ -105,7 +105,7 @@ export function CheckboxCell({ header = false }: { header?: boolean }) {
   return (
     <div
       className={`border-b-[1.241px] border-solid flex h-[54px] items-center justify-center w-[48px] ${
-        header ? "bg-[#f2f4f7] border-[#f9f9f9]" : "border-[#f2f4f7]"
+        header ? "bg-canvas border-[#f9f9f9]" : "border-border-lighter"
       }`}
     />
   );

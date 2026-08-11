@@ -21,11 +21,11 @@ export function CheckRow({
       role="menuitemcheckbox"
       aria-checked={checked}
       onClick={onToggle}
-      className="flex gap-[8px] items-center w-full px-[8px] py-[6px] rounded-[6px] cursor-pointer text-left hover:bg-[#f3f5f8]"
+      className="flex gap-[8px] items-center w-full px-[8px] py-[6px] rounded-[6px] cursor-pointer text-left hover:bg-neutral-50"
     >
       <span
         className={`flex items-center justify-center rounded-[4px] shrink-0 size-[16px] border border-solid ${
-          checked ? "bg-[#1570ef] border-[#1570ef]" : "bg-white border-[#d0d5dd]"
+          checked ? "bg-blue-400 border-border-primary" : "bg-white border-border-muted"
         }`}
       >
         {checked && (
@@ -40,7 +40,7 @@ export function CheckRow({
           </svg>
         )}
       </span>
-      <span className="font-sans font-normal leading-[20px] text-[14px] text-[#101828] whitespace-nowrap">
+      <span className="font-sans font-normal leading-[20px] text-[14px] text-text-primary whitespace-nowrap">
         {label}
       </span>
     </button>

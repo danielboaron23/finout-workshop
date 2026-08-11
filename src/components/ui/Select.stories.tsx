@@ -48,7 +48,7 @@ function FolderSelectDemo() {
         onChange={setFolder}
         onNewFolder={() => showToast("New folder flow is next in the workshop")}
       />
-      <p className="font-sans font-normal leading-[20px] text-[14px] text-[#475467]">
+      <p className="font-sans font-normal leading-[20px] text-[14px] text-text-secondary">
         Active folder filter: {folder ?? "none"}
       </p>
       <Toaster />
