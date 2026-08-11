@@ -78,10 +78,10 @@ export function Cell({
   );
 }
 
-/** Body cell text at the design's exact rendered size */
+/** Body cell text — 14/22 at the table's 1.241x Figma instance scale (17.37/27.31 rendered) */
 export function CellText({ children }: { children: ReactNode }) {
   return (
-    <p className="font-sans font-normal leading-[33.898px] text-[21.57px] text-text-primary overflow-hidden text-ellipsis whitespace-nowrap">
+    <p className="font-sans font-normal leading-[27.31px] text-[17.37px] text-text-primary overflow-hidden text-ellipsis whitespace-nowrap">
       {children}
     </p>
   );
