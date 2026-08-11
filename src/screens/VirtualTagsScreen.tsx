@@ -124,7 +124,7 @@ export function VirtualTagsScreen() {
   return (
     <div className="bg-canvas flex h-full flex-1 w-full items-start overflow-hidden">
       <Sidebar activeItem="Virtual tags" />
-      <div className="flex flex-col flex-1 h-full min-w-0 overflow-y-auto">
+      <div className="flex flex-col flex-1 h-full min-w-0 overflow-y-auto bg-surface-primary">
         <TopNav />
         <PageTitleBar title="Virtual Tags" linkLabel="Learn about Virtual Tags" />
         <Tabs
