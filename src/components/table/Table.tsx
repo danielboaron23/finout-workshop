@@ -101,12 +101,47 @@ export function MenuCell() {
   );
 }
 
-export function CheckboxCell({ header = false }: { header?: boolean }) {
+export function CheckboxCell({
+  header = false,
+  checked,
+  onChange,
+}: {
+  header?: boolean;
+  /** EXTEND: pass checked/onChange to render a real, selectable checkbox.
+   *  Omit both and the cell stays the reserved spacer it has always been. */
+  checked?: boolean;
+  onChange?: (checked: boolean) => void;
+}) {
+  const interactive = onChange !== undefined;
   return (
     <div
+      onClick={interactive ? () => onChange(!checked) : undefined}
       className={`border-b-[1.241px] border-solid flex h-[54px] items-center justify-center w-[48px] ${
-        header ? "bg-canvas border-[#f9f9f9]" : "border-border-lighter"
-      }`}
-    />
+        interactive ? "cursor-pointer " : ""
+      }${header ? "bg-canvas border-[#f9f9f9]" : "border-border-lighter"}`}
+    >
+      {interactive && (
+        <span
+          role="checkbox"
+          aria-checked={!!checked}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              e.preventDefault();
+              onChange(!checked);
+            }
+          }}
+          className={`flex items-center justify-center size-[18px] rounded-[4px] border border-solid ${
+            checked ? "bg-blue-400 border-blue-400" : "bg-surface-primary border-border-primary"
+          }`}
+        >
+          {checked && (
+            <svg width="11" height="9" viewBox="0 0 11 9" fill="none" aria-hidden="true">
+              <path d="M1 4.5L4 7.5L10 1.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </span>
+      )}
+    </div>
   );
 }

@@ -24,6 +24,8 @@ echo "== 4/5 assembling site"
 cp -R out/. "$WORK"/
 mkdir -p "$WORK/storybook"
 cp -R storybook-static/. "$WORK/storybook"/
+mkdir -p "$WORK/deck"
+cp -R deck/. "$WORK/deck"/
 touch "$WORK/.nojekyll"
 
 echo "== 5/5 pushing to $DEMO_REPO"
@@ -33,3 +35,4 @@ git add -A
 git commit -q -m "Deploy finout-workshop demo (app + storybook)"
 git push -q -f "https://github.com/$DEMO_REPO.git" main
 echo "done: https://danielboaron23.github.io$BASE/"
+echo "deck: https://danielboaron23.github.io$BASE/deck/"

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { showToast } from "@/components/ui/Toast";
 
 export type KpiTrend = "down" | "up";
 
@@ -13,11 +12,16 @@ export type KpiCardProps = {
   value: string;
   delta?: { trend: KpiTrend; value: string };
   previous?: string;
-  cta: string;
+  /** EXTEND: optional. A KPI that is a statement, not a launchpad, has no CTA. */
+  cta?: string;
   /** When set, the CTA navigates (e.g. Investigate in MegaBill -> /megabill) */
   ctaHref?: string;
   /** CTA click handler when there is no ctaHref (e.g. Go to CostGuard toast) */
   onCtaClick?: () => void;
+  /** EXTEND: slot beneath the value — e.g. a ratio bar showing this number in context */
+  footer?: ReactNode;
+  /** EXTEND: danger tint for a figure that represents money lost */
+  tone?: "default" | "danger";
   className?: string;
 };
 
@@ -148,10 +152,12 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
   );
 }
 
-export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, onCtaClick, className = "" }: KpiCardProps) {
+export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, onCtaClick, footer, tone = "default", className = "" }: KpiCardProps) {
   return (
     <div
-      className={`@container bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
+      className={`@container border border-solid drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${
+        tone === "danger" ? "bg-red-50 border-red-400" : "bg-white border-neutral-100"
+      } ${className}`}
     >
       <div className="flex flex-col gap-[12px] items-start w-full">
         <div className="flex gap-[12px] items-center w-full">
@@ -188,9 +194,10 @@ export function KpiCard({ title, caption, icon, value, delta, previous, cta, cta
           {previous && (
             <div className="font-sans leading-[22px] text-text-primary text-[14px] whitespace-nowrap">{previous}</div>
           )}
+          {footer}
         </div>
       </div>
-      {(() => {
+      {cta && (() => {
         const ctaClass =
           "bg-white border border-solid border-border-muted flex gap-[8px] items-center justify-center mt-auto overflow-clip px-[14px] py-[7px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] w-full cursor-pointer";
         const label = (
@@ -257,7 +264,7 @@ const DEFAULT_CARDS: KpiCardProps[] = [
     icon: <KpiTileWavyCheck />,
     value: "$26,802",
     cta: "Go to CostGuard",
-    onCtaClick: () => showToast("CostGuard is next in the workshop 😉"),
+    ctaHref: "/costguard",
   },
   {
     title: "Anomalies",

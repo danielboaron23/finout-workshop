@@ -1,0 +1,16 @@
+import { chromium } from 'playwright';
+const out = process.argv[2];
+const b = await chromium.launch();
+const p = await b.newPage({ viewport:{width:1500,height:900}, deviceScaleFactor:2 });
+const errs=[]; p.on('pageerror',e=>errs.push(String(e)));
+await p.goto('http://localhost:3000/costguard-hub',{waitUntil:'networkidle'});
+await p.waitForTimeout(1000);
+await p.screenshot({ path: `${out}/hub-finops.png` });
+await p.getByRole('button', { name: /Engineering & Platform/ }).click();
+await p.waitForTimeout(800);
+await p.screenshot({ path: `${out}/hub-eng.png` });
+await p.getByRole('button', { name: /Executives/ }).click();
+await p.waitForTimeout(700);
+await p.screenshot({ path: `${out}/hub-exec.png` });
+await b.close();
+console.log(errs.length? 'ERRORS '+errs.join(' | ') : 'no page errors');

@@ -155,3 +155,36 @@ body {
   height: calc(100dvh / var(--app-zoom));
   overflow: hidden;
 }
+
+/* ── Sidebar hover choreography (Daniel, Sep 2026) ──
+   Uniform for every nav row: row tint + label slide, icon jelly-pop with a
+   breathing green halo (brand #49A57F). Pure CSS, works collapsed + expanded. */
+.sb-row{transition:background-color .18s ease;}
+.sb-row:hover{background-color:rgba(255,255,255,.055);}
+.sb-row .sb-label{transition:transform .25s cubic-bezier(.16,1,.3,1),color .18s ease,
+  opacity .3s ease-in-out,max-width .3s ease-in-out;}
+.sb-row:hover .sb-label{transform:translateX(3px);color:#eaecf0;}
+.sb-ico{position:relative;display:grid;place-items:center;flex-shrink:0;}
+.sb-ico::before{content:"";position:absolute;inset:-13px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(73,220,151,.75) 0%,rgba(73,165,127,.28) 45%,rgba(73,165,127,0) 72%);
+  opacity:0;transform:scale(.35);transition:opacity .22s ease,transform .28s cubic-bezier(.16,1,.3,1);}
+.sb-row:hover .sb-ico::before{opacity:1;transform:scale(1);animation:sbGlow 1.7s ease-in-out .3s infinite;}
+.sb-row:hover .sb-ico>*{animation:sbJelly .58s cubic-bezier(.36,.07,.19,.97);
+  filter:brightness(1.6) drop-shadow(0 0 4px rgba(73,220,151,.9));}
+.sb-ico>*{transition:filter .2s ease;}
+@keyframes sbJelly{
+  0%{transform:scale(1) rotate(0deg);}
+  28%{transform:scale(1.32) rotate(-8deg);}
+  50%{transform:scale(.88) rotate(5deg);}
+  72%{transform:scale(1.14) rotate(-2deg);}
+  100%{transform:scale(1) rotate(0deg);}
+}
+@keyframes sbGlow{
+  0%,100%{transform:scale(1);opacity:.85;}
+  50%{transform:scale(1.4);opacity:.45;}
+}
+@media (prefers-reduced-motion:reduce){
+  .sb-row:hover .sb-ico>*{animation:none;}
+  .sb-row:hover .sb-ico::before{animation:none;}
+  .sb-row:hover .sb-label{transform:none;}
+}
