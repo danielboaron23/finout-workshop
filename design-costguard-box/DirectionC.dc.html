@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body{margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f2f4f7;-webkit-font-smoothing:antialiased;}
+    a{color:#175cd3;} a:hover{color:#101828;}
+    .num{font-variant-numeric:tabular-nums;}
+    .arc{stroke-dasharray:339;stroke-dashoffset:339;animation:draw 1.1s cubic-bezier(.16,1,.3,1) .15s both;}
+    @keyframes draw{to{stroke-dashoffset:325.5;}}
+    @media(prefers-reduced-motion:reduce){.arc{animation:none;stroke-dashoffset:325.5;}}
+  </style>
+</helmet>
+
+<div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+
+  <div style="display: flex; align-items: baseline; gap: 10px;">
+    <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #7b889e;">Direction C</span>
+    <span style="font-size: 13px; color: #475467;">Hero and dial &mdash; one number, dramatised</span>
+  </div>
+
+  <div style="background: #fefefe; border: 1px solid #dee1e8; border-radius: 10px; padding: 26px 30px; display: flex; align-items: center; gap: 44px; flex-wrap: wrap;">
+
+    <div style="display: flex; flex-direction: column; gap: 5px;">
+      <span style="font-size: 13px; color: #475467;">Banked and holding</span>
+      <span class="num" style="font-size: 56px; font-weight: 700; letter-spacing: -0.025em; color: #101828; line-height: 1;">
+        $1,113<span style="font-size: 21px; font-weight: 400; color: #7b889e;"> /mo</span>
+      </span>
+      <span style="font-size: 13px; color: #475467;">verified against the bill</span>
+    </div>
+
+    <div style="position: relative; width: 124px; height: 124px; flex: none;">
+      <svg viewBox="0 0 124 124" style="width: 124px; height: 124px; transform: rotate(-90deg);" aria-hidden="true">
+        <circle cx="62" cy="62" r="54" fill="none" stroke="#eaecf0" stroke-width="13"></circle>
+        <circle class="arc" cx="62" cy="62" r="54" fill="none" stroke="#17b26a" stroke-width="13" stroke-linecap="round"></circle>
+      </svg>
+      <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;">
+        <span class="num" style="font-size: 26px; font-weight: 700; color: #101828; line-height: 1;">4%</span>
+        <span style="font-size: 11px; color: #7b889e;">kept</span>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; flex: 1; min-width: 380px;">
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <span style="font-size: 12px; color: #7b889e;">Identified</span>
+        <span class="num" style="font-size: 21px; font-weight: 600; color: #101828;">$27,915</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <span style="font-size: 12px; color: #7b889e;">Lost to regression</span>
+        <span class="num" style="font-size: 21px; font-weight: 600; color: #ac1706;">$2,075</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 3px;">
+        <span style="font-size: 12px; color: #7b889e;">With no owner</span>
+        <span class="num" style="font-size: 21px; font-weight: 600; color: #101828;">2</span>
+      </div>
+    </div>
+
+  </div>
+
+  <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #475467; max-width: 82ch;">
+    <strong style="color:#101828;">Why it makes sense:</strong> the most immediate of the four &mdash; one number, one gesture, readable from the back of a room. The dial makes 4% land emotionally rather than arithmetically.
+    <strong style="color:#101828;"> Tradeoff:</strong> a dial that is 96% empty can read as decoration, and it hides where the other 96% actually is.
+  </p>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1240,"height":520}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

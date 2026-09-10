@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body{margin:0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#f2f4f7;-webkit-font-smoothing:antialiased;}
+    a{color:#175cd3;} a:hover{color:#101828;}
+    .num{font-variant-numeric:tabular-nums;}
+    .stage{animation:rise .55s cubic-bezier(.16,1,.3,1) both;}
+    .stage:nth-child(1){animation-delay:.04s;} .stage:nth-child(3){animation-delay:.14s;}
+    .stage:nth-child(5){animation-delay:.24s;} .stage:nth-child(7){animation-delay:.34s;}
+    @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+    @media(prefers-reduced-motion:reduce){.stage{animation:none;}}
+  </style>
+</helmet>
+
+<div style="padding: 28px 32px; display: flex; flex-direction: column; gap: 18px;">
+
+  <div style="display: flex; align-items: baseline; gap: 10px;">
+    <span style="font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #7b889e;">Direction B</span>
+    <span style="font-size: 13px; color: #475467;">The funnel — where the money leaks</span>
+  </div>
+
+  <div style="background: #fefefe; border: 1px solid #dee1e8; border-radius: 10px; padding: 26px; display: flex; flex-direction: column; gap: 20px;">
+
+    <div style="display: flex; align-items: stretch; gap: 12px;">
+
+      <div class="stage" style="flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #f2f4f7; border-radius: 8px;">
+        <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b889e;">Identified</span>
+        <span class="num" style="font-size: 28px; font-weight: 700; color: #101828; line-height: 1.1;">$27,915</span>
+        <span style="font-size: 12px; color: #475467;">12 recommendations</span>
+      </div>
+
+      <div class="stage" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 108px;">
+        <span style="font-size: 18px; color: #7b889e;">&rarr;</span>
+        <span class="num" style="font-size: 13px; font-weight: 600; color: #ac1706;">&minus;$11,291</span>
+        <span style="font-size: 11px; color: #7b889e; text-align: center; line-height: 1.3;">never owned</span>
+      </div>
+
+      <div class="stage" style="flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #f2f4f7; border-radius: 8px;">
+        <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b889e;">Owned</span>
+        <span class="num" style="font-size: 28px; font-weight: 700; color: #101828; line-height: 1.1;">$16,624</span>
+        <span style="font-size: 12px; color: #475467;">has a named person</span>
+      </div>
+
+      <div class="stage" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 108px;">
+        <span style="font-size: 18px; color: #7b889e;">&rarr;</span>
+        <span class="num" style="font-size: 13px; font-weight: 600; color: #ac1706;">&minus;$12,366</span>
+        <span style="font-size: 11px; color: #7b889e; text-align: center; line-height: 1.3;">owned, not done</span>
+      </div>
+
+      <div class="stage" style="flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #f2f4f7; border-radius: 8px;">
+        <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #7b889e;">Done</span>
+        <span class="num" style="font-size: 28px; font-weight: 700; color: #101828; line-height: 1.1;">$4,258</span>
+        <span style="font-size: 12px; color: #475467;">work completed</span>
+      </div>
+
+      <div class="stage" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 108px;">
+        <span style="font-size: 18px; color: #7b889e;">&rarr;</span>
+        <span class="num" style="font-size: 13px; font-weight: 600; color: #ac1706;">&minus;$3,145</span>
+        <span style="font-size: 11px; color: #7b889e; text-align: center; line-height: 1.3;">unproven or reverted</span>
+      </div>
+
+      <div class="stage" style="flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #ecfdf3; border: 1px solid #abefc6; border-radius: 8px;">
+        <span style="font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: #067647;">Banked</span>
+        <span class="num" style="font-size: 28px; font-weight: 700; color: #067647; line-height: 1.1;">$1,113</span>
+        <span style="font-size: 12px; color: #067647;">on the bill, and holding</span>
+      </div>
+
+    </div>
+
+    <div style="border-top: 1px solid #f2f4f7; padding-top: 16px; display: flex; gap: 28px; flex-wrap: wrap;">
+      <span style="font-size: 13px; color: #475467;">Biggest leak: <span style="color: #101828; font-weight: 500;">work nobody owns</span> &mdash; <span class="num">$11,291</span></span>
+      <span style="font-size: 13px; color: #475467;">Of the $3,145 that did not hold, <span class="num" style="color: #ac1706; font-weight: 500;">$2,075</span> is a saving that reverted</span>
+    </div>
+
+  </div>
+
+  <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #475467; max-width: 82ch;">
+    <strong style="color:#101828;">Why it makes sense:</strong> it answers the question the other directions only imply &mdash; not just how much was kept, but <em>where the rest went</em>. The drop-offs are the product's whole argument.
+    <strong style="color:#101828;"> Tradeoff:</strong> the widest and busiest of the four; needs a sentence of explanation the first time you see it.
+  </p>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1240,"height":520}}'>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>

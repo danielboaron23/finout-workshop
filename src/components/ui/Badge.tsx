@@ -33,3 +33,31 @@ export function ProductBadge({ label, variant = "blue" }: { label: string; varia
     </span>
   );
 }
+
+/*
+ * Badge / Status — EXTEND of the product badge language for the CostGuard
+ * ledger. Same pill, same 1.241x table scale, narrower horizontal padding so
+ * "Working on it" fits a 160px column. "Regressed" is derived, never set by
+ * hand: it means the work was done and the cost came back.
+ */
+export type StatusBadgeVariant = "new" | "working" | "done" | "regressed" | "dismissed";
+
+const STATUS_VARIANTS: Record<StatusBadgeVariant, string> = {
+  new: "bg-blue-25 border-dataviz-blue-100 text-dataviz-blue-600",
+  working: "bg-yellow-50 border-border-muted text-orange-800",
+  done: "bg-success-50 border-success-200 text-success-700",
+  regressed: "bg-red-50 border-red-400 text-red-800",
+  dismissed: "bg-canvas border-border-light text-text-tertiary",
+};
+
+export function StatusBadge({ label, variant }: { label: string; variant: StatusBadgeVariant }) {
+  return (
+    <span
+      className={`border-[1.241px] border-solid flex gap-[4.965px] items-center justify-center px-[12.41px] py-[4.965px] rounded-full w-fit ${STATUS_VARIANTS[variant]}`}
+    >
+      <span className="font-geist font-semibold leading-[19.861px] text-[13.65px] text-center whitespace-nowrap">
+        {label}
+      </span>
+    </span>
+  );
+}

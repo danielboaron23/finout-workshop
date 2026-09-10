@@ -1,7 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
-import { showToast } from "@/components/ui/Toast";
 import { HomeCell, HomeCellText, HomeHeaderCell, HomeTableShell, TableActionButton, WidgetCard, WidgetTitle, parseMoney, type SortDir } from "./CostCentersCard";
 
 /*
@@ -58,6 +59,7 @@ export function RecommendationsCard({
   title = "Recent daily optimization recommendations",
   rows: rowsProp = DEFAULT_ROWS,
 }: RecommendationsCardProps) {
+  const router = useRouter();
   const [sortDir, setSortDir] = useState<SortDir>(null);
   const rows = sortDir
     ? [...rowsProp].sort((a, b) =>
@@ -121,7 +123,7 @@ export function RecommendationsCard({
             {rows.map((row) => (
               <HomeCell key={row.scanName} className="px-[12px]!">
                 {row.action !== undefined && (
-                  <TableActionButton onClick={() => showToast("Opening scan in CostGuard…")}>
+                  <TableActionButton onClick={() => router.push("/costguard")}>
                     {row.action}
                   </TableActionButton>
                 )}

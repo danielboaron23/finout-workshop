@@ -23,14 +23,24 @@ export function Button({
   children,
   variant = "primary",
   className = "",
+  onClick,
+  type = "button",
+  disabled = false,
 }: {
   children: ReactNode;
   variant?: ButtonVariant;
   className?: string;
+  /** EXTEND: buttons were presentation-only; interactive screens need a handler */
+  onClick?: () => void;
+  type?: "button" | "submit";
+  disabled?: boolean;
 }) {
   return (
     <button
-      className={`flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] whitespace-nowrap ${VARIANTS[variant]} ${className}`}
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] rounded-[8px] cursor-pointer font-sans font-medium leading-[20px] text-[14px] whitespace-nowrap disabled:opacity-50 disabled:cursor-default ${VARIANTS[variant]} ${className}`}
     >
       {children}
     </button>

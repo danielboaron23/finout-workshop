@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<title>CostGuard · direction D — the triage queue</title>
+<style>
+/* Tokens read live from src/app/globals.css @theme */
+:root{
+  --text-primary:#101828; --text-secondary:#475467; --text-tertiary:#7b889e; --text-link:#175cd3;
+  --surface-primary:#fefefe; --surface-secondary:#f3f5f8; --canvas:#f2f4f7;
+  --border-lighter:#f2f4f7; --border-light:#dee1e8; --border-muted:#d0d5dd;
+  --blue-400:#1570ef; --blue-50:#eff8ff; --blue-25:#f5faff;
+  --green-400:#027a48; --success-50:#ecfdf3; --success-200:#abefc6; --success-500:#17b26a; --success-700:#067647;
+  --red-400:#d92d20; --red-50:#fef3f2; --red-800:#ac1706;
+  --yellow-50:#fffae6; --orange-800:#7a2e0e; --amber:#f0b43c;
+  --radius-md:8px; --radius-lg:10px; --radius-xl:12px; --radius-full:9999px;
+  --shadow-medium:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);
+  --font-sans:"Helvetica Neue","Inter",-apple-system,sans-serif;
+  --font-geist:"Geist","Inter","Helvetica Neue",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);color:var(--text-primary);background:var(--canvas);min-width:1280px;-webkit-font-smoothing:antialiased;}
+.app{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:220px;flex-shrink:0;background:#101828;color:#f3f5f8;padding:20px 0;}
+.sb-logo{padding:0 20px 22px;font-weight:700;font-size:17px;color:#fff;display:flex;align-items:center;gap:8px;}
+.sb-logo i{width:22px;height:22px;border-radius:6px;background:#429674;display:inline-block;}
+.sb-sec{padding:14px 20px 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7b889e;}
+.sb-item{padding:8px 20px;font-size:13.5px;color:#d0d5dd;}
+.sb-item.on{background:rgba(255,255,255,.08);color:#fff;border-inline-start:3px solid #429674;padding-inline-start:17px;}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;}
+.titlebar{background:var(--surface-primary);border-bottom:1px solid var(--border-light);padding:14px 28px;display:flex;align-items:center;gap:14px;}
+.titlebar h1{font-size:20px;font-weight:500;}
+.tb-progress{font-size:12.5px;color:var(--text-secondary);margin-inline-start:6px;font-family:var(--font-geist);}
+.tb-progress b{color:var(--success-700);}
+.scan{margin-inline-start:auto;font-size:12.5px;color:var(--text-tertiary);font-family:var(--font-geist);}
+.btn2{font-size:13.5px;font-weight:500;border:1px solid var(--border-muted);background:var(--surface-primary);border-radius:var(--radius-md);padding:7px 14px;cursor:pointer;color:var(--text-primary);}
+.btn2.primary{background:var(--blue-400);border-color:var(--blue-400);color:#fff;}
+.btn2.good{background:var(--green-400);border-color:var(--green-400);color:#fff;}
+
+/* the program bar — where every identified dollar stands */
+.program{background:var(--surface-primary);border-bottom:1px solid var(--border-light);padding:14px 28px 16px;}
+.pg-cap{display:flex;justify-content:space-between;font-size:12px;color:var(--text-secondary);margin-bottom:8px;}
+.pg-cap b{font-family:var(--font-geist);}
+.pg-bar{display:flex;height:14px;border-radius:var(--radius-full);overflow:hidden;background:var(--surface-secondary);}
+.pg-bar i{display:block;height:100%;}
+.pg-legend{display:flex;gap:22px;margin-top:8px;font-size:12px;color:var(--text-secondary);}
+.pg-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-inline-end:6px;}
+.pg-legend b{font-family:var(--font-geist);font-weight:500;}
+
+.body{flex:1;min-height:0;display:flex;gap:0;}
+
+/* focus card — up next */
+.focus{flex:1.25;min-width:0;padding:20px 24px;overflow-y:auto;}
+.f-k{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.f-k .why{font-family:var(--font-geist);letter-spacing:0;text-transform:none;color:var(--red-800);background:var(--red-50);border:1px solid #f6c9c5;border-radius:var(--radius-full);padding:3px 10px;font-size:11.5px;}
+.focus-card{background:var(--surface-primary);border:1px solid #f6c9c5;border-radius:var(--radius-xl);box-shadow:var(--shadow-medium);padding:22px 24px;}
+.fc-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:6px;}
+.fc-top h2{font-size:19px;font-weight:500;line-height:1.3;}
+.stbadge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;border-radius:var(--radius-full);padding:4px 12px;flex-shrink:0;background:var(--red-50);color:var(--red-800);border:1px solid #f6c9c5;}
+.fc-sub{font-size:13px;color:var(--text-tertiary);margin-bottom:16px;}
+.fc-body{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start;}
+.chart-card{border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:14px;}
+.chart-card .cap{font-size:12px;color:var(--text-secondary);margin-bottom:10px;display:flex;justify-content:space-between;}
+.chart-card .cap b{font-family:var(--font-geist);font-weight:500;}
+.legend{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--text-tertiary);}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-inline-end:5px;}
+.fc-facts p{font-size:13.5px;line-height:1.6;color:var(--text-secondary);margin-bottom:12px;}
+.fc-facts p b{color:var(--text-primary);}
+.fc-facts .money{font-family:var(--font-geist);color:var(--red-400);font-weight:500;}
+.fc-actions{display:flex;gap:10px;margin-top:4px;}
+.ghost{border:0;background:none;font-size:13px;color:var(--text-tertiary);cursor:pointer;padding:7px 10px;}
+.then{margin-top:18px;}
+.then .f-k{margin-bottom:8px;}
+.then-row{display:flex;gap:14px;}
+.mini{flex:1;background:var(--surface-primary);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:13px 16px;}
+.mini .t{font-size:13px;font-weight:500;line-height:1.35;margin-bottom:4px;}
+.mini .d{font-size:12px;color:var(--text-tertiary);}
+.mini .act{font-size:12.5px;color:var(--text-link);margin-top:8px;display:inline-block;}
+
+/* queue */
+.queue{width:480px;flex-shrink:0;border-inline-start:1px solid var(--border-light);background:var(--surface-primary);overflow-y:auto;padding:20px 20px 36px;}
+.q-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+.q-head .f-k{margin:0;}
+.q-head .rule{margin-inline-start:auto;font-family:var(--font-geist);font-size:11px;color:var(--text-tertiary);}
+.q-row{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:center;padding:11px 10px;border-radius:var(--radius-lg);border:1px solid transparent;}
+.q-row:hover{background:var(--blue-25);}
+.q-row.current{background:var(--red-50);border-color:#f6c9c5;}
+.q-row .rank{font-family:var(--font-geist);font-size:12px;color:var(--text-tertiary);text-align:center;}
+.q-row.current .rank{color:var(--red-800);font-weight:600;}
+.q-row .t{display:block;font-size:13px;font-weight:500;line-height:1.3;}
+.q-row .d{display:block;font-size:11.5px;color:var(--text-tertiary);margin-top:1px;}
+.q-row .m{font-family:var(--font-geist);font-size:13px;text-align:right;}
+.q-row .m i{display:block;font-style:normal;font-size:10.5px;color:var(--text-tertiary);}
+.q-row .m.bad{color:var(--red-400);}
+.q-row .m.good{color:var(--green-400);}
+.q-done{margin-top:14px;border-top:1px solid var(--border-lighter);padding-top:12px;}
+.q-done .cap{font-size:12px;color:var(--text-tertiary);margin-bottom:8px;}
+.q-row.dim{opacity:.6;}
+.q-row.dim .t{text-decoration:line-through;text-decoration-color:var(--border-muted);}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar" aria-label="Main">
+    <div class="sb-logo"><i></i>finout</div>
+    <div class="sb-sec">Inform</div>
+    <div class="sb-item">MegaBill</div><div class="sb-item">Virtual Tags</div><div class="sb-item">Dashboards</div>
+    <div class="sb-sec">Optimize</div>
+    <div class="sb-item on">CostGuard</div><div class="sb-item">My Commitments</div>
+    <div class="sb-sec">Operate</div>
+    <div class="sb-item">Anomalies</div><div class="sb-item">Reports</div><div class="sb-item">Governance</div>
+  </nav>
+
+  <div class="main">
+    <header class="titlebar">
+      <h1>CostGuard</h1>
+      <span class="tb-progress"><b>2 handled</b> this week · 7 to go</span>
+      <span class="scan">Last scan 2 hours ago</span>
+      <button class="btn2">Re-run scan</button>
+    </header>
+
+    <!-- where every identified dollar stands -->
+    <div class="program">
+      <div class="pg-cap"><span>Every dollar CostGuard has identified</span><b>$27,915 /mo</b></div>
+      <div class="pg-bar" role="img" aria-label="4% banked, 7% bleeding, 42% in motion, 47% not started">
+        <i style="width:4%;background:var(--success-500)"></i>
+        <i style="width:7.4%;background:var(--red-400)"></i>
+        <i style="width:42%;background:var(--amber)"></i>
+        <i style="width:46.6%;background:#d0d5dd"></i>
+      </div>
+      <div class="pg-legend">
+        <span><i style="background:var(--success-500)"></i>Banked <b>$1,113</b></span>
+        <span><i style="background:var(--red-400)"></i>Bleeding <b>$2,075</b></span>
+        <span><i style="background:var(--amber)"></i>In motion <b>$11,755</b></span>
+        <span><i style="background:#d0d5dd"></i>Not started <b>$12,970</b></span>
+      </div>
+    </div>
+
+    <div class="body">
+      <!-- ── up next: one decision at a time ── -->
+      <main class="focus" aria-label="Up next">
+        <p class="f-k">Up next <span class="why">why now: was banked · bleeding $186/day · owner known</span></p>
+        <div class="focus-card">
+          <div class="fc-top">
+            <h2>Warehouse runs at weekday cost every weekend</h2>
+            <span class="stbadge">Regressed</span>
+          </div>
+          <p class="fc-sub">Snowflake Warehouse · Data team · you verified this saving on May 26 — it stopped holding on June 6</p>
+          <div class="fc-body">
+            <div class="chart-card">
+              <div class="cap"><span>Daily cost · Apr – Sep</span><b>$155 ➝ $390 weekend</b></div>
+              <svg viewBox="0 0 340 96" width="100%" height="96" aria-label="Daily Snowflake cost: weekend dips until June 6, flat after">
+                <rect x="0" y="14" width="150" height="58" fill="#ecfdf3"/>
+                <polyline fill="none" stroke="#98a2b3" stroke-width="1.5"
+                  points="0,22 10,22 14,64 20,64 24,22 38,22 42,64 48,64 52,22 66,22 70,64 76,64 80,22 94,22 98,64 104,64 108,22 122,22 126,64 132,64 136,22 146,22 150,60"/>
+                <polyline fill="none" stroke="#d92d20" stroke-width="2" points="150,60 156,21 340,20"/>
+                <line x1="150" y1="8" x2="150" y2="88" stroke="#d92d20" stroke-dasharray="3 3" stroke-width="1"/>
+                <text x="156" y="88" font-size="9" fill="#ac1706" font-family="Geist,Inter,sans-serif">Jun 6 — optimisation stopped</text>
+              </svg>
+              <div class="legend">
+                <span><i style="background:#ecfdf3;border:1px solid #abefc6"></i>Verified baseline</span>
+                <span><i style="background:#d92d20"></i>After regression</span>
+              </div>
+            </div>
+            <div class="fc-facts">
+              <p><b>What happened:</b> the weekend auto-suspend policy stopped applying. Weekend cost is back to <span class="money">100% of weekday</span> — <span class="money">$5,596</span> lost since June 6.</p>
+              <p><b>Why you:</b> Amit shipped the original fix in May. Reopening keeps the history and the baseline together.</p>
+              <div class="fc-actions">
+                <button class="btn2 primary">Reopen &amp; notify Amit</button>
+                <button class="btn2">Reassign</button>
+                <button class="ghost">Skip · show me later</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="then">
+          <p class="f-k">Then</p>
+          <div class="then-row">
+            <div class="mini">
+              <div class="t">Cluster overprovisioned — $/vCPU-hour up 12.2%</div>
+              <div class="d">EKS · $8,950/mo · no owner yet</div>
+              <span class="act">Assign Platform on-call →</span>
+            </div>
+            <div class="mini">
+              <div class="t">Log retention plan changed on Aug 1</div>
+              <div class="d">Datadog · $2,341/mo · no owner yet</div>
+              <span class="act">Assign Dana Weiss →</span>
+            </div>
+            <div class="mini">
+              <div class="t">Scheduled query scans an unpartitioned table</div>
+              <div class="d">BigQuery · $7,066/mo · open 52 days</div>
+              <span class="act">Nudge Noa →</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- ── the ranked queue ── -->
+      <aside class="queue" aria-label="Queue">
+        <div class="q-head"><p class="f-k">The queue · 7</p><span class="rule">rank = $ at stake × age × state</span></div>
+
+        <div class="q-row current"><span class="rank">01</span><span><span class="t">Warehouse runs at weekday cost every weekend</span><span class="d">Snowflake · Data · Amit Shani</span></span><span class="m bad">−$2,075<i>bleeding</i></span></div>
+        <div class="q-row"><span class="rank">02</span><span><span class="t">Cluster overprovisioned — $/vCPU up 12.2%</span><span class="d">EKS · Platform · unassigned</span></span><span class="m">$8,950<i>/mo</i></span></div>
+        <div class="q-row"><span class="rank">03</span><span><span class="t">Scheduled query scans an unpartitioned table</span><span class="d">BigQuery · Platform · Noa Peretz · 52d</span></span><span class="m">$7,066<i>/mo</i></span></div>
+        <div class="q-row"><span class="rank">04</span><span><span class="t">CPU requests exceed p95 usage</span><span class="d">GKE · DevOps · Dana Weiss · 2mo</span></span><span class="m">$4,689<i>/mo</i></span></div>
+        <div class="q-row"><span class="rank">05</span><span><span class="t">Log retention plan changed on Aug 1</span><span class="d">Datadog · DevOps · unassigned</span></span><span class="m">$2,341<i>/mo</i></span></div>
+        <div class="q-row"><span class="rank">06</span><span><span class="t">Read replica idle — zero connections 7d</span><span class="d">RDS · Core Product · Tomer Adler</span></span><span class="m">$1,245<i>/mo</i></span></div>
+        <div class="q-row"><span class="rank">07</span><span><span class="t">Build parallelism reserved and unused</span><span class="d">CircleCI · Growth · Maya Rosen</span></span><span class="m">$434<i>/mo</i></span></div>
+
+        <div class="q-done">
+          <p class="cap">Handled this week — verification running</p>
+          <div class="q-row dim"><span class="rank">✓</span><span><span class="t">Old snapshots past retention policy</span><span class="d">EBS · verified, held 4 months</span></span><span class="m good">$812<i>realized</i></span></div>
+          <div class="q-row dim"><span class="rank">✓</span><span><span class="t">Dev environment running nights &amp; weekends</span><span class="d">EC2 · verified, held 3 months</span></span><span class="m good">$301<i>realized</i></span></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+</body>
+</html>

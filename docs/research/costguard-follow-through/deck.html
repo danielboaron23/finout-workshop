@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CostGuard ledger — design research</title>
+<style>
+  :root{
+    --ink:#101828; --body:#475467; --muted:#667085; --faint:#98a2b3;
+    --line:#eaecf0; --canvas:#f9fafb; --paper:#fff;
+    --good:#027a48; --bad:#d92d20;
+    --ease:cubic-bezier(.24,.48,0,.98);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{
+    font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+    background:var(--canvas); color:var(--body);
+    -webkit-font-smoothing:antialiased; overflow:hidden;
+  }
+  .stage{position:fixed; inset:0 0 56px 0;}
+  .slide{
+    position:absolute; inset:0; display:none;
+    padding:72px 88px; overflow-y:auto;
+    background:var(--paper);
+  }
+  .slide.is-active{display:flex; flex-direction:column; gap:28px;
+    justify-content:center; justify-content:safe center;}
+  .eyebrow{
+    font-size:14px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--faint);
+  }
+  h1{font-size:64px; line-height:1.06; margin:0; color:var(--ink); font-weight:700; letter-spacing:-.02em;}
+  h2{font-size:40px; line-height:1.15; margin:0; color:var(--ink); font-weight:600; letter-spacing:-.01em;}
+  p{font-size:22px; line-height:1.5; margin:0; max-width:34em;}
+  .lead{font-size:28px; line-height:1.4; color:var(--body);}
+  .muted{color:var(--muted);}
+  a{color:var(--ink);}
+
+  /* reference slide: image left, reading right */
+  .ref{display:grid; grid-template-columns:1.35fr 1fr; gap:48px; align-items:start; flex:1; min-height:0;}
+  .ref img{width:100%; height:auto; border:1px solid var(--line); border-radius:10px; display:block;}
+  .ref .read{display:flex; flex-direction:column; gap:20px;}
+  .verdict{display:flex; flex-direction:column; gap:6px;}
+  .verdict .label{font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;}
+  .verdict.win .label{color:var(--good);}
+  .verdict.miss .label{color:var(--bad);}
+  .verdict p{font-size:19px;}
+  .src{font-size:15px; color:var(--muted);}
+
+  /* two references side by side — for showing a disagreement */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:40px; flex:1; min-height:0;}
+  .split figure{margin:0; display:flex; flex-direction:column; gap:14px;}
+  .split img{width:100%; height:auto; border:1px solid var(--line); border-radius:10px;}
+  .split figcaption{font-size:18px;}
+
+  table{border-collapse:collapse; width:100%; font-size:18px;}
+  th,td{text-align:left; padding:14px 16px; border-bottom:1px solid var(--line);}
+  th{font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); font-weight:700;}
+  td strong{color:var(--ink);}
+
+  ol.points{margin:0; padding-left:1.3em; display:flex; flex-direction:column; gap:22px;}
+  ol.points li{font-size:24px; line-height:1.45;}
+  ol.points b{color:var(--ink);}
+
+  /* chrome */
+  .bar{
+    position:fixed; left:0; right:0; bottom:0; height:56px;
+    display:flex; align-items:center; gap:18px; padding:0 24px;
+    background:var(--paper); border-top:1px solid var(--line);
+  }
+  .track{flex:1; height:3px; background:var(--line); border-radius:2px; overflow:hidden;}
+  .fill{height:100%; width:0; background:var(--ink); transition:width .3s var(--ease);}
+  .count{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; min-width:56px; text-align:right;}
+  .nav{display:flex; gap:8px;}
+  .nav button{
+    font:inherit; font-size:14px; font-weight:600; color:var(--ink);
+    background:var(--paper); border:1px solid var(--line); border-radius:8px;
+    padding:7px 14px; cursor:pointer; transition:all .2s var(--ease);
+  }
+  .nav button:hover:not(:disabled){background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .nav button:disabled{opacity:.35; cursor:default;}
+  @media (max-width:1100px){
+    .slide{padding:48px 40px;}
+    h1{font-size:44px;} h2{font-size:30px;}
+    .ref,.split{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <section class="slide is-active" data-slide>
+    <div class="eyebrow">Design research</div>
+    <h1>CostGuard ledger</h1>
+    <p class="lead">How do products show committed work with owners and statuses, put projected against realized, admit that finished work came undone, and treat an empty list as a success?</p>
+    <p class="muted src">12 references from Mobbin · web · 2026-09-06 · brief: docs/prd/costguard-follow-through.md</p>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">What we're solving</div>
+    <h2>Finding the waste is solved. Proving it was saved is not.</h2>
+    <p class="lead">And our own data holds the sharper case: Snowflake weekend cost ran at 40% of weekday until 6 June, then returned to 100%. $5,596 across 24 weekend days — ≈$2,075/month, still running, and no anomaly fired.</p>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Where we looked</div>
+    <h2>Three bands — and the category was the weakest of them</h2>
+    <table>
+      <tr><th>Band</th><th>Who</th><th>Why</th></tr>
+      <tr><td><strong>Direct</strong></td><td>AWS, Snowflake</td><td>What a FinOps buyer already expects</td></tr>
+      <tr><td><strong>Indirect</strong></td><td>7shifts, Xero, Clay</td><td>Products that live on projected vs. actual, and on who owns a line</td></tr>
+      <tr><td><strong>Aspirational</strong></td><td>Supabase, Linear, Jira, ClickUp, Twenty</td><td>Issue tooling, where accountability was solved a decade ago</td></tr>
+    </table>
+    <p class="muted src">The status quo — a spreadsheet pasted into a monthly Slack update — is the honest competitor. It records that work happened. It cannot verify the bill moved.</p>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Direct · AWS</div>
+    <div class="ref">
+      <img src="./assets/aws-recommended-actions.webp" alt="AWS — Recommendations, beside the number that motivates them">
+      <div class="read">
+        <h2>Recommendations, beside the number that motivates them</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>The recommendation sits next to the spend it refers to, and dismissing is one obvious click.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>No owner, no status, no age. Dismissing looks identical to doing. Three cards work; forty would not.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/b59a3360-394f-4a2e-8cb7-eebfd3652808">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Direct · AWS</div>
+    <div class="ref">
+      <img src="./assets/aws-plan-state-and-summary.webp" alt="AWS — A total that never leaves the screen">
+      <div class="read">
+        <h2>A total that never leaves the screen</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>The footer keeps Number of lines and Estimated cost visible without scrolling or selecting anything.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>The State column has one value in practice, so it is decoration. Status earns its width only when states differ.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/e02ff405-fa55-4cb4-93a5-8b86dbb137ed">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Direct · Snowflake</div>
+    <div class="ref">
+      <img src="./assets/snowflake-cost-insights.webp" alt="Snowflake — The best empty state in the set">
+      <div class="read">
+        <h2>The best empty state in the set</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>It names every check it ran, ticks each one, and says it found nothing. Absence becomes evidence.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>A dead end. No history, and no way to know when the checks themselves last changed.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/725959e2-fde7-4b89-a8e3-1d272d9ec735">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · Supabase</div>
+    <div class="ref">
+      <img src="./assets/supabase-security-advisor.webp" alt="Supabase — The closest thing anyone has to a ledger">
+      <div class="read">
+        <h2>The closest thing anyone has to a ledger</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Counts live in the tabs, the scan is re-runnable from the screen, and provenance is explained in place.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Every issue is anonymous — nothing assigned, nothing aged. A findings list, not a ledger.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/48251c0c-48b0-4de9-a687-8882b41a8e59">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · Linear</div>
+    <div class="ref">
+      <img src="./assets/linear-done-then-reopened.webp" alt="Linear — “Moved to Done, then back to In Progress”">
+      <div class="read">
+        <h2>“Moved to Done, then back to In Progress”</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>The only reference that acknowledges finished work coming undone — in a single, economical line.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>It is buried in an activity log on a detail page. The list view never says this issue bounced.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/beb9d6b3-ec34-46d7-9332-320fcb32a338">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · Snowflake</div>
+    <div class="ref">
+      <img src="./assets/snowflake-reopen-window.webp" alt="Snowflake — Reopening, but not forever">
+      <div class="read">
+        <h2>Reopening, but not forever</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Closed, with Reopen Case available for “1 week, 2 days, 23 hours”. A bounded window to keep watching.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>The countdown is arbitrary and unexplained. You cannot tell why that long, or what happens after.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/e81c4b97-52ae-4e4f-93fa-6abd84817c65">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · Jira</div>
+    <div class="ref">
+      <img src="./assets/jira-history-audit-trail.webp" alt="Jira — The audit trail Finout says is missing">
+      <div class="read">
+        <h2>The audit trail Finout says is missing</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Every field change logged with actor and relative time. Assignment changes are first-class events.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Undifferentiated — deleting a comment and reassigning ownership carry equal weight.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/4ecaec7d-b384-4747-b30e-8735992c5ecf">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · Twenty</div>
+    <div class="ref">
+      <img src="./assets/twenty-relative-age-table.webp" alt="Twenty — Age as a column, not a date">
+      <div class="read">
+        <h2>Age as a column, not a date</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>“About 2 hours ago” beats a timestamp when the failure mode is items going stale.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Status is bare text with no weight or colour, so scanning for state fails at real density.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/272a0f20-51e9-4b9c-bb2e-27d82a590ea1">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Aspirational · ClickUp</div>
+    <div class="ref">
+      <img src="./assets/clickup-status-groups.webp" alt="ClickUp — Grouping answers “what is stuck” first">
+      <div class="read">
+        <h2>Grouping answers “what is stuck” first</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Collapsible status groups with counts show the shape of the work before any filter is touched.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Six groups is too many, collapsed groups hide work, and the eye has no default resting place.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/8b2419a3-f16a-4a36-8269-871829c24f8c">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Indirect · 7shifts</div>
+    <div class="ref">
+      <img src="./assets/sevenshifts-variance-columns.webp" alt="7shifts — Variance as its own column">
+      <div class="read">
+        <h2>Variance as its own column</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Actual, projected and variance sit adjacent with a total row. The reader never computes the delta.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Six near-identical numeric headers. Without colour it is unparseable — and colour alone is not accessible.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/e7f4ff6e-88da-4978-839d-66550face4ad">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Indirect · Xero</div>
+    <div class="ref">
+      <img src="./assets/xero-bulk-select-panel.webp" alt="Xero — Selection and its action, together">
+      <div class="read">
+        <h2>Selection and its action, together</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Checkboxes, “2 selected”, per-row amounts and the primary action all live in one panel.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>The count says how many, never how much. For money work the selected total governs the decision.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/d7179a06-0195-4f94-97a9-19e781e3f50e">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Indirect · Clay</div>
+    <div class="ref">
+      <img src="./assets/clay-owner-column.webp" alt="Clay — Owner as a column with a face">
+      <div class="read">
+        <h2>Owner as a column with a face</h2>
+        <div class="verdict win"><span class="label">Gets right</span><p>Ownership is a column with an avatar, not a filter, and Archived stays visible instead of vanishing.</p></div>
+        <div class="verdict miss"><span class="label">Gets wrong</span><p>Every owner in view is the same person, so the column carries no information.</p></div>
+        <p class="src"><a href="https://mobbin.com/screens/7998e986-ae95-46d2-b147-363f2d1463a8">View on Mobbin →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Compared</div>
+    <h2>Nothing scores above 3 on regression</h2>
+    <table>
+      <tr><th>Reference</th><th>Status</th><th>Ownership</th><th>Evidence</th><th>Regression</th><th>Verdict</th></tr>
+      <tr><td><strong>AWS · actions</strong></td><td>2</td><td>1</td><td>3</td><td>1</td><td>Good placement, no accountability</td></tr><tr><td><strong>AWS · summary row</strong></td><td>2</td><td>1</td><td>3</td><td>1</td><td>Steal the persistent total</td></tr><tr><td><strong>Snowflake · insights</strong></td><td>—</td><td>1</td><td>5</td><td>1</td><td>Best empty state anywhere</td></tr><tr><td><strong>Supabase · Advisor</strong></td><td>4</td><td>1</td><td>4</td><td>1</td><td>Findings list, not a ledger</td></tr><tr><td><strong>Linear · activity</strong></td><td>3</td><td>5</td><td>4</td><td><strong>3</strong></td><td>Models regression — and hides it</td></tr><tr><td><strong>Snowflake · reopen</strong></td><td>4</td><td>2</td><td>2</td><td><strong>3</strong></td><td>Time-boxed reopen is a real idea</td></tr><tr><td><strong>Jira · History</strong></td><td>2</td><td>5</td><td>5</td><td>2</td><td>Audit trail, undifferentiated</td></tr><tr><td><strong>Twenty · table</strong></td><td>2</td><td>4</td><td>2</td><td>1</td><td>Relative age as a column</td></tr><tr><td><strong>ClickUp · groups</strong></td><td>5</td><td>4</td><td>2</td><td>1</td><td>Counts good, too many groups</td></tr><tr><td><strong>7shifts · variance</strong></td><td>3</td><td>1</td><td>5</td><td>1</td><td>The projected-vs-actual model</td></tr><tr><td><strong>Xero · bulk panel</strong></td><td>3</td><td>2</td><td>4</td><td>1</td><td>Count without total</td></tr><tr><td><strong>Clay · owner</strong></td><td>3</td><td>4</td><td>2</td><td>1</td><td>Owner as a column with a face</td></tr>
+    </table>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">What we take from this</div>
+    <h2>Table stakes, a real decision, and an opening</h2>
+    <ol class="points">
+      <li><b>Table stakes.</b> Weighted status labels, a named owner with a face, counts in the tabs, relative age, a persistent total, provenance in place, and a re-runnable scan.</li>
+      <li><b>The real decision.</b> Group by status or filter by it — and is variance its own column, or a treatment inside one composite cell that can also say “Not verifiable”?</li>
+      <li><b>Our opening.</b> No reference surfaces work that was completed and then came undone. Linear buries it in a log; Snowflake hides it on a detail page.</li>
+    </ol>
+  </section>
+
+  <section class="slide" data-slide>
+    <div class="eyebrow">Recommendation</div>
+    <h1>Build a ledger, not a findings list — and make regression a first-class row state.</h1>
+    <p class="lead muted">Wrong if FinOps leads never revisit closed items. Testable in one conversation: ask what they did the last time a saving came back, and whether they found out at all.</p>
+  </section>
+
+</div>
+
+<div class="bar">
+  <div class="nav">
+    <button id="prev" aria-label="Previous slide">←</button>
+    <button id="next" aria-label="Next slide">→</button>
+  </div>
+  <div class="track"><div class="fill" id="fill"></div></div>
+  <div class="count"><span id="cur">1</span> / <span id="total">0</span></div>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('[data-slide]')),i=0;
+  var fill=document.getElementById('fill'),cur=document.getElementById('cur');
+  var prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next');
+  document.getElementById('total').textContent=slides.length;
+  function render(){
+    slides.forEach(function(s,n){s.classList.toggle('is-active',n===i);});
+    fill.style.width=(slides.length>1?i/(slides.length-1)*100:100)+'%';
+    cur.textContent=i+1;
+    prevBtn.disabled=i===0; nextBtn.disabled=i===slides.length-1;
+  }
+  function go(n){i=Math.max(0,Math.min(slides.length-1,n));render();}
+  nextBtn.addEventListener('click',function(){go(i+1);});
+  prevBtn.addEventListener('click',function(){go(i-1);});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(i-1);}
+    else if(e.key==='Home'){go(0);}
+    else if(e.key==='End'){go(slides.length-1);}
+  });
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",       "x": 0,    "y": 0,   "w": 1240, "h": 520, "title": "A · One bar" },
+    { "file": "DirectionB.dc.html", "x": 1380, "y": 0,   "w": 1240, "h": 520, "title": "B · The funnel" },
+    { "file": "DirectionC.dc.html", "x": 0,    "y": 680, "w": 1240, "h": 520, "title": "C · Hero and dial" },
+    { "file": "DirectionD.dc.html", "x": 1380, "y": 680, "w": 1240, "h": 380, "title": "D · Ledger strip" }
+  ],
+  "annotations": [
+    { "id": "the-axis", "x": 0, "y": -190, "w": 620, "text": "Four directions for the box above the CostGuard table.\n\nThe axis: how much room should this take, and what should it foreground — the number kept, or where the rest went?\n\nA and D show the same four-part split at two very different sizes. B is the only one that answers \"where did it go\". C is the only one that reads across a room." },
+    { "id": "scenario-note", "x": 700, "y": -190, "w": 480, "text": "A carries a Scenario tweak — Ledger or Executive — so you can see it with the table beneath it and without.\n\nWhichever you pick gets built into both /costguard and /costguard-hub so the two screens stop disagreeing about how the same money is shown." }
+  ],
+  "launch": { "view": "canvas" }
+}

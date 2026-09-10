@@ -12,11 +12,15 @@ export function Dropdown({
   trigger,
   children,
   align = "left",
+  placement = "bottom",
   panelClassName = "",
 }: {
   trigger: (open: boolean) => ReactNode;
   children: ReactNode | ((close: () => void) => ReactNode);
   align?: "left" | "right";
+  /** EXTEND (Settings, 2026-09-10): open upward. A menu on a bar pinned to the
+   *  bottom of the viewport opens off-screen otherwise. */
+  placement?: "bottom" | "top";
   panelClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -36,9 +40,9 @@ export function Dropdown({
       <div onClick={() => setOpen((v) => !v)}>{trigger(open)}</div>
       {open && (
         <div
-          className={`absolute top-[calc(100%+8px)] z-50 bg-white border border-solid border-neutral-100 rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
-            align === "left" ? "left-0" : "right-0"
-          } ${panelClassName}`}
+          className={`absolute z-50 bg-white border border-solid border-neutral-100 rounded-[8px] p-[12px] drop-shadow-[0px_4px_3px_rgba(0,0,0,0.1)] min-w-[180px] ${
+            placement === "bottom" ? "top-[calc(100%+8px)]" : "bottom-[calc(100%+8px)]"
+          } ${align === "left" ? "left-0" : "right-0"} ${panelClassName}`}
         >
           {typeof children === "function" ? children(() => setOpen(false)) : children}
         </div>

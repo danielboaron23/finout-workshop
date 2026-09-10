@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRD · CostGuard — the recommendation ledger</title>
+<style>
+:root{--ink:#222325;--body:#404145;--muted:#62646a;--faint:#95979d;--border:#e4e5e7;--divide:#efeff0;--paper:#fff;--good:#027a48;}
+*{box-sizing:border-box;}
+body{margin:0;background:#fafafa;color:var(--body);font-family:'Macan','Helvetica Neue',Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.65;font-size:15.5px;}
+.doc{max-width:820px;margin:0 auto;padding:48px 40px 90px;background:var(--paper);min-height:100vh;
+  border-inline:1px solid var(--divide);}
+.dochead{border-bottom:1px solid var(--border);padding-bottom:22px;margin-bottom:10px;}
+.dochead .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 10px;}
+h1{font-size:34px;line-height:1.1;letter-spacing:-.02em;color:var(--ink);margin:0 0 8px;}
+h2{font-size:21px;color:var(--ink);letter-spacing:-.01em;margin:44px 0 12px;padding-top:22px;border-top:1px solid var(--divide);}
+h3{font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:30px 0 10px;}
+p{margin:0 0 14px;}
+b{color:var(--ink);} i{color:var(--ink);font-style:italic;}
+code{font-family:ui-monospace,Menlo,monospace;font-size:.86em;color:var(--ink);background:#f5f5f5;
+  border:1px solid var(--border);border-radius:5px;padding:1px 5px;}
+pre{font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;color:var(--body);background:#fafafa;
+  border:1px solid var(--border);border-radius:12px;padding:16px 18px;overflow-x:auto;}
+ul,ol{margin:0 0 14px;padding-inline-start:22px;}
+li{margin:0 0 7px;}
+.tbl{overflow-x:auto;margin:0 0 18px;border:1px solid var(--border);border-radius:12px;}
+table{border-collapse:collapse;width:100%;font-size:13.5px;line-height:1.5;}
+th{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:left;
+  padding:10px 14px;background:#fafafa;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;border-bottom:1px solid var(--divide);vertical-align:top;color:var(--body);}
+tr:last-child td{border-bottom:0;}
+</style>
+</head>
+<body>
+<article class="doc">
+<div class="dochead">
+<p class="k">Finout · CostGuard · written by <code>finout-pm</code></p>
+<h1>CostGuard — the recommendation ledger</h1>
+<p><b>Status:</b> draft <b>Date:</b> 2026-09-06 <b>Surface:</b> <code>/costguard</code> <b>Sources:</b> <code>src/components/sidebar/Sidebar.tsx</code> · <code>src/components/home/KpiCard.tsx</code> · <code>src/components/home/RecommendationsCard.tsx</code> · <code>workshop-data/seed.sql</code> · <code>DESIGN_CONTEXT.md</code> · docs.finout.io/user-guide/optimize/costguard · finout.io/blog/the-savings-that-never-show-up</p>
+
+</div>
+<h2>1. Problem</h2>
+<p>Finding cloud waste is solved. Every cloud already emits recommendations, and Finout already unifies, prioritises and assigns them. What is not solved is everything after the list: <b>nobody can prove the money was ever saved.</b> Finout's own writing names the failure modes — <i>"a recommendation without a named individual owner defaults to no one"</i>, decisions made in Slack with no audit trail, and tickets closed without checking whether the projected saving reached the bill.</p>
+<p>Our own data contains the sharpest version of this. Snowflake Warehouse weekend cost ran at <b>40% of weekday</b> ($155 vs $383/day) from April through 5 June — an optimisation that was working. On <b>6 June it stopped</b>: weekends now cost <b>100% of weekday</b> ($390 vs $389). That regression has cost <b>$5,596 across 24 weekend days, ≈$2,075/month</b>, and it is still running today. No anomaly fired: all five rows in the <code>anomalies</code> table are other services.</p>
+<p>So the problem is not only that savings are unproven. <b>A saving that was real can quietly die, and today nothing is watching.</b></p>
+<p>Meanwhile the product advertises the destination in three places and delivers a toast.</p>
+<h2>2. Who it's for</h2>
+<p><b>Primary — the FinOps lead.</b> Owns the total number and has to answer "what did the programme actually save this quarter?" Today they cannot, because implementation lives in other people's backlogs.</p>
+<p><b>Secondary — the engineering owner.</b> Receives the work. Needs to know it is genuinely theirs, how much it is worth, and that closing it will be believed. Allergic to being handed someone else's cleanup.</p>
+<p><b>Secondary — the executive.</b> Wants one number, its trend, and evidence somebody is acting. Reads the top of the screen and leaves.</p>
+<p>Not served in this version: anyone doing the remediation itself. This screen tracks work; it does not perform it.</p>
+<h2>3. What exists today</h2>
+<ul><li><code>Sidebar.tsx</code> lists <b>CostGuard</b> under <i>Optimize</i>. It has no <code>href</code>. One of twelve dead nav items out of sixteen.</li><li><code>KpiCard.tsx</code> shows <b>"Monthly potential savings · $26,802"</b> with a <b>"Go to CostGuard"</b> button whose handler is <code>showToast("CostGuard is next in the workshop 😉")</code>.</li><li><code>RecommendationsCard.tsx</code> lists <i>RDS - Idle</i>, <i>RDS - Rightsizing</i>, <i>K8s - Deployment</i> with per-row savings, a <b>Cost Waste Percentage</b>, and a <b>Number of Resources</b> column. Its action fires <code>showToast("Opening scan in CostGuard…")</code>.</li><li><code>/anomalies</code> exists and is a genuinely different job: it detects unexpected <i>change</i>. This screen tracks committed <i>work</i>. They should link, not merge.</li></ul>
+<p><b>The status quo we are competing with</b> is a spreadsheet of optimisation tickets pasted into a monthly Slack update. It is honestly adequate for tracking <i>that</i> work happened. It cannot verify the bill went down, and it cannot notice a saving reverting. That is the only ground on which this screen wins.</p>
+<h2>4. Non-goals</h2>
+<ul><li><b>The scan engine.</b> Recommendations are assumed to arrive. We do not detect them here.</li><li><b>Cloud-native scan ingestion</b> (AWS Compute Optimizer, Azure Advisor, GCP Recommender).</li><li><b>Jira sync.</b> Finout marks it "coming soon"; we design the owner and status model it would need, and stop there.</li><li><b>Commitments and Savings Plans.</b> Separate nav items, separate purchase workflow.</li><li><b>Resource-level drill-down.</b> See Decision D1.</li><li><b>Performing remediation.</b> No infrastructure is changed from this screen.</li></ul>
+<h2>5. Decisions</h2>
+<div class='tbl'><table><thead><tr><th>Decision</th><th>Choice</th><th>Why</th></tr></thead><tbody><tr><td><b>D1</b> Unit of the screen</td><td>The <b>recommendation</b>, not the resource</td><td><code>cost_events</code> is grained at service × team × environment × day and has no resource identity. A recommendation references a <i>service</i>, which the data supports. Home's <i>Number of Resources</i> column stays on Home and is out of scope here — noted, not silently dropped</td></tr><tr><td><b>D2</b> What "Act" means</td><td>Assign a named owner and a due date <b>inside Finout</b></td><td>Jira sync is a non-goal, but the ownership model it needs is exactly what fixes "defaults to no one". Design the model, not the integration</td></tr><tr><td><b>D3</b> What "realized" means</td><td>Actual service cost over the 14 days after <code>done_at</code>, compared against the 14 days before <code>created_at</code>, expressed as $/month</td><td>It is computable from <code>cost_events</code> today, and 14 days matches CostGuard's documented analysis window</td></tr><tr><td><b>D4</b> What happens after Done</td><td>Verification <b>keeps running</b>. If cost returns to baseline, status becomes <b>Regressed</b></td><td>This is the gap. Finout's "Prove" is described as a report; our data proves it has to be a watchdog</td></tr><tr><td><b>D5</b> Status model</td><td>Real four — <code>New</code> · <code>Working on it</code> · <code>Done</code> · <code>Dismissed</code> — plus derived <b><code>Regressed</code></b></td><td>Matches the shipped product so it stays recognisable; the fifth state is the new idea and is derived, never set by hand</td></tr><tr><td><b>D6</b> Verification without a baseline</td><td>Show <b>"Not verifiable"</b>, never $0</td><td>A missing baseline is not a zero saving. Claiming otherwise is the exact dishonesty this screen exists to end</td></tr><tr><td><b>D7</b> Dismissed</td><td>Kept, filterable, and re-raised if the same opportunity recurs after 90 days</td><td>Finout's post names opportunities that "resurface repeatedly" — silent deletion is how that happens</td></tr></tbody></table></div>
+<h2>6. User stories</h2>
+<ol><li>As a <b>FinOps lead</b>, I want every open recommendation to show a named owner and an age, so I can see what is stalled without opening a spreadsheet.</li><li>As a <b>FinOps lead</b>, I want projected savings and realized savings side by side, so I can report what actually reached the bill.</li><li>As a <b>FinOps lead</b>, I want to be told when a saving I already banked has come back, so I stop counting money I no longer save.</li><li>As an <b>engineering owner</b>, I want to see why this was assigned to me and what it is worth, so I can judge it against my other work.</li><li>As an <b>engineering owner</b>, I want to move an item to <i>Working on it</i> and <i>Done</i> and have the system check my work, so closing it means something.</li><li>As an <b>executive</b>, I want one realized-savings number with a trend, so I can tell whether the programme is working.</li><li>As a <b>FinOps lead</b>, I want to dismiss a recommendation with a reason and have it come back if it recurs, so the same argument is not had twice.</li></ol>
+<h2>7. Success metrics</h2>
+<div class='tbl'><table><thead><tr><th>Metric</th><th>Definition</th><th>Baseline</th></tr></thead><tbody><tr><td>Ownership coverage</td><td>% of non-dismissed recommendations with a named owner</td><td>No baseline exists — nothing assigns owners today</td></tr><tr><td>Time to done</td><td>Median days from <code>created_at</code> to <code>done_at</code></td><td>No baseline exists</td></tr><tr><td><b>Realization rate</b></td><td>Realized $/month ÷ projected $/month, for items marked Done</td><td>No baseline exists. The headline metric</td></tr><tr><td>Regression caught</td><td>$/month of savings detected as reverted</td><td>Currently <b>$0 detected</b> against <b>$2,075/month actually regressing</b> on Snowflake alone</td></tr><tr><td>Verification coverage</td><td>% of Done items with a computable baseline</td><td>No baseline exists</td></tr></tbody></table></div>
+<p>The fourth row is the one that justifies the screen: the gap between what is being lost and what is being noticed is presently the whole amount.</p>
+<h2>8. Open questions</h2>
+<ul><li><b>Who assigns owners</b> — auto-assign from the team on <code>cost_events</code>, or always a human choice? Auto-assignment is what Finout advertises via Virtual Tags, but wrong auto-assignment is how engineers learn to ignore a tool. <i>Decide with Daniel before build.</i></li><li><b>How long must a saving hold</b> before it counts as realized — 14 days, or a full billing cycle? Affects only copy and thresholds, not layout.</li><li><b>Should Regressed reopen the original item or create a new one?</b> Reopening keeps the history together; a new item keeps the realization stats honest. Leaning reopen with a visible event log. <i>Designer's input welcome.</i></li><li><b>Does the executive need a separate view</b>, or is the top of this screen enough?</li></ul>
+<h2>9. Screen requirements</h2>
+<h3>Surfaces</h3>
+<div class='tbl'><table><thead><tr><th>Surface</th><th>Detail</th></tr></thead><tbody><tr><td>Route</td><td><code>/costguard</code></td></tr><tr><td>Sidebar entry</td><td><code>CostGuard</code>, in the <b>Optimize</b> section — give the existing item an <code>href</code></td></tr><tr><td>Entry points</td><td><code>KpiCard.tsx</code> "Go to CostGuard" (replace <code>showToast</code> with a link) · <code>RecommendationsCard.tsx</code> "Go to scan" · Sidebar</td></tr><tr><td>Exits</td><td>A recommendation's detail · <code>/anomalies</code> for related detections · <code>/megabill</code> to see the service's spend</td></tr></tbody></table></div>
+<p>Breadboard:</p>
+<pre>
+Home · &quot;Go to CostGuard&quot;
+  → CostGuard ledger  (KPI row · filters · table)
+  → pick a row
+    → detail  (why it was raised · the cost evidence · projected saving)
+      → assign owner + set &quot;Working on it&quot;
+      → set &quot;Done&quot;
+        → system verifies against cost_events after 14 days
+          → realized  → counts toward the realized total
+          → not verifiable → flagged, no number claimed
+          → cost returns → REGRESSED → back to the top of the ledger
+</pre>
+<h3>States</h3>
+<div class='tbl'><table><thead><tr><th>State</th><th>When</th><th>What the user sees</th></tr></thead><tbody><tr><td><b>Empty</b></td><td>No open recommendations</td><td>A success state, not a blank. What was checked, when, and what it found — Snowflake's "we ran these checks and found nothing" is the model. Show the realized total earned so far</td></tr><tr><td>Loading</td><td>Scan in progress</td><td>Last scan time and progress; the previous list stays readable</td></tr><tr><td>Populated</td><td>Default</td><td>KPI row, filters, ledger table</td></tr><tr><td><b>Regressed present</b></td><td>≥1 item reverted</td><td>The regression is surfaced above the ordinary list — it is more urgent than a new opportunity, because it was already believed</td></tr><tr><td>Not verifiable</td><td>Done, no computable baseline</td><td>"Not verifiable" with the reason. Never a zero</td></tr><tr><td>Error</td><td>Verification or scan failed</td><td>What failed, when it was last good, and what still holds</td></tr><tr><td>Permission</td><td>Viewer without assign rights</td><td>Read the ledger, cannot change status or owner</td></tr></tbody></table></div>
+<h3>Data fields</h3>
+<div class='tbl'><table><thead><tr><th>Field</th><th>Source</th><th>Example</th><th>Notes</th></tr></thead><tbody><tr><td>Recommendation id</td><td><b>new</b></td><td><code>rec_014</code></td><td></td></tr><tr><td>Title</td><td><b>new</b></td><td><code>Snowflake warehouse runs all weekend</code></td><td></td></tr><tr><td>Type</td><td><b>new</b></td><td><code>Idle</code> / <code>Rightsizing</code> / <code>Commitment</code></td><td>Finout's three documented categories</td></tr><tr><td>Service</td><td><code>services.name</code></td><td><code>Snowflake Warehouse</code></td><td>service_id 17</td></tr><tr><td>Provider</td><td><code>services.provider</code></td><td><code>Snowflake</code></td><td></td></tr><tr><td>Team</td><td><code>teams.name</code></td><td><code>Data</code></td><td>Owning team</td></tr><tr><td>Owner</td><td><b>new</b></td><td>person, not team</td><td>D2. <code>Avatar</code> exists for this</td></tr><tr><td>Status</td><td><b>new</b></td><td><code>New</code> · <code>Working on it</code> · <code>Done</code> · <code>Dismissed</code></td><td>D5</td></tr><tr><td>Regressed</td><td><b>derived</b></td><td>boolean + <code>regressed_at</code></td><td>D4. Never set by hand</td></tr><tr><td>Projected saving</td><td><b>new</b></td><td><code>$2,075 / month</code></td><td></td></tr><tr><td>Realized saving</td><td><b>derived from <code>cost_events</code></b></td><td><code>$2,075 / month</code> or <code>Not verifiable</code></td><td>D3, D6</td></tr><tr><td>Baseline window</td><td><b>new</b></td><td><code>2026-04-01 → 2026-06-05</code></td><td>Makes the claim auditable</td></tr><tr><td>Created / Done at</td><td><b>new</b></td><td><code>2026-06-06</code> / <code>—</code></td><td>Drives age and time-to-done</td></tr><tr><td>Age</td><td>derived</td><td><code>92 days</code></td><td></td></tr><tr><td>Confidence</td><td><b>new</b></td><td><code>high</code> / <code>medium</code> / <code>low</code></td><td>Only if the scan supplies it; omit rather than invent</td></tr><tr><td>Dismiss reason</td><td><b>new</b></td><td>free text</td><td>D7</td></tr></tbody></table></div>
+<p><b>A <code>recommendations</code> table does not exist and is part of this work.</b> Everything in the Realized column is computable from <code>cost_events</code> today — that is the point, and it is why this screen is buildable rather than aspirational.</p>
+<h3>Components</h3>
+<p><b>Reuse</b> — from the inventory in <code>DESIGN_CONTEXT.md</code>:</p>
+<ul><li><code>Sidebar</code> with <code>activeItem="CostGuard"</code></li><li><code>TopNav</code>, <code>PageTitleBar</code> — match <code>AnomaliesScreen.tsx</code></li><li><code>Tabs</code> — the ledger's cuts (All / Open / Done / Regressed / Dismissed)</li><li><code>ChipFilter</code> pattern from <code>AnomaliesScreen.tsx</code> — provider, team, type, owner</li><li><code>SearchInput</code>, <code>Select</code></li><li><code>TableShell</code>, <code>HeaderCell</code>, <code>Cell</code>, <code>CellText</code>, <code>MenuCell</code>, <code>CheckboxCell</code></li><li><code>Button</code> — primary for the row action, tertiary for bulk</li><li><code>Avatar</code> — the owner cell</li><li>KPI row: follow the equal-width card rule; <code>KpiCard</code> currently lives under <code>components/home/</code> and would need lifting to be shared — flag as a small refactor, not a new component</li></ul>
+<p><b>New</b> — each one a cost:</p>
+<ul><li><b>Status badge</b> — five states including Regressed. <i>Extend the existing <code>Badge</code> with a status variant rather than build a new component.</i> Reusable on <code>/anomalies</code> immediately.</li><li><b>Savings delta</b> — projected vs realized in one cell, including the "Not verifiable" case. Nothing existing shows two related figures with a verdict. Reusable wherever forecast meets actual, e.g. <code>budgets</code>.</li><li><b>Bulk action bar</b> — appears on row selection, shows count and combined $/month. <code>CheckboxCell</code> already exists and currently leads nowhere.</li></ul>
+<p>Not proposing layout, hierarchy or visual treatment. Those belong to design.</p>
+<h2>Appendix — how the numbers were derived</h2>
+<p>Computed from <code>workshop-data/seed.sql</code>, all 12,172 <code>cost_events</code> rows parsed.</p>
+<p><b>Snowflake Warehouse (service 17)</b></p>
+<ul><li>Baseline 1 Apr – 5 Jun: weekday $383/day, weekend $155/day = <b>40%</b></li><li>Since 6 Jun: weekday $389/day, weekend $390/day = <b>100%</b></li><li>Expected weekend at baseline ratio: $157/day → excess <b>$233/weekend-day</b></li><li>24 weekend days → <b>$5,596 total ≈ $2,075/month</b></li></ul>
+<p><b>EKS Cluster (service 1)</b> — the second undetected story</p>
+<ul><li>1–14 Apr: $32,398 over 668,792 vCPU-hours = <b>$0.0484/vCPU-h</b></li><li>13–26 Aug: $37,898 over 698,503 vCPU-hours = <b>$0.0543/vCPU-h</b></li><li>Unit cost <b>+12.2%</b> while usage rose 4.4% → ≈<b>$8,950/month</b> of drift</li></ul>
+<p><b>Two discrepancies with <code>workshop-data/README.md</code>, flagged not resolved:</b></p>
+<ol><li>The README states the Snowflake gap is <b>~$1,412/mo</b>; computing from the rows gives <b>$2,075/mo</b>. Different baseline method, most likely. The computed figure is used here because it is reproducible from the data.</li><li>The README describes <b>three</b> flagged anomalies. The <code>anomalies</code> table contains <b>five</b>: Anthropic API, BigQuery, Datadog Logs, <b>EC2 Instances</b> and <b>S3 Storage</b>. The last two are not mentioned in the README. Only three carry a <code>cost_impact_usd</code>.</li></ol>
+<p>Neither affects the design. Both should be reconciled before the workshop, since participants will compute these themselves.</p>
+</article>
+</body>
+</html>

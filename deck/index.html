@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design the screen the product forgot — Finout · CostGuard</title>
+<style>
+:root{
+  /* neutral scale from the reference deck */
+  --grey-100:#fafafa; --grey-200:#f5f5f5; --grey-300:#efeff0; --grey-400:#e4e5e7;
+  --grey-600:#c5c6c9; --grey-800:#95979d; --grey-1000:#62646a; --grey-1100:#404145; --grey-1200:#222325;
+  --white:#fff;
+  --ink:var(--grey-1200); --body:var(--grey-1100); --muted:var(--grey-1000);
+  --faint:var(--grey-800); --border:var(--grey-400); --divide:var(--grey-300); --paper:var(--white);
+  /* semantics borrowed from the product itself */
+  --good:#027a48; --good-bg:#ecfdf3; --bad:#d92d20; --bad-bg:#fef3f2; --link:#1570ef;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+html,body{height:100%;}
+body{margin:0;font-family:'Macan','Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--body);
+  background:radial-gradient(120% 120% at 100% 0%,#fafafa 0%,#fff 55%);-webkit-font-smoothing:antialiased;overflow:hidden;}
+.deck{position:fixed;inset:0;}
+.deck-progress{position:fixed;top:0;inset-inline:0;height:3px;background:var(--divide);z-index:20;}
+.deck-progress>i{display:block;height:100%;width:0;background:var(--ink);transition:width .4s var(--ease-out);}
+.deck-brand{position:fixed;top:22px;inset-inline-end:32px;z-index:20;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint);display:flex;align-items:center;gap:8px;}
+.deck-brand b{color:var(--ink);font-weight:600;letter-spacing:0;text-transform:none;}
+.deck-dot{width:7px;height:7px;border-radius:50%;background:var(--ink);}
+
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(40px,7vw,110px);box-sizing:border-box;opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .6s var(--ease-out),transform .6s var(--ease-out),visibility 0s linear .6s;}
+.slide.is-active{opacity:1;visibility:visible;transform:none;
+  transition:opacity .6s var(--ease-out),transform .6s var(--ease-out);}
+.slide.is-active [data-stagger]{animation:rise .6s var(--ease-out) both;}
+.slide.is-active [data-stagger="1"]{animation-delay:80ms;} .slide.is-active [data-stagger="2"]{animation-delay:160ms;}
+.slide.is-active [data-stagger="3"]{animation-delay:240ms;} .slide.is-active [data-stagger="4"]{animation-delay:320ms;}
+.slide.is-active [data-stagger="5"]{animation-delay:400ms;} .slide.is-active [data-stagger="6"]{animation-delay:480ms;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+.wrap{width:100%;max-width:1060px;margin-inline:auto;}
+.wrap.wide{max-width:1240px;}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 18px;}
+.eyebrow .num{color:var(--ink);font-weight:600;}
+h1.title{font-weight:700;color:var(--ink);font-size:clamp(40px,6.2vw,84px);line-height:1.02;letter-spacing:-.02em;margin:0 0 22px;}
+h2.head{font-weight:700;color:var(--ink);font-size:clamp(30px,4.4vw,54px);line-height:1.05;letter-spacing:-.015em;margin:0 0 24px;}
+h2.head.sm{font-size:clamp(26px,3.2vw,40px);}
+.lead{font-size:clamp(17px,1.5vw,21px);line-height:1.55;color:var(--body);max-width:64ch;margin:0;}
+.sub{font-size:14px;color:var(--muted);}
+.rule{height:1px;background:var(--divide);border:0;margin:28px 0;}
+em{font-style:normal;color:var(--ink);font-weight:600;}
+
+.cards{display:grid;gap:18px;margin-top:8px;}
+.cards.cols-3{grid-template-columns:repeat(3,1fr);} .cards.cols-2{grid-template-columns:repeat(2,1fr);}
+.card{background:var(--paper);border:1px solid var(--border);border-radius:16px;padding:22px 20px;
+  transition:transform .32s var(--ease-out),border-color .32s var(--ease-out);}
+.card:hover{transform:translateY(-3px);border-color:var(--grey-600);}
+.card .k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 10px;}
+.card h3{font-weight:600;color:var(--ink);font-size:18px;margin:0 0 8px;}
+.card p{font-size:14px;line-height:1.5;color:var(--muted);margin:0;}
+code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--ink);background:var(--grey-200);
+  border:1px solid var(--border);border-radius:5px;padding:1px 5px;}
+.note-strip{margin-top:22px;font-size:15px;line-height:1.55;color:var(--body);border-inline-start:3px solid var(--ink);padding-inline-start:14px;}
+.note-strip.bad{border-color:var(--bad);}
+
+.prompt-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--paper);margin-top:8px;}
+.pc-top{display:flex;align-items:center;gap:9px;padding:12px 18px;border-bottom:1px solid var(--divide);background:var(--grey-100);}
+.pc-avatar{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:600;}
+.pc-who{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+.pc-who .cmd{font-family:ui-monospace,Menlo,monospace;letter-spacing:0;text-transform:none;color:var(--ink);
+  background:var(--grey-200);border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin-inline-start:8px;}
+.pc-body{padding:20px;font-size:16px;line-height:1.6;color:var(--ink);}
+
+/* ── prompt anatomy (slide 12) ── */
+.pa-layout{display:grid;grid-template-columns:1.55fr 1fr;gap:24px;align-items:stretch;margin-top:8px;}
+.pa-layout .prompt-card{margin-top:0;display:flex;flex-direction:column;cursor:pointer;}
+.pc-hint{margin-inline-start:auto;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--good);
+  letter-spacing:.06em;animation:pa-blink 1.4s infinite;}
+@keyframes pa-blink{50%{opacity:.25;}}
+.pa-body{padding:18px 20px;font-family:ui-monospace,Menlo,monospace;font-size:14.5px;line-height:1.8;color:var(--faint);flex:1;}
+.pa-body .seg{border-radius:5px;padding:1px 3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;
+  transition:color .4s var(--ease-out),background .4s var(--ease-out),box-shadow .4s var(--ease-out);}
+.pa-body .seg.lit{color:var(--ink);}
+.seg.lit[data-el="persona"]{background:#efedff;box-shadow:inset 0 -2px 0 #6355f5;}
+.seg.lit[data-el="purpose"]{background:var(--good-bg);box-shadow:inset 0 -2px 0 var(--good);}
+.seg.lit[data-el="triggers"]{background:#fffaeb;box-shadow:inset 0 -2px 0 #b54708;}
+.seg.lit[data-el="context"]{background:#fff4ed;box-shadow:inset 0 -2px 0 #b93815;}
+.seg.lit[data-el="reference"],
+.seg.lit[data-el="method"]{background:#eef4ff;box-shadow:inset 0 -2px 0 #3538cd;}
+.seg.lit[data-el="tools"],.seg.lit[data-el="success"]{background:#f0fdf9;box-shadow:inset 0 -2px 0 #0e9384;}
+.pa-addhead{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:#0e9384;margin-top:14px;opacity:0;transition:opacity .4s var(--ease-out);}
+.pa-addhead.lit{opacity:1;}
+.pa-add{display:block;margin-top:10px;padding:10px 14px;border-radius:10px;background:#f0fdf9;border:1px solid #99f6e0;
+  color:#134e48;opacity:0;transform:translateY(8px);transition:opacity .45s var(--ease-out),transform .45s var(--ease-out);}
+.pa-add .plus{color:#0e9384;font-weight:700;margin-inline-end:8px;}
+.pa-add.lit{opacity:1;transform:none;}
+.pa-foot{padding:10px 20px;border-top:1px solid var(--divide);background:var(--grey-100);
+  font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--muted);}
+.pa-foot a{color:var(--link);text-decoration:none;}
+.pa-legend{display:flex;flex-direction:column;gap:8px;justify-content:center;}
+.pa-item{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:9px 14px;
+  display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;opacity:.35;filter:saturate(.2);
+  transition:opacity .4s var(--ease-out),filter .4s var(--ease-out),border-color .4s var(--ease-out),background .4s var(--ease-out);}
+.pa-item.lit{opacity:1;filter:none;}
+.pa-item .pk{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--faint);font-weight:600;text-align:center;}
+.pa-item .pt{display:block;font-size:13.5px;font-weight:600;color:var(--ink);}
+.pa-item .pd{display:block;font-size:12px;color:var(--muted);line-height:1.4;margin-top:1px;}
+.pa-item.lit[data-el="persona"]{border-color:#6355f5;} .pa-item.lit[data-el="persona"] .pk{color:#6355f5;}
+.pa-item.lit[data-el="purpose"]{border-color:var(--good);} .pa-item.lit[data-el="purpose"] .pk{color:var(--good);}
+.pa-item.lit[data-el="triggers"]{border-color:#b54708;} .pa-item.lit[data-el="triggers"] .pk{color:#b54708;}
+.pa-item.lit[data-el="context"]{border-color:#b93815;} .pa-item.lit[data-el="context"] .pk{color:#b93815;}
+.pa-item.lit[data-el="method"]{border-color:#3538cd;} .pa-item.lit[data-el="method"] .pk{color:#3538cd;}
+.pa-item.lit[data-el="tools"],.pa-item.lit[data-el="success"]{border-color:#0e9384;background:#f0fdf9;}
+.pa-item.lit[data-el="tools"] .pk,.pa-item.lit[data-el="success"] .pk{color:#0e9384;}
+#pa-note{min-height:48px;transition:border-color .4s var(--ease-out);}
+#pa-note.done{border-color:#0e9384;}
+@media(max-width:900px){.pa-layout{grid-template-columns:1fr;}}
+
+.steps{display:grid;gap:12px;margin-top:6px;}
+.steprow{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;}
+.steprow .n{width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;}
+.steprow .t{font-weight:600;color:var(--ink);font-size:16px;margin:2px 0 0;}
+.steprow .d{font-size:13.5px;color:var(--muted);margin:2px 0 0;}
+.tag{align-self:center;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:4px 10px;white-space:nowrap;}
+.tag.ok{background:var(--good-bg);color:var(--good);} .tag.soon{background:var(--bad-bg);color:var(--bad);}
+
+.tree{font-family:ui-monospace,Menlo,monospace;font-size:13.5px;line-height:1.7;color:var(--body);
+  background:var(--grey-100);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:8px;white-space:pre;overflow:auto;}
+.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.pill{font-size:13.5px;color:var(--ink);border:1px solid var(--border);border-radius:999px;padding:8px 14px;background:var(--paper);}
+.pill.dim{color:var(--faint);}
+.takeaways{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:14px;}
+.takeaways li{display:flex;gap:14px;align-items:flex-start;font-size:17px;line-height:1.5;color:var(--body);}
+.takeaways .b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:13px;}
+
+.btn{display:inline-block;margin-top:22px;padding:12px 24px;border:1.5px solid var(--ink);border-radius:999px;
+  color:var(--ink);font-weight:600;font-size:15px;text-decoration:none;
+  transition:background .3s var(--ease-out),color .3s var(--ease-out);}
+.btn:hover{background:var(--ink);color:#fff;}
+.deck-embed{position:relative;margin-top:18px;border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  box-shadow:0 18px 40px -22px rgba(16,24,40,.35);aspect-ratio:16/9;max-height:48vh;pointer-events:none;background:#fff;}
+.deck-embed iframe{width:200%;height:200%;border:0;transform:scale(.5);transform-origin:0 0;display:block;}
+.doc-embed{margin-top:18px;border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  box-shadow:0 18px 40px -22px rgba(16,24,40,.35);height:52vh;background:#fff;}
+.doc-embed iframe{width:100%;height:100%;border:0;display:block;}
+
+.stat{display:flex;align-items:baseline;gap:20px;margin:0 0 8px;}
+.stat .n{font-weight:700;color:var(--ink);font-size:clamp(64px,10vw,132px);line-height:.86;letter-spacing:-.04em;}
+.stat .u{font-size:clamp(16px,1.6vw,21px);color:var(--muted);max-width:22ch;}
+
+.shot{width:100%;display:block;border:1px solid var(--border);border-radius:14px;box-shadow:0 18px 40px -22px rgba(16,24,40,.35);}
+.split{display:grid;grid-template-columns:1.35fr 1fr;gap:34px;align-items:center;}
+.split.rev{grid-template-columns:1fr 1.35fr;}
+.figrow{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.figrow figure{margin:0;}
+.figrow figcaption{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:10px;}
+.figrow figcaption b{color:var(--ink);}
+
+.repro{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-top:6px;}
+.kpi-mini{width:300px;background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.kpi-mini .t{font-size:16px;font-weight:600;color:var(--ink);}
+.kpi-mini .v{font-size:28px;font-weight:700;color:var(--ink);margin:12px 0 14px;letter-spacing:-.02em;}
+.kpi-mini .b{display:block;text-align:center;border:1px solid var(--border);border-radius:8px;padding:8px;font-size:14px;font-weight:600;color:var(--ink);}
+.arrow{font-size:28px;color:var(--faint);}
+.toast{background:#101828;color:#fff;border-radius:8px;padding:10px 16px;font-size:14px;line-height:20px;white-space:nowrap;
+  box-shadow:0 4px 8px -2px rgba(16,24,40,.1),0 2px 4px -2px rgba(16,24,40,.06);}
+
+.deck-nav{position:fixed;bottom:24px;inset-inline-start:32px;z-index:20;display:flex;align-items:center;gap:14px;}
+.nav-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--paper);color:var(--ink);
+  display:grid;place-items:center;cursor:pointer;transition:border-color .32s var(--ease-out),transform .2s var(--ease-out);}
+.nav-btn:hover{border-color:var(--ink);} .nav-btn:active{transform:scale(.94);} .nav-btn:disabled{opacity:.35;cursor:default;}
+.nav-btn svg{width:18px;height:18px;}
+.counter{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;} .counter b{color:var(--ink);}
+.hint{position:fixed;bottom:28px;inset-inline-end:32px;z-index:20;font-size:12px;color:var(--faint);}
+.hint kbd{font-family:inherit;border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 7px;color:var(--muted);background:var(--paper);}
+
+.deck-tabs{position:fixed;top:17px;inset-inline-start:30px;z-index:20;display:flex;align-items:center;gap:0;
+  flex-wrap:wrap;max-width:min(74vw,940px);}
+.dtab{display:flex;align-items:center;gap:7px;border:0;background:transparent;cursor:pointer;font:inherit;
+  font-size:12.5px;color:var(--faint);padding:7px 12px;border-radius:999px;white-space:nowrap;
+  transition:background .32s var(--ease-out),color .32s var(--ease-out);}
+.dtab .n{font-variant-numeric:tabular-nums;font-size:10.5px;letter-spacing:.06em;opacity:.7;}
+.dtab:hover{color:var(--ink);}
+.dtab.done{color:var(--muted);}
+.dtab.on{background:var(--ink);color:#fff;}
+.dtab.on .n{opacity:.65;}
+.dsep{color:var(--grey-600);font-size:13px;line-height:1;user-select:none;margin:0 2px;}
+.sec-dots{display:flex;gap:4px;margin-inline-start:6px;}
+.sec-dots i{width:5px;height:5px;border-radius:50%;background:var(--grey-400);transition:background .3s var(--ease-out);}
+.sec-dots i.on{background:var(--ink);}
+@media(max-width:1180px){.dtab{padding:6px 9px;font-size:11.5px;} .dtab .lbl{display:none;} .dtab .n{opacity:1;font-size:12px;}}
+
+@media(max-width:900px){.cards.cols-3,.cards.cols-2,.split,.split.rev,.figrow{grid-template-columns:1fr;}.hint{display:none;}}
+@media(prefers-reduced-motion:reduce){
+  .slide,.slide.is-active [data-stagger],.card,.nav-btn,.deck-progress>i,
+  .seg,.pa-add,.pa-item,.pa-addhead,.pc-hint{transition:none!important;animation:none!important;}
+  .slide.is-active [data-stagger]{opacity:1!important;transform:none!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="deck-progress"><i id="bar"></i></div>
+<div class="deck-brand"><span>Design AI · Workshop</span><span class="deck-dot"></span><b>Finout</b></div>
+
+<nav class="deck-tabs" id="tabs" aria-label="Sections"></nav>
+
+<div class="deck" id="deck">
+
+  <!-- ═════════ ACT 1 · THE PROBLEM ═════════ -->
+
+  <section class="slide is-active" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">01</span> — Finout · CostGuard</p>
+      <h1 class="title" data-stagger="2">Design the screen<br>the product forgot.</h1>
+      <p class="lead" data-stagger="3">A product manager, a design researcher and a product designer — none of them human — build a real screen for a real product, in one session.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">02</span> — The product</p>
+      <h2 class="head" data-stagger="2">Finout turns a pile of cloud bills into one number you can argue about.</h2>
+      <div class="cards cols-3" data-stagger="3">
+        <div class="card"><p class="k">Inform</p><h3>Where did it go?</h3><p>AWS, GCP, Azure, Kubernetes, Snowflake, Datadog, OpenAI — one bill, and one answer to “whose is it?”</p></div>
+        <div class="card"><p class="k">Optimize</p><h3>What is wasted?</h3><p>Find the things you pay for and do not use.</p></div>
+        <div class="card"><p class="k">Operate</p><h3>Who owns it?</h3><p>Budgets, owners, and whether anyone is acting.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">03</span> — Where it started</p>
+      <h2 class="head sm" data-stagger="2">Five screens rebuilt exactly. Then you click this.</h2>
+      <div class="repro" data-stagger="3">
+        <div class="kpi-mini">
+          <div class="t">Monthly potential savings</div>
+          <div class="v">$26,802</div>
+          <div class="b">Go to CostGuard</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="toast">CostGuard is next in the workshop 😉</div>
+      </div>
+      <p class="note-strip" data-stagger="4">And it wasn't the only one — <em>12 of 16 sidebar items led nowhere.</em> A product full of promises somebody has already justified.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">04</span> — The choice</p>
+      <h2 class="head" data-stagger="2">I picked the screen I knew nothing about.</h2>
+      <p class="lead" data-stagger="3">CostGuard. Never used it, never seen it, no PRD, no reference. That was the point — <em>if the method works, it has to work on a screen its designer can't fake from experience.</em> So the research starts from zero.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">05</span> — The brief</p>
+      <h2 class="head sm" data-stagger="2">CostGuard is five stages. Two don't exist.</h2>
+      <div class="steps" data-stagger="3">
+        <div class="steprow"><span class="n">1</span><span><p class="t">Unify</p><p class="d">One list from every cloud and third-party tool</p></span><span class="tag ok">Shipped</span></div>
+        <div class="steprow"><span class="n">2</span><span><p class="t">Prioritize</p><p class="d">Strip out the low-value noise</p></span><span class="tag ok">Shipped</span></div>
+        <div class="steprow"><span class="n">3</span><span><p class="t">Own</p><p class="d">Assign to a team automatically, via Virtual Tags</p></span><span class="tag ok">Shipped</span></div>
+        <div class="steprow"><span class="n">4</span><span><p class="t">Act</p><p class="d">Push the task to Jira</p></span><span class="tag soon">Coming soon</span></div>
+        <div class="steprow"><span class="n">5</span><span><p class="t">Prove</p><p class="d">Show the savings that were actually realised</p></span><span class="tag soon">Coming soon</span></div>
+      </div>
+      <p class="note-strip" data-stagger="4">Not our guess — <em>Finout's own site says so.</em> So that is the brief: <em>don't design the list. Design what happens after it.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="1">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">06</span> — One rule for today</p>
+      <h2 class="head" data-stagger="2">We are designing it blind.</h2>
+      <p class="lead" data-stagger="3">The brief came from their marketing site — but we have deliberately not looked at the real CostGuard screens. We will build from the data, the design system and first principles — and compare at the end. Everything from here on is the method: <em>skills, research, screen.</em></p>
+    </div>
+  </section>
+
+  <!-- ═════════ ACT 2 · THE METHOD ═════════ -->
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">09</span> — The method</p>
+      <h2 class="head" data-stagger="2">Ask an AI for a screen, and you get a screen anyone could have made.</h2>
+      <p class="lead" data-stagger="3">It does not know your components, your grid, your data, or the twelve promises your product has already broken. So it invents all of them — plausibly, and wrongly.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">10</span> — The fix</p>
+      <h2 class="head" data-stagger="2">It isn't a better prompt. It's onboarding.</h2>
+      <p class="lead" data-stagger="3">A skill is the document you would hand a new hire on day one — where the tokens live, which components already exist, what the data can and cannot answer, which arguments are already settled. Written once, read every time.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">11</span> — The pipeline</p>
+      <h2 class="head" data-stagger="2">Three roles. One chain.</h2>
+      <div class="cards cols-3" data-stagger="3">
+        <div class="card"><p class="k">Role 1</p><h3><code>finout-pm</code></h3><p>What should exist, and why.<br><b style="color:var(--good)">→ a PRD</b></p></div>
+        <div class="card"><p class="k">Role 2</p><h3><code>finout-design-research</code></h3><p>How everyone else solved it.<br><b style="color:var(--good)">→ a study, a deck, a Figma board</b></p></div>
+        <div class="card"><p class="k">Role 3</p><h3><code>/senior-product-designer</code></h3><p>What it looks like, built.<br><b style="color:var(--good)">→ the screen</b></p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">Each one's output is the next one's input. Not three chats — one chain.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2" id="pa-slide">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">12</span> — Skill one · the method</p>
+      <h2 class="head sm" data-stagger="2">One prompt. Seven parameters.</h2>
+      <div class="pa-layout" data-stagger="3">
+        <div class="prompt-card" id="pa-card">
+          <div class="pc-top"><span class="pc-avatar">D</span><span class="pc-who">Daniel<span class="cmd">/skill-creator</span></span><span class="pc-hint" id="pa-hint">→ break it apart</span></div>
+          <div class="pa-body"><span class="seg" data-el="persona">I want a product manager for this product</span><span class="seg" data-el="purpose"> that helps me write specs and PRDs, runs competitor research,</span><span class="seg" data-el="triggers"> and thinks with me about every new feature and new screen before I build it.</span><span class="seg" data-el="context"> It is connected to the code structure, the design system, and everything in this repo.</span><span class="seg" data-el="reference"> Use github.com/RefoundAI/lenny-skills as your reference for how strong PM skills are built.</span><span class="seg" data-el="purpose"> The main reason: help me characterize and make better decisions about the pages I want to create.</span><span class="seg" data-el="method"> Ask me questions to clarify my idea before you write anything.</span>
+            <div class="pa-addhead" id="pa-addhead">What was missing ↓</div>
+            <div class="pa-add" data-el="tools"><span class="plus">+</span>Use the finout-data MCP to pull real numbers — never invent a figure.</div>
+            <div class="pa-add" data-el="success"><span class="plus">+</span>Done = a PRD a designer can build the screen from without asking me a single question.</div>
+          </div>
+          <div class="pa-foot">reference → <a href="https://github.com/RefoundAI/lenny-skills" target="_blank" rel="noopener">github.com/RefoundAI/lenny-skills</a></div>
+        </div>
+        <div class="pa-legend">
+          <div class="pa-item" data-el="persona"><span class="pk">01</span><span><span class="pt">Persona</span><span class="pd">The role it wears. A PM, not “an assistant”.</span></span></div>
+          <div class="pa-item" data-el="purpose"><span class="pk">02</span><span><span class="pt">Purpose</span><span class="pd">What it produces, and why that is worth having.</span></span></div>
+          <div class="pa-item" data-el="triggers"><span class="pk">03</span><span><span class="pt">Triggers</span><span class="pd">When it wakes up: a new feature, a new screen.</span></span></div>
+          <div class="pa-item" data-el="context"><span class="pk">04</span><span><span class="pt">Context</span><span class="pd">This repo: the code, the design system, the data.</span></span></div>
+          <div class="pa-item" data-el="method"><span class="pk">05</span><span><span class="pt">Method</span><span class="pd">How it thinks: questions <em>before</em> answers — plus a reference of what “good” looks like.</span></span></div>
+          <div class="pa-item" data-el="tools"><span class="pk">06</span><span><span class="pt">Tools · MCP</span><span class="pd">Hands: finout-data supplies the real numbers.</span></span></div>
+          <div class="pa-item" data-el="success"><span class="pk">07</span><span><span class="pt">Success</span><span class="pd">What “done” means, so it has something to aim at.</span></span></div>
+        </div>
+      </div>
+      <p class="note-strip" data-stagger="4" id="pa-note">Five sentences, close to what was typed. <em>Six parameters already inside.</em> Press → to see where each one sits.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2" id="pa-slide2">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">13</span> — Skill two · the method</p>
+      <h2 class="head sm" data-stagger="2">Same method. Different holes.</h2>
+      <div class="pa-layout" data-stagger="3">
+        <div class="prompt-card">
+          <div class="pc-top"><span class="pc-avatar">D</span><span class="pc-who">Daniel<span class="cmd">/skill-creator</span></span><span class="pc-hint">→ break it apart</span></div>
+          <div class="pa-body"><span class="seg" data-el="persona">Create a design research skill</span><span class="seg" data-el="purpose"> that sees how our competitors design the features we want to build.</span><span class="seg" data-el="tools"> It connects to the Mobbin MCP and gets real references.</span><span class="seg" data-el="context"> Its “brain” comes from our competitive-analyst agent.</span><span class="seg" data-el="success"> It delivers HTML slides plus the Mobbin references, so we can paste them into the presentation and into Figma.</span><span class="seg" data-el="method"> Ask me questions to make it better.</span>
+            <div class="pa-addhead">What was missing ↓</div>
+            <div class="pa-add" data-el="triggers"><span class="plus">+</span>Wake up whenever we start a new feature or screen — right after the PM hands over the PRD.</div>
+            <div class="pa-add" data-el="reference"><span class="plus">+</span>Use github.com/RefoundAI/lenny-skills as your reference for how strong skills are built.</div>
+          </div>
+          <div class="pa-foot">reference → <a href="https://github.com/RefoundAI/lenny-skills" target="_blank" rel="noopener">github.com/RefoundAI/lenny-skills</a></div>
+        </div>
+        <div class="pa-legend">
+          <div class="pa-item" data-el="persona"><span class="pk">01</span><span><span class="pt">Persona</span><span class="pd">The role it wears. A researcher, not a mood board.</span></span></div>
+          <div class="pa-item" data-el="purpose"><span class="pk">02</span><span><span class="pt">Purpose</span><span class="pd">Evidence: how competitors design what we’re about to.</span></span></div>
+          <div class="pa-item" data-el="triggers"><span class="pk">03</span><span><span class="pt">Triggers</span><span class="pd">When it wakes: right after the PRD lands.</span></span></div>
+          <div class="pa-item" data-el="context"><span class="pk">04</span><span><span class="pt">Context</span><span class="pd">Its brain: the competitive-analyst agent, plus this repo.</span></span></div>
+          <div class="pa-item" data-el="method"><span class="pk">05</span><span><span class="pt">Method</span><span class="pd">How it thinks: questions <em>before</em> answers — plus a reference of what “good” looks like.</span></span></div>
+          <div class="pa-item" data-el="tools"><span class="pk">06</span><span><span class="pt">Tools · MCP</span><span class="pd">Hands: Mobbin brings the real screens.</span></span></div>
+          <div class="pa-item" data-el="success"><span class="pk">07</span><span><span class="pt">Success</span><span class="pd">Slides + references, ready for the deck and for Figma.</span></span></div>
+        </div>
+      </div>
+      <p class="note-strip" data-stagger="4">Five sentences, close to what was typed. <em>Six parameters — but not the same six.</em> Press → to see which.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">14</span> — What both prompts have in common</p>
+      <h2 class="head" data-stagger="2">Seven parameters. Neither had them all.</h2>
+      <p class="lead" data-stagger="3">Skill one forgot its <em>tools</em> and its <em>definition of done</em>. Skill two forgot its <em>triggers</em> — and half its method, <em>the reference</em>. That is what the checklist is for: not a longer prompt, but <em>seeing what is missing before it costs a rebuild</em>. And note what still isn't in either one: no format, no sections, no tone. The structure comes out of the conversation.</p>
+      <p class="note-strip" data-stagger="4">This is the part people get backwards. A longer prompt does not make a better skill. A prompt that walks the checklist — and still ends with <em>ask me questions</em> — does.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">15</span> — Skill one</p>
+      <h2 class="head" data-stagger="2">It asked before it built.</h2>
+      <ul class="takeaways" data-stagger="3">
+        <li><span class="b">?</span><span><em>How wide should this be?</em> A skill for this one brief, or a PM for any Finout screen?</span></li>
+        <li><span class="b">?</span><span><em>Who does competitor research?</em> Market and features here — or UI patterns, which belong to the next skill?</span></li>
+      </ul>
+      <p class="note-strip" data-stagger="4">Two questions, two minutes. Without them we would have built a one-page generator and called it a pipeline.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">16</span> — Skill two</p>
+      <h2 class="head" data-stagger="2">It asked too.</h2>
+      <ul class="takeaways" data-stagger="3">
+        <li><span class="b">?</span><span><em>How literal is “agent”?</em> Expertise baked into the skill, or real subagents fanning out per competitor?</span></li>
+        <li><span class="b">?</span><span><em>What lands in Figma?</em> Raw screenshots, or an annotated board with a comparison matrix?</span></li>
+        <li><span class="b">?</span><span><em>What shape are the slides?</em> Standalone, or the same deck shell as everything else?</span></li>
+      </ul>
+      <p class="note-strip" data-stagger="4">Three questions. Each one would have been a rebuild if we had guessed wrong.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">17</span> — Five questions, in total</p>
+      <h2 class="head" data-stagger="2">Every one would have been a rebuild.</h2>
+      <div class="cards cols-2" data-stagger="3">
+        <div class="card"><p class="k">If we had guessed narrow</p><h3>A one-page generator</h3><p>A skill that writes this one brief and nothing else. No pipeline, and nothing to take home.</p></div>
+        <div class="card"><p class="k">If we had guessed raw images</p><h3>A mood board</h3><p>Screenshots with no matrix and no point of view — inspiration, not research.</p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">The questions took about four minutes. Answering them wrong would have cost the session.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">18</span> — Skill one</p>
+      <h2 class="head" data-stagger="2">What it became.</h2>
+      <div class="tree" data-stagger="3">.claude/skills/finout-pm/
+├── SKILL.md              how to think, and what to read first
+└── references/
+    ├── product-context.md  Finout, CostGuard, the 12 dead ends, the data
+    ├── frameworks.md       shaping, the 1-pager rubric, the review checklist
+    └── prd-template.md     the output shape — and the handoff contract</div>
+      <div class="cards cols-2" data-stagger="4" style="margin-top:18px">
+        <div class="card"><h3>Start from a broken promise</h3><p>Twelve of them are sitting in the sidebar already.</p></div>
+        <div class="card"><h3>Never invent a number</h3><p>Every figure traces to the code or the data, or it doesn't ship.</p></div>
+        <div class="card"><h3>Name the data you don't have</h3><p>Our costs are per service; CostGuard is per resource. Say so.</p></div>
+        <div class="card"><h3>Price every new component</h3><p>Stay inside the design system, and treat additions as a cost.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">19</span> — Skill two</p>
+      <h2 class="head" data-stagger="2">What it became.</h2>
+      <div class="tree" data-stagger="3">.claude/skills/finout-design-research/
+├── SKILL.md                 the research loop, and how to read a reference
+├── references/
+│   ├── analysis-framework.md  three bands, the matrix, the opportunity
+│   ├── mobbin-playbook.md     how to query, and how to get the images
+│   └── figma-board.md         what goes on the board, in what order
+└── assets/
+    └── deck-template.html   slides, pre-wired</div>
+      <p class="note-strip" data-stagger="4">Its hardest rule: <em>every reference must name what it gets wrong.</em> A board where everything is excellent is a board where nobody looked.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">20</span> — Skill two, proof</p>
+      <h2 class="head sm" data-stagger="2">One query. Real prior art.</h2>
+      <div class="figrow" data-stagger="3">
+        <figure>
+          <img class="shot" src="./assets/aws-recommended-actions.webp" alt="AWS Billing and Cost Management showing a Recommended actions panel">
+          <figcaption><b>AWS</b> puts recommendations beside the spend as dismissible cards — but no owner, no status, no age. Dismissing looks the same as doing.</figcaption>
+        </figure>
+        <figure>
+          <img class="shot" src="./assets/snowflake-cost-insights.webp" alt="Snowflake Cost Management showing a Cost insights panel">
+          <figcaption><b>Snowflake</b> lists every check it ran and ticks the ones that found nothing. The best empty state in the study — absence becomes evidence.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="2">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">21</span> — Skill three</p>
+      <h2 class="head" data-stagger="2">The third one, we didn't build.</h2>
+      <p class="lead" data-stagger="3"><code>/senior-product-designer</code> already existed. Knowing when <em>not</em> to build is part of the same skill as knowing how.</p>
+    </div>
+  </section>
+
+  <!-- ═════════ ACT 3 · THE WORKFLOW ═════════ -->
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">21</span> — The workflow</p>
+      <h1 class="title" data-stagger="2">Now we run the chain.</h1>
+      <div class="steps" data-stagger="3" style="margin-top:14px">
+        <div class="steprow"><span class="n">1</span><span><p class="t"><code>finout-pm</code> — decide what should exist</p><p class="d">Hands the PRD to research</p></span></div>
+        <div class="steprow"><span class="n">2</span><span><p class="t"><code>finout-design-research</code> — check it against the real world</p><p class="d">Hands a design direction to the designer</p></span></div>
+        <div class="steprow"><span class="n">3</span><span><p class="t"><code>/senior-product-designer</code> — build it</p><p class="d">The screen</p></span></div>
+      </div>
+      <p class="note-strip" data-stagger="4">Each output is the next one's input. For every skill: <em>the task → what we got → the insight.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">22</span> — <code>finout-pm</code> · the task</p>
+      <h2 class="head" data-stagger="2">The task we gave the PM.</h2>
+      <p class="lead" data-stagger="3">Write the PRD for the half of CostGuard that doesn't exist — everything after somebody reads the list.</p>
+      <ul class="takeaways" data-stagger="4" style="margin-top:24px">
+        <li><span class="b">1</span><span>Decide the unit, the owners, the states — <em>from our data, not from memory.</em></span></li>
+        <li><span class="b">2</span><span>Never invent a number. Say out loud what the data can't answer.</span></li>
+        <li><span class="b">3</span><span>End with <em>Screen requirements</em> — the section the next skill reads.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">23</span> — <code>finout-pm</code> · the research</p>
+      <h2 class="head sm" data-stagger="2">It read everything before deciding anything.</h2>
+      <div class="cards cols-3" data-stagger="3">
+        <div class="card"><p class="k">The data</p><h3>12,172 cost events, parsed</h3><p>Found the Snowflake weekend regression — <b style="color:var(--bad)">$2,075/month, still running</b> — that no anomaly ever flagged.</p></div>
+        <div class="card"><p class="k">The code</p><h3>What exists today</h3><p>The dead sidebar item, the KPI button whose handler is a toast, and the components already there to reuse.</p></div>
+        <div class="card"><p class="k">Finout's own words</p><h3>Docs + blog</h3><p>“A recommendation without a named owner defaults to no one.” Their writing names the failure modes we design against.</p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">The sharpest insight came from the data: <em>a saving that was real quietly died on June 6 — and nothing was watching.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">23</span> — Chapter 01 · what we got</p>
+      <h2 class="head sm" data-stagger="2">Three calls that shaped the screen.</h2>
+      <div class="cards cols-3" data-stagger="3">
+        <div class="card"><p class="k">D1</p><h3>The unit is the recommendation</h3><p>Not the resource — our data has no instance IDs. Named, not assumed.</p></div>
+        <div class="card"><p class="k">D3</p><h3>“Realized” has a definition</h3><p>Cost for 14 days after done, against 14 days before. Computable today.</p></div>
+        <div class="card"><p class="k">D6</p><h3>Never claim $0</h3><p>No baseline means “Not verifiable”. A zero would say the saving failed.</p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">D6 is the one that created a component. A variance column has to print a number — and there is no honest number for something unknowable.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">24</span> — <code>finout-pm</code> · the deliverable</p>
+      <h2 class="head sm" data-stagger="2">It came back as a PRD.</h2>
+      <div class="doc-embed" data-stagger="3">
+        <iframe src="../docs/prd/costguard-follow-through.html" title="CostGuard PRD" loading="lazy"></iframe>
+      </div>
+      <a class="btn" data-stagger="4" style="margin-top:14px" href="../docs/prd/costguard-follow-through.html" target="_blank" rel="noopener">Open the PRD →</a>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">24</span> — <code>finout-design-research</code> · the task</p>
+      <h2 class="head" data-stagger="2">The task we gave the researcher.</h2>
+      <p class="lead" data-stagger="3">Take the PRD's screen requirements and check them against the real world.</p>
+      <ul class="takeaways" data-stagger="4" style="margin-top:24px">
+        <li><span class="b">1</span><span>Bring <em>real references from Mobbin</em> — the tools our users already live in.</span></li>
+        <li><span class="b">2</span><span>Score every reference on our four dimensions — <em>including regression.</em></span></li>
+        <li><span class="b">3</span><span>Come back with a direction: what's table stakes, and where's the gap.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">26</span> — Chapter 02 · what we got</p>
+      <h2 class="head" data-stagger="2">Twelve references. Nobody solved it.</h2>
+      <p class="lead" data-stagger="3">Scored on four dimensions, <em>nothing scored above 3 on regression.</em> Linear collapses it into one activity line — <em>“moved to Done, then back to In Progress”</em> — buried on a detail page. Snowflake lets you reopen a closed case for “1 week, 2 days, 23 hours”. No list view anywhere says <em>this was done, and it is not done any more.</em></p>
+      <p class="note-strip" data-stagger="4">The most useful research finding was a negative one. Positive findings tell you what to copy. The negative one told us where the single new idea should go.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">27</span> — <code>finout-design-research</code> · the deliverable</p>
+      <h2 class="head sm" data-stagger="2">The research came back as its own deck.</h2>
+      <p class="lead" data-stagger="3">18 slides, written by the skill — every reference cited, every score explained, ending with the design direction.</p>
+      <div class="deck-embed" data-stagger="4">
+        <iframe src="../docs/research/costguard-follow-through/deck.html" title="CostGuard design research deck" tabindex="-1" loading="lazy"></iframe>
+      </div>
+      <a class="btn" data-stagger="5" style="margin-top:16px" href="../docs/research/costguard-follow-through/deck.html" target="_blank" rel="noopener">Open the research deck →</a>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">28</span> — <code>/senior-product-designer</code> · the task</p>
+      <h2 class="head" data-stagger="2">The task we gave the designer.</h2>
+      <p class="lead" data-stagger="3">Build the screen from the PRD and the research direction — inside Finout's design system, on the real data.</p>
+      <ul class="takeaways" data-stagger="4" style="margin-top:24px">
+        <li><span class="b">1</span><span>Every state in the requirements exists on the screen.</span></li>
+        <li><span class="b">2</span><span>No invented numbers — <em>every figure traces to the data.</em></span></li>
+        <li><span class="b">3</span><span>Put the one new idea where nobody solved it: <em>regression.</em></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">29</span> — Chapter 03 · what we got</p>
+      <h2 class="head sm" data-stagger="2">CostGuard, built in Finout's own design system.</h2>
+      <img class="shot" data-stagger="3" src="./assets/cg-list.png" alt="The CostGuard ledger: three KPI cards, filters, and a table of recommendations with the regressed row pinned at the top">
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">26</span> — The KPI row</p>
+      <h2 class="head sm" data-stagger="2">$26,802 found. $1,113 kept.</h2>
+      <p class="lead" data-stagger="3">The first version had four tiles and four buttons, and hid the only number that matters. Three statements now, no buttons — and a bar showing that <em>4%</em> of everything we identified actually reached the bill.</p>
+      <p class="note-strip bad" data-stagger="4">Regression used to be stated four times on one screen. Now it is said three times, and each one does a different job: the card gives the money, the row is pinned and tinted, the badge gives the state.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">27</span> — The gap, built</p>
+      <h2 class="head sm" data-stagger="2">The evidence is real data.</h2>
+      <img class="shot" data-stagger="3" src="./assets/cg-evidence.png" alt="The detail drawer showing why the recommendation was raised, a chart of real daily Snowflake cost with a weekend sawtooth that goes flat on 6 June, and an activity log">
+      <p class="sub" style="margin-top:14px" data-stagger="4">134 days of real cost from <code>workshop-data/seed.sql</code>. The weekend sawtooth runs all through April and May, then goes flat on 6 June. Nobody has to trust the claim.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">28</span> — Proving it</p>
+      <h2 class="head sm" data-stagger="2">Four outcomes, and none of them lie.</h2>
+      <img class="shot" data-stagger="3" src="./assets/cg-verified.png" alt="The Done tab showing realized, not verifiable and verifying outcomes side by side">
+      <p class="sub" style="margin-top:14px" data-stagger="4"><em>Realized $812 (−$18)</em> · <em>Realized $301 (+$11)</em> · <em>Verifying — 7 days to go</em> · <em>Not verifiable</em>. The last one is the honest answer when a migration overlapped the window.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="3">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">29</span> — And it runs</p>
+      <h2 class="head" data-stagger="2">One rule the interface will not let you skip.</h2>
+      <div class="tree" data-stagger="3">new ──assign──▶ new(owned) ──start──▶ working ──complete──▶ done
+                                                              │
+                                                    system verifies
+                                                              ▼
+       regressed ◀──decay── verified │ not verifiable │ verifying</div>
+      <p class="note-strip" data-stagger="4"><em>“Start work” is disabled until somebody owns it.</em> The PRD said a recommendation without a named owner defaults to no one. That is now a guard, not a sentence.</p>
+    </div>
+  </section>
+
+  <!-- ═════════ ACT 4 · WHAT TO TAKE ═════════ -->
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">30</span> — Then we looked</p>
+      <h2 class="head" data-stagger="2">Then we opened the real CostGuard.</h2>
+      <p class="lead" data-stagger="3">We designed the whole thing without ever seeing it. Time to compare — their product, next to ours.</p>
+      <p class="note-strip" data-stagger="4">The five stages we already knew. <em>What we didn't know was further down the page.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">31</span> — The convergence</p>
+      <h2 class="head" data-stagger="2">They named the same three people we did.</h2>
+      <div class="cards cols-2" data-stagger="3">
+        <div class="card"><p class="k">Our PRD · §2 Who it's for</p><h3>FinOps lead · Engineering owner · Executive</h3><p>Derived from the data: who owns the number, who does the work, and who only needs to know whether it worked.</p></div>
+        <div class="card"><p class="k">finout.io/costguard</p><h3>“One Hub for Every Stakeholder”</h3><p>FinOps Teams · Engineering &amp; Platform · Executives. Written from their positioning, months before we read it.</p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">We got there from the rows in a database. They got there from selling the product. When two independent routes land on the same three users, that is usually the real shape of the problem — not a coincidence worth ignoring.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">32</span> — So we built it again</p>
+      <h2 class="head sm" data-stagger="2">One ledger, three views.</h2>
+      <img class="shot" data-stagger="3" src="./assets/hub-finops.png" alt="The FinOps view: three KPI cards and the full governance ledger across every team">
+      <p class="sub" style="margin-top:14px" data-stagger="4">Not three filters — three different questions. The FinOps lead asks <em>what is stuck and who owns nothing.</em> Same data, same design system, no new components.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">33</span> — Engineering &amp; Platform</p>
+      <h2 class="head sm" data-stagger="2">The engineer wants proof, not a price tag.</h2>
+      <img class="shot" data-stagger="3" src="./assets/hub-eng.png" alt="The engineering view: one team's work as cards, each with the real daily cost chart behind the claim">
+      <p class="sub" style="margin-top:14px" data-stagger="4">Filtered to one team, and the evidence comes first. The money is still there — it is just no longer the argument. Engineers are allergic to being handed someone else's cleanup.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">34</span> — Executives</p>
+      <h2 class="head sm" data-stagger="2">The executive never sees the table.</h2>
+      <img class="shot" data-stagger="3" src="./assets/hub-exec.png" alt="The executive view: one large realized savings figure and a single bar splitting identified savings into banked, lost, in progress and not started">
+      <p class="sub" style="margin-top:14px" data-stagger="4">One number, and one bar: <em>$1,113 banked</em> · <em>$2,075 lost to regression</em> · <em>$11,757 in progress</em> · <em>$12,970 never started</em>. The sliver of green against the rest is the entire programme, in one glance.</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">35</span> — What to take from this</p>
+      <h2 class="head" data-stagger="2">Three things.</h2>
+      <ul class="takeaways" data-stagger="3">
+        <li><span class="b">1</span><span><em>Context beats prompting.</em> The skill is not clever wording — it is the onboarding doc that makes every future prompt shorter.</span></li>
+        <li><span class="b">2</span><span><em>Make the handoff a contract.</em> Named sections turn separate tools into a chain that survives being handed to someone else.</span></li>
+        <li><span class="b">3</span><span><em>Design from what is already promised.</em> Your product is full of buttons that go nowhere. That is a backlog somebody already justified.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="4">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">36</span> — And finally</p>
+      <h1 class="title" data-stagger="2">We designed it blind.<br>Then we checked.</h1>
+      <p class="lead" data-stagger="3">The stages we aimed at were the two they have not built. The users we found in the data were the three they name on their own site. Finout's designer is in the room — so the question is no longer whether we were close. It is what we still got wrong, and that is the most interesting conversation of the day.</p>
+    </div>
+  </section>
+
+  <!-- ═════════ ACT 5 · COMPARISON DESIGN ═════════ -->
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">37</span> — Comparison design</p>
+      <h1 class="title" data-stagger="2">One screen.<br>Three designs.</h1>
+      <p class="lead" data-stagger="3">Same data, same PRD, same design system underneath — and three different answers to what CostGuard should feel like. That is the point of a fast pipeline: <em>a direction costs an hour, not a sprint.</em></p>
+      <div class="pills" data-stagger="4">
+        <span class="pill">A · The build</span><span class="pill">B · The evidence rail</span><span class="pill">D · The triage queue</span><span class="pill">C · The concept</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">38</span> — Direction A · the build</p>
+      <h2 class="head sm" data-stagger="2">Faithful. Ships tomorrow morning.</h2>
+      <img class="shot" data-stagger="3" src="./assets/cg-list.png" alt="Direction A: the original CostGuard build — KPI cards, filters and a flat table with the regressed row pinned">
+      <p class="note-strip" data-stagger="4">Tabs + table, straight from Finout's design system. Evidence lives one click away, in the drawer. Optimizes for: <em>fitting the product today.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">39</span> — Direction B · the evidence rail <span style="color:var(--good)">· live</span></p>
+      <h2 class="head sm" data-stagger="2">The proof becomes the interface.</h2>
+      <div class="deck-embed" data-stagger="3">
+        <iframe src="../design/costguard-evidence-rail.html" title="Direction B — the evidence rail, live" tabindex="-1" loading="lazy"></iframe>
+      </div>
+      <p class="note-strip" data-stagger="4" style="margin-top:14px">What changed: tabs became <em>status groups with money totals</em>, the drawer became an <em>always-on evidence rail</em> — chart, verdict, history, next action. Optimizes for: <em>trust without clicking.</em> <a href="../design/costguard-evidence-rail.html" target="_blank" rel="noopener" style="color:var(--link);text-decoration:none">Open live →</a></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">39</span> — Direction D · the triage queue <span style="color:var(--good)">· live</span></p>
+      <h2 class="head sm" data-stagger="2">One decision at a time.</h2>
+      <div class="deck-embed" data-stagger="3">
+        <iframe src="../design/costguard-triage.html" title="Direction D — the triage queue, live" tabindex="-1" loading="lazy"></iframe>
+      </div>
+      <p class="note-strip" data-stagger="4" style="margin-top:14px">What changed: the table became a <em>ranked queue</em> — the screen picks what's next and says <em>why now</em>; the program bar shows where every identified dollar stands. Optimizes for: <em>action — clearing the queue.</em> <a href="../design/costguard-triage.html" target="_blank" rel="noopener" style="color:var(--link);text-decoration:none">Open live →</a></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap wide">
+      <p class="eyebrow" data-stagger="1"><span class="num">40</span> — Direction C · the concept</p>
+      <h2 class="head sm" data-stagger="2">The screen talks first.</h2>
+      <img class="shot" data-stagger="3" src="./assets/cg-direction-c.png" alt="Direction C: dark ambient concept — glowing banked/waiting/bleeding KPIs, an AI copilot suggesting to reopen the regression, and a stream of cards with sparklines">
+      <p class="note-strip" data-stagger="4">What changed: the table became an <em>attention stream</em>, every card carries its own sparkline, and the copilot opens the conversation — <em>“Snowflake stopped holding. Reopen for Amit?”</em> Optimizes for: <em>desire — the demo that sells the roadmap.</em></p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide data-section="5">
+    <div class="wrap">
+      <p class="eyebrow" data-stagger="1"><span class="num">41</span> — The difference</p>
+      <h2 class="head" data-stagger="2">Same truth, four temperatures.</h2>
+      <div class="cards cols-2" data-stagger="3">
+        <div class="card"><p class="k">A · The build</p><h3>You browse — evidence one click away</h3><p>100% existing components. The version you merge this sprint.</p></div>
+        <div class="card"><p class="k">B · The evidence rail</p><h3>You trust — evidence always on screen</h3><p>One new component. The version you A/B against the drawer.</p></div>
+        <div class="card"><p class="k">D · The triage queue</p><h3>You act — the screen picks what's next</h3><p>Same components, new posture: a ranked queue with a reason. The version for Monday morning.</p></div>
+        <div class="card"><p class="k">C · The concept</p><h3>It speaks — the copilot opens the conversation</h3><p>A deliberate break from the system. The version that argues for the vision.</p></div>
+      </div>
+      <p class="note-strip" data-stagger="4">The skill pipeline made all four from the same PRD in one afternoon. <em>Choosing between them is now a product conversation, not a design sprint.</em></p>
+    </div>
+  </section>
+</div>
+
+<div class="deck-nav">
+  <button class="nav-btn" id="prev" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button class="nav-btn" id="next" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+  <span class="counter"><b id="cur">1</b> / <span id="total">0</span></span>
+  <span class="sec-dots" id="dots" aria-hidden="true"></span>
+</div>
+<div class="hint">Use <kbd>←</kbd> <kbd>→</kbd></div>
+
+<script>
+(function(){
+  var SECTIONS=[
+    {n:'01',label:'The problem'},
+    {n:'02',label:'Skill building'},
+    {n:'03',label:'The workflow'},
+    {n:'04',label:'The reveal'},
+    {n:'05',label:'Comparison design'}
+  ];
+  var slides=[].slice.call(document.querySelectorAll('[data-slide]')),i=0;
+  slides.forEach(function(s,n){
+    var el=s.querySelector('.eyebrow .num');
+    if(el) el.textContent=('0'+(n+1)).slice(-2);
+  });
+  var secOf=slides.map(function(s){return parseInt(s.dataset.section,10)||1;});
+  var firstOf={}; secOf.forEach(function(sec,n){ if(firstOf[sec]===undefined) firstOf[sec]=n; });
+
+  var tabsEl=document.getElementById('tabs'), dotsEl=document.getElementById('dots'), tabBtns=[];
+  SECTIONS.forEach(function(sec,k){
+    if(k) { var sep=document.createElement('span'); sep.className='dsep'; sep.textContent='\u2192'; tabsEl.appendChild(sep); }
+    var b=document.createElement('button');
+    b.className='dtab'; b.type='button';
+    b.innerHTML='<span class="n">'+sec.n+'</span><span class="lbl">'+sec.label+'</span>';
+    b.setAttribute('aria-label','Section '+sec.n+': '+sec.label);
+    b.addEventListener('click',function(){ go(firstOf[k+1]); });
+    tabsEl.appendChild(b); tabBtns.push(b);
+  });
+  var bar=document.getElementById('bar'),cur=document.getElementById('cur');
+  var prev=document.getElementById('prev'),next=document.getElementById('next');
+  document.getElementById('total').textContent=slides.length;
+  function render(){
+    slides.forEach(function(s,n){s.classList.toggle('is-active',n===i);});
+    bar.style.width=(i/(slides.length-1)*100)+'%';
+    cur.textContent=i+1;
+    prev.disabled=i===0; next.disabled=i===slides.length-1;
+    if(location.hash.slice(1)!==String(i+1)) history.replaceState(null,'','#'+(i+1));
+
+    var sec=secOf[i];
+    tabBtns.forEach(function(b,k){
+      b.classList.toggle('on',k+1===sec);
+      b.classList.toggle('done',k+1<sec);
+      b.setAttribute('aria-current',k+1===sec?'true':'false');
+    });
+    // dots show position inside the current section
+    var inSec=slides.filter(function(_,n){return secOf[n]===sec;}).length;
+    var atSec=i-firstOf[sec];
+    dotsEl.innerHTML='';
+    for(var d=0;d<inSec;d++){
+      var dot=document.createElement('i');
+      if(d<=atSec) dot.className='on';
+      dotsEl.appendChild(dot);
+    }
+    window.dispatchEvent(new CustomEvent('deckslide',{detail:{index:i}}));
+  }
+  function go(n){i=Math.max(0,Math.min(slides.length-1,n));render();}
+  function step(dir){return window.paStep?window.paStep(dir):false;}
+  next.addEventListener('click',function(){if(step(1))return;go(i+1);});
+  prev.addEventListener('click',function(){if(step(-1))return;go(i-1);});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();if(step(1))return;go(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();if(step(-1))return;go(i-1);}
+    else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(slides.length-1);}
+  });
+  var start=parseInt(location.hash.slice(1),10);
+  go(isNaN(start)?0:start-1);
+})();
+
+/* ── prompt anatomy (slides 12+13) — step-by-step reveals of the skill-prompt method ── */
+(function(){
+  var allSlides=[].slice.call(document.querySelectorAll('[data-slide]'));
+  var CONFIGS=[
+    {id:'pa-slide', addAt:7,
+     order:['persona','purpose','triggers','context','method','reference','tools','success'],
+     note:[
+      ['Five sentences, close to what was typed. <em>Five parameters already inside.</em> Press → to see where each one sits.',false],
+      ['<em>Persona.</em> Not “help me” — a role. A PM has opinions; an assistant has none.',false],
+      ['<em>Purpose.</em> What it produces — specs, PRDs, competitor research — and why: better decisions, not more documents.',false],
+      ['<em>Triggers.</em> A new feature, a new screen. Now it knows when to wake up.',false],
+      ['<em>Context.</em> The sentence that keeps it from being a generic PM off the internet — this repo is its world.',false],
+      ['<em>Method.</em> Ask before you write. Every question on the next slides came from this one line.',false],
+      ['Still method: <em>the reference.</em> Never let it guess what “good” looks like — hand it a repo of great skills to learn from.',false],
+      ['What was missing: <em>tools.</em> One added line, and it pulls real numbers instead of inventing them.',true],
+      ['And <em>a definition of done.</em> The same prompt — nothing clever, just no forgotten parameters.',true]
+     ]},
+    {id:'pa-slide2', addAt:7,
+     order:['persona','purpose','tools','context','success','method','triggers','reference'],
+     note:[
+      ['Five sentences, close to what was typed. <em>Six parameters — but not the same six.</em> Press → to see which.',false],
+      ['<em>Persona.</em> A researcher this time — a different role, a different set of opinions.',false],
+      ['<em>Purpose.</em> Not inspiration — evidence: how competitors already solved the thing we are about to design.',false],
+      ['<em>Tools.</em> This prompt remembered its hands: the Mobbin MCP brings real screens, not memories of them.',false],
+      ['<em>Context.</em> A “brain” it inherits — the competitive-analyst agent decides how it judges what it sees.',false],
+      ['<em>Success.</em> The deliverable was named up front: slides plus references, ready for the deck and for Figma.',false],
+      ['<em>Method.</em> The same four words as skill one: ask me questions first.',false],
+      ['What was missing here: <em>triggers.</em> Added — it now wakes up the moment the PM hands over a PRD.',true],
+      ['And the method was only half there: <em>the reference.</em> Same repo as skill one. Every prompt forgets different parameters — the checklist catches them.',true]
+     ]}
+  ];
+  var instances=CONFIGS.map(function(cfg){
+    var slide=document.getElementById(cfg.id); if(!slide) return null;
+    var note=slide.querySelector('.note-strip'), hint=slide.querySelector('.pc-hint'),
+        addhead=slide.querySelector('.pa-addhead'), card=slide.querySelector('.prompt-card');
+    var MAX=cfg.order.length, step=0;
+    function active(){return slide.classList.contains('is-active');}
+    function render(){
+      var shown={}; for(var k=0;k<step;k++) shown[cfg.order[k]]=true;
+      slide.querySelectorAll('.seg,.pa-add,.pa-item').forEach(function(el){
+        el.classList.toggle('lit',!!shown[el.getAttribute('data-el')]);
+      });
+      if(addhead) addhead.classList.toggle('lit',step>=cfg.addAt);
+      if(note){note.innerHTML=cfg.note[step][0];note.classList.toggle('done',cfg.note[step][1]);}
+      if(hint) hint.style.display=step>=MAX?'none':'';
+    }
+    var inst={
+      myIndex:allSlides.indexOf(slide),
+      step:function(dir){
+        if(!active()) return false;
+        if(dir>0&&step<MAX){step++;render();return true;}
+        if(dir<0&&step>0){step--;render();return true;}
+        return false;
+      },
+      reset:function(full){step=full?MAX:0;render();}
+    };
+    if(card) card.addEventListener('click',function(e){
+      if(e.target.closest('a')) return;
+      if(active()) inst.step(1);
+    });
+    render();
+    return inst;
+  }).filter(Boolean);
+  var lastIdx=-1;
+  window.paStep=function(dir){
+    for(var k=0;k<instances.length;k++){ if(instances[k].step(dir)) return true; }
+    return false;
+  };
+  window.addEventListener('deckslide',function(e){
+    var idx=e.detail.index;
+    instances.forEach(function(inst){
+      if(idx===inst.myIndex&&idx!==lastIdx) inst.reset(lastIdx>inst.myIndex);
+    });
+    lastIdx=idx;
+  });
+})();
+</script>
+</body>
+</html>
