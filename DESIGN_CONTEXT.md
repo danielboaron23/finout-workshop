@@ -12,9 +12,33 @@ Finout — FinOps cost-management platform (finout.io). Workshop repo: 1:1 rebui
 ## Component inventory (REUSE these)
 - `src/components/sidebar/Sidebar.tsx` (+`sidebar-icons.tsx`) — 220px dark nav, activeItem prop
 - `src/components/navigation/` — `TopNav`, `PageTitleBar`, `Tabs`
-- `src/components/ui/` — `Button` (primary/secondary/tertiary/ghost/link) + `ChevronDown16`, `SearchInput`, `Select`, `Badge` (FolderBadge/ProductBadge), `Avatar`, `FolderMenu`
+- `src/components/ui/` — `Button` (primary/secondary/tertiary/ghost/link) + `ChevronDown16`, `SearchInput`, `Select`, `Badge` (FolderBadge/ProductBadge), `Avatar`, `FolderMenu`, `Switch`, `Callout`, `ActionBar`, `Dropdown`/`DropdownItem`, `Toast`
 - `src/components/table/Table.tsx` — `TableShell`, `HeaderCell`, `Cell`, `CellText`, `MenuCell`, `CheckboxCell`
+- `src/components/costguard/` — `SavingsCell` (projected + realized + verdict in one cell, renders "Not verifiable"), `BulkActionBar` (selection count + $ at stake + actions — now a thin wrapper over `ui/ActionBar`)
+- `src/components/settings/` — `SettingsRail` (vertical grouped nav), `SettingRow` (label + control + scope + provenance) + `RowDivider`, `ImpactPanel` (what a staged change does to the numbers), `StagedChangeBar`, `data.ts` (settings model + allocation math), `allocation-data.ts` (generated from seed)
 - Screens live in `src/screens/*Screen.tsx` + route in `src/app/<slug>/page.tsx` + story per screen.
+
+### Accepted extends (Sidebar hover choreography, 2026-09-09) — treat as REUSE from here
+- Uniform hover on every sidebar row (`.sb-row`/`.sb-ico`/`.sb-label` in globals.css): row tint + label slide-and-brighten, icon jelly-pop (`sbJelly`) with breathing green halo (`sbGlow`, brand green) + brightness/drop-shadow glow. Pure CSS, works expanded + collapsed, `prefers-reduced-motion` safe. This is the app's icon-hover language — reuse the classes, don't invent new hover effects per surface.
+
+### Accepted extends (Sidebar collapse, 2026-09-09) — treat as REUSE from here
+- `Sidebar` → client component with collapse-to-rail: clicking the logo toggles 220px ↔ 64px (green mark stays, wordmark clipped away, labels hide, CSS tooltips on hover, section labels become dividers). Persists via localStorage `finout-sidebar-collapsed`; transitions suppressed on first paint so a stored state applies instantly. Expanded layout unchanged (1:1 Figma). `public/brand/finout-mark.svg` = extracted green mark.
+
+### Accepted extends + invents (Settings, 2026-09-10) — treat as REUSE from here
+- **INVENT** `SettingsRail` — vertical grouped nav with scope headings; every row a real anchor so a section is deep-linkable. `Tabs` cannot do this (horizontal, fixed 68px, bottom-border indicator, `TabItem` has no href).
+- **INVENT** `SettingRow` (+ `RowDivider`) — label + description + control, plus the two lines that make a settings row honest: `scope` (who this affects, stated before the change) and `provenance` (who last changed it and why). Reuses real Finout's Virtual Tag change-note idea without an audit log.
+- **INVENT** `Callout` (`ui/`) — tinted panel stating a consequence, tones info/warning/danger, all from existing tokens. Absorbs the private `InfoBanner` in `ThresholdsDrawer`; also fits the four places CostGuard inlines this by hand.
+- **EXTEND** `Switch` → lifted from `anomaly-form/ThresholdsDrawer` to `ui/Switch.tsx` and given `checked` + `onChange` (+ `disabled`). Controlled when both are passed, uncontrolled otherwise — same shape as the `CheckboxCell` extend. Existing call sites unchanged.
+- **EXTEND** `ActionBar` (`ui/`) — the dark conditional bar lifted out of `BulkActionBar`, which was welded to CostGuard's owners/reasons. Takes `label` + `actions`; `BulkActionBar` keeps its API and renders through it.
+- **EXTEND** `Dropdown` → `placement?: "bottom" | "top"`. A menu on a bar pinned to the bottom of the viewport opened off-screen.
+- **EXTEND** `Sidebar` → the footer `Settings` row now has `href="/settings"` and an active state. It had been a dead row with full hover choreography since the prototype began.
+- Note: `Select` is a **trigger only** (no value/options/onChange) — pair it with `Dropdown` for a working single-select. There is still no generic `Input`, radio, textarea, modal or date picker; Settings deliberately uses a preset `Dropdown` for its effective-date control rather than introducing a picker.
+
+### Accepted extends (CostGuard, 2026-09-06) — treat as REUSE from here
+- `Badge` → `StatusBadge` (new / working / done / regressed / dismissed)
+- `Button` → `onClick`, `type`, `disabled` (was presentation-only)
+- `CheckboxCell` → optional `checked` + `onChange`; renders a real checkbox when interactive, stays a spacer otherwise
+- Note: `SearchInput` is exported from `src/components/ui/Input.tsx`, not `SearchInput.tsx`
 
 ## Assets
 Exported Figma SVGs only (never hand-drawn): `public/icons/{sidebar,topnav,ui}`, `public/brand/finout-logo.svg`.
