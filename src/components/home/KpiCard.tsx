@@ -151,7 +151,7 @@ function TrendIcon({ trend }: { trend: KpiTrend }) {
 export function KpiCard({ title, caption, icon, value, delta, previous, cta, ctaHref, onCtaClick, className = "" }: KpiCardProps) {
   return (
     <div
-      className={`@container bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
+      className={`@container bg-blue-50 border border-solid border-blue-300 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[16px] px-[16px] py-[24px] rounded-[8px] ${className}`}
     >
       <div className="flex flex-col gap-[12px] items-start w-full">
         <div className="flex gap-[12px] items-center w-full">
