@@ -14,10 +14,19 @@ import { useRouter } from "next/navigation";
 
 /* ---------- shared widget primitives (reused by the other home cards) ---------- */
 
-export function WidgetCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function WidgetCard({
+  children,
+  className = "",
+  tone = "default",
+}: {
+  children: ReactNode;
+  className?: string;
+  tone?: "default" | "blue";
+}) {
+  const toneClass = tone === "blue" ? "bg-blue-50 border-blue-300" : "bg-white border-neutral-100";
   return (
     <div
-      className={`bg-white border border-solid border-neutral-100 drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start px-[24px] py-[16px] rounded-[8px] w-full ${className}`}
+      className={`${toneClass} border border-solid drop-shadow-[0px_1px_1px_rgba(16,24,40,0.06),0px_1px_1.5px_rgba(16,24,40,0.1)] flex flex-col gap-[8px] items-start px-[24px] py-[16px] rounded-[8px] w-full ${className}`}
     >
       {children}
     </div>
@@ -250,7 +259,7 @@ export function CostCentersCard({
   const isTotal = (i: number) => i === all.length - 1;
   const toggleSort = () => setSortDir((d) => (d === "desc" ? "asc" : "desc"));
   return (
-    <WidgetCard>
+    <WidgetCard tone="blue">
       <div className="flex flex-col gap-[16px] items-start rounded-[8px] w-full">
         <div className="flex flex-col gap-[8px] items-start w-full">
           <WidgetTitle>{title}</WidgetTitle>
