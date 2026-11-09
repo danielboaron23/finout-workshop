@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1512, height: 900 } });
+await page.goto('http://localhost:3000/', { waitUntil: 'networkidle' });
+await page.waitForTimeout(600);
+await page.getByText('Investigate in MegaBill').first().click();
+await page.waitForURL('**/megabill'); await page.waitForTimeout(400);
+console.log('CTA ->', new URL(page.url()).pathname);
+await page.getByText('Overview', { exact: true }).first().click();
+await page.waitForURL('http://localhost:3000/');
+await page.getByText('MegaBill', { exact: true }).first().click();
+await page.waitForURL('**/megabill');
+console.log('sidebar ->', new URL(page.url()).pathname);
+await browser.close();
