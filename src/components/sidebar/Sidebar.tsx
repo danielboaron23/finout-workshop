@@ -34,7 +34,7 @@ const NAV: Entry[] = [
   { type: "item", label: "Anomalies", icon: "anomalies", href: "/anomalies" },
   { type: "section", label: "Operate" },
   { type: "item", label: "Cost per entity", icon: "cost-per-entity" },
-  { type: "item", label: "Reports", icon: "reports" },
+  { type: "item", label: "Reports", icon: "reports", href: "/reports" },
   { type: "item", label: "Governance", icon: "governance" },
 ];
 
